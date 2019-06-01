@@ -1,0 +1,7 @@
+source "drivers/ontim/touchscreen/Kconfig"
+source "drivers/ontim/compass/Kconfig"
+source "drivers/ontim/gsensor/Kconfig"
+source "drivers/ontim/light_prox/Kconfig"
+source "drivers/ontim/ontimdbgcore/Kconfig"
+source "drivers/ontim/backlight/Kconfig"
+

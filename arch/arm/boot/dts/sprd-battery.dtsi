@@ -1,0 +1,109 @@
+/*
+* Copyright (C) 2013 Spreadtrum Communication Incorporated
+*		http://www.spreadtrum.com/
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License version 2 as
+* published by the Free Software Foundation.
+*/
+
+/* This is the sprd battery default DTS */
+
+/ {
+	sprd_battery: sprd_battery {
+		compatible = "sprd,sprd-battery";
+		gpios = <&a_eic_gpio 0 0        /* chg int */
+			&a_eic_gpio 4 0        /* cv state */
+			&a_eic_gpio 6 0>;      /* chg ovi */
+		chg-end-vol-h = <4375>;
+		chg-end-vol-pure = <4365>;
+		chg-end-vol-l = <4336>;
+		chg-bat-safety-vol = <4430>;
+		rechg-vol = <4280>;
+		adp-cdp-cur = <500>;
+		adp-dcp-cur = <1000>;
+		adp-sdp-cur = <500>;
+		ovp-stop = <6000>;
+		ovp-restart = <5800>;
+		chg-timeout = <25200>;
+		chgtimeout-show-full = <0>;
+		chg-rechg-timeout = <5400>;
+		chg-cv-timeout = <3600>;
+		chg-eoc-level = <3>;
+		cccv-default = <0>;
+		chg-end-cur = <80>;
+		otp-high-stop = <1500>;
+		otp-high-restart = <1480>;
+		/*wdm---*/
+		otp-low-stop = <1000>;
+		otp-low-restart = <1020>;
+		
+		chg-current-call = <300>;
+		chg-current-high-temp-area = <450>;
+		chg-current-high-temp-area-30 = <650>;
+                chg-current-low-temp-area = <400>;
+                low-temp-area-h = <1150>;
+                low-temp-area-l = <1000>;
+                high-temp-area-h = <1500>;
+                high-temp-area-l = <1450>;
+		high-temp-area-l-cur = <1400>;
+		high-temp-area-l-cur-30 = <1340>;
+
+                chg-end-vol-high-temp = <4100>;
+                chg-end-to-chg-state-vol = <4000>;
+                chg-max-cur = <1000>;
+		/*---*/
+		chg-polling-time = <60>;
+		chg-polling-time-fast = <1>;
+		bat-polling-time = <15>;
+		bat-polling-time-fast = <15>;
+		cap-one-per-time = <30>;
+		cap-valid-range-poweron = <30>;
+		temp-support = <1>;
+		temp-adc-ch = <0>;
+		temp-adc-scale = <0>;
+		temp-adc-sample-cnt = <15>;
+		temp-table-mode = <1>;
+		temp-tab-size = <19>;
+		temp-tab-val = <988 960 927  889 847
+				782 733 701 649 595 523
+				472 443 398 339 302 281 245 221>;
+		temp-tab-temp = <750 800 850 900 950 1000	/* temperature + 1000,750 = 1000 + (-250)*/
+				1050 1100 1150 1200 1250 1300
+				1350 1400 1450 1500 1550 1600 1650>;
+		fgu-mode = <1>;
+		alm-soc = <5>;
+		alm-vol = <3663>;
+		soft-vbat-uvlo = <3250>;
+		/*wdm---*/
+		discharging_rint = <227>;
+                charging_rint = <227>;
+		/*---*/
+		rint = <120>;
+		cnom = <1730>;
+		rsense-real = <215>;
+		rsense-spec = <200>;
+		relax-current = <50>;
+		fgu-cal-ajust = <0>;
+		ocv-tab-size = <13>;
+		ocv-tab-vol = <4300 4264 4093 4005 3915 3841
+			       3799 3770 3736 3711 3683 3655 3406>;
+		ocv-tab-cap = <100 97 82 72 62 52
+			       42  32 22 17 12 4  0>;
+		/*wdm--*/
+		rint-tab-size = <4>;
+                rint-temp-tab = <1500 1250 1000 900>;
+                rint-tab = <139 227  714 1280>;
+		/*---*/
+		sprd_chg: sprd_chg{
+			compatible  = "sprd,sprd_chg";
+			interrupt-parent = <&gic>;
+			interrupts = <0 120 0x0>;
+		};
+		sprd_fgu: sprd_fgu{
+			compatible  = "sprd,sprd_fgu";
+			interrupt-parent = <&adi>;
+			interrupts = <4 0x0>;
+		};
+	};
+};

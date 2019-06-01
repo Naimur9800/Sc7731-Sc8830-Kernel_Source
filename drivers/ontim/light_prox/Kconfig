@@ -1,0 +1,24 @@
+#
+# light and proximity driver configuration
+#
+
+config LIGHT_PROXIMITY_TMD22713T
+	tristate "tmd22713t light and proximity sensor"
+	depends on  I2C
+	default n
+
+config LIGHT_PROXIMITY_RPR0400
+        tristate "RPR0400 light and proximity sensor"
+        depends on  I2C
+	default n
+
+config LIGHT_PROXIMITY_LTR553
+        tristate "ltr553 light and proximity sensor"
+        depends on  I2C
+	default n
+
+config LIGHT_PROXIMITY_STK3311
+        tristate "skt3311 light and proximity sensor"
+        depends on  I2C
+	default n
+

@@ -1,0 +1,10 @@
+#
+# ontim compass driver configuration
+#
+
+config INPUT_LSM303D_I2C
+	tristate "lsm303d compass & g-sensor 2 in 1"
+	depends on  I2C
+	default n
+
+

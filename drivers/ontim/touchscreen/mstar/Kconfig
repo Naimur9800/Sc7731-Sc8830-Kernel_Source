@@ -1,0 +1,31 @@
+config TOUCHSCREEN_MSTAR
+	tristate "msg2133 based touchscreens"
+	depends on I2C
+	help
+	  Say Y here if you have a msg2133 based touchscreen
+	  controller.
+
+	  If unsure, say N.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called msg2133.
+
+config TOUCHSCREEN_MSTAR2XXX
+	tristate "msg2xxx based touchscreens"
+	depends on I2C
+	help
+	  Say Y here if you have a msg2xxx based touchscreen
+	  controller.
+
+	  If unsure, say N.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called msg2xxx.
+
+config  ENABLE_SIMULATIONS_PROXIMITY 
+	boolean "support tp simulator proximity "
+	depends on TOUCHSCREEN_MSTAR2XXX 
+	default n		
+
+
+

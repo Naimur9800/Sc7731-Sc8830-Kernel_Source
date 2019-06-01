@@ -1,0 +1,10 @@
+#
+# ontim compass driver configuration
+#
+
+config ONTIM_BACKLIGHT
+	tristate "ontim backlight driver"
+	depends on  I2C
+	default n
+
+

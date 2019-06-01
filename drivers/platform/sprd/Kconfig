@@ -1,0 +1,56 @@
+#
+# SPREADTRUM Platform Specific Drivers
+#
+menu "Spreadtrum Platform Specific Drivers"
+config SC_INTERNAL_ADI
+	bool "Spredtrum ADI Support"
+        default y
+	help
+	  Say Y here to support for adi.
+
+config BUS_MONITOR_DEBUG
+    bool "Spreadtrum BM Support"
+	default y
+	help
+	  Say Y here to support debug busmonitor
+
+config SC_FPGA
+	bool "Spreadtrum FPGA support"
+	default n
+	help
+	  This is used for FPGA verification
+
+config SCX35L64BIT_FPGA
+	bool "Spreadtrum FPGA platform"
+	depends on ARCH_SCX35L64
+	select  SC_FPGA
+	default n
+	help
+	  SCX35L64BIT_FPGA fpga platform
+
+config SC_VIBRATOR
+        bool "vibrator for SC serials"
+        select ANDROID_TIMED_OUTPUT
+        default n
+
+config SPRD_VIBRATOR_2723
+        bool "vibrator for sprd_vibrator_2723"
+        select ANDROID_TIMED_OUTPUT
+        default n
+
+config SC_VIBRATOR_GPIO
+        bool "vibrator for SC serials by gpio"
+        default n
+	depends on SC_VIBRATOR
+
+config SC_VIBRATOR_POWER
+        bool "vibrator for SC serials by power"
+        default n
+	depends on SC_VIBRATOR
+
+config SC_INTERNAL_WATCHDOG
+	bool "spreadtrum sc internal watchdog"
+	default y
+	depends on ARCH_SCX35
+
+endmenu

@@ -1,0 +1,13 @@
+config TOUCHSCREEN_FOCALTECH_ONTIM
+	tristate "FocalTech IC based touchscreens"
+	depends on I2C
+	help
+	  Say Y here if you have a FocalTech IC based touchscreen
+	  controller.
+
+	  If unsure, say N.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called FocalTech.
+
+

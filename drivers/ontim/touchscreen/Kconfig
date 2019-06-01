@@ -1,0 +1,4 @@
+source "drivers/ontim/touchscreen/focaltech/Kconfig"
+source "drivers/ontim/touchscreen/goodix/Kconfig"
+source "drivers/ontim/touchscreen/mstar/Kconfig"
+

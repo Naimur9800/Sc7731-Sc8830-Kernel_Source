@@ -1,0 +1,30 @@
+config CGX
+	bool "Sprd gps"
+	default n
+	help
+	  GPS can locate you position
+
+config CGX_DRIVER
+	tristate "Sprd gps driver"
+	depends on CGX
+	help
+	  GPS can locate you position
+
+config CGX_VIRTUALCOM
+	tristate "Sprd gps virtual com"
+	depends on CGX
+	help
+	  GPS can locate you position
+
+config CGX_GE_GPS
+	tristate "Sprd greeneye gps use spi interface"
+	depends on CGX
+	help
+	  GPS can locate you position
+
+config CGX_DMA_IRQ_MODE
+	bool "Force DMA irq mode instead of linked list mode"
+	depends on CGX
+	default n
+	help
+	  GPS can locate you position

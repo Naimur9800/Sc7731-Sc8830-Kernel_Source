@@ -1,0 +1,98 @@
+/*
+* Copyright (C) 2013 Spreadtrum Communication Incorporated
+*		http://www.spreadtrum.com/
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License version 2 as
+* published by the Free Software Foundation.
+*/
+
+/* This is the sprd battery default DTS */
+
+/ {
+	sprd_battery: sprd_battery {
+		compatible = "sprd,sprd-battery";
+		gpios = <&a_eic_gpio 0 0        /* chg int */
+			&a_eic_gpio 4 0        /* cv state */
+			&a_eic_gpio 6 0>;      /* chg ovi */
+		chg-end-vol-h = <4375>;
+		chg-end-vol-pure = <4350>;
+		chg-end-vol-l = <4340>;
+		chg-false-full-vol = <4295>; 
+		chg-bat-safety-vol = <4400>;
+		rechg-vol = <4250>;
+		adp-cdp-cur = <500>;
+		adp-dcp-cur = <500>;
+		adp-sdp-cur = <500>;
+		ovp-stop = <6500>;
+		ovp-restart = <5800>;
+		chg-timeout = <21600>;
+		chgtimeout-show-full = <0>;
+		chg-rechg-timeout = <5400>;
+		chg-cv-timeout = <3600>;
+		chg-eoc-level = <3>;
+		cccv-default = <0>;
+		chg-end-cur = <80>;
+		otp-high-stop = <1450>;
+		otp-high-restart = <1420>;
+		otp-low-stop = <1000>;
+		otp-low-restart = <1030>;
+		chg-polling-time = <30>;
+		chg-polling-time-fast = <1>;
+		bat-polling-time = <15>;
+		bat-polling-time-fast = <15>;
+		cap-one-per-time = <30>;
+		cap-valid-range-poweron = <30>;
+		chg-full-condition = <0>;	/*0 vol and cur,1 status and cur(need add),2 ext ic*/
+		temp-support = <1>;
+		temp-adc-ch = <0>;
+		temp-adc-scale = <0>;
+		temp-adc-sample-cnt = <15>;
+		temp-table-mode = <1>;
+		temp-comp-res = <30>;	/*30mohm,if temp-table-mode = <1>, use it*/
+		temp-tab-size = <19>;
+		temp-tab-val = <725713 525736 385651 286243 214834 162942
+				124819 96520 75306 59254 47000 37566
+				30245 24519 20009 16432 13575 11280 9424>;
+		temp-tab-temp = <750 800 850 900 950 1000	/* temperature + 1000,750 = 1000 + (-250)*/
+				1050 1100 1150 1200 1250 1300
+				1350 1400 1450 1500 1550 1600 1650>;
+		jeita-tab-size = <6>;
+		jeita-temp-tab = <900 1000 1100 1450 1500 3000>;
+		jeita-temp-recovery-tab = <870 970 1070 1420 1470 3000>;
+		jeita-cur-tab = <0 0 500 500 0 0>;
+		jeita-cccv-tab = <4200 4200 4350 4350 4350 4350>;
+		fgu-mode = <1>;
+		alm-soc = <5>;
+		alm-vol = <3600>;
+		soft-vbat-uvlo = <3100>;
+		rint = <250>;
+		cnom = <1500>;
+		rsense-real = <215>;
+		rsense-spec = <200>;
+		relax-current = <50>;
+		fgu-cal-ajust = <0>;
+		ocv-type = <0>;		//0 for soft_ocv,1 for pocv
+		ocv-tab-size = <21>;
+		ocv-tab-vol = <4284 4211 4166 4118 4072 4022 3975 3936 3898 3852 3824 3800 3780 3769 3752 3731 3696 3645 3575 3510 3400>;
+		ocv-tab-cap = <100  95   90   85   80   75   70   65   60   55   50   45   40   35   30   25   20   15   10   5    0>;
+		cnom-temp-tab = <1020 1800	/*value = 1000 + temp*/
+				1010 1300
+				1000 1070
+				990  1000>;
+		rint-temp-tab = <1050 248	/*value = 1000 + temp*/
+				1025 250 
+				1000 460
+				990  970>;
+		sprd_chg: sprd_chg{
+			compatible  = "sprd,sprd_chg";
+			interrupt-parent = <&gic>;
+			interrupts = <0 120 0x0>;
+		};
+		sprd_fgu: sprd_fgu{
+			compatible  = "sprd,sprd_fgu";
+			interrupt-parent = <&adi>;
+			interrupts = <4 0x0>;
+		};
+	};
+};

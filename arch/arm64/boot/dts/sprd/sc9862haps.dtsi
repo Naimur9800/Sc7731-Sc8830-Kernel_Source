@@ -1,0 +1,124 @@
+/*
+ * Spreadtrum SP9862 SoC DTS file
+ *
+ * Copyright (C) 2016, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#include "whalek.dtsi"
+#include "sc9862haps-clocks.dtsi"
+
+/ {
+	cpus {
+		#address-cells = <2>;
+		#size-cells = <0>;
+
+		cpu-map {
+			cluster0 {
+				core0 {
+					cpu = <&CPU0>;
+				};
+			};
+		};
+
+		CPU0: cpu@0 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53","arm,armv8";
+			reg = <0x0 0x0>;
+			enable-method = "psci";
+		};
+	};
+
+	psci {
+		compatible = "arm,psci-0.2";
+		method = "smc";
+	};
+
+	gic: interrupt-controller@12000000 {
+		compatible = "arm,gic-v3";
+		#interrupt-cells = <3>;
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		redistributor-stride = <0x0 0x20000>;	// 128KB stride
+		#redistributor-regions = <1>;
+		interrupt-controller;
+		reg = <0x0 0x12000000 0 0x20000>,	// GICD
+			<0x0 0x12040000 0 0x100000>;	// GICR
+		interrupts = <1 9 4>;
+		v2m_0: v2m@0 {
+			compatible = "arm,gic-v2m-frame";
+			msi-controller;
+			reg = <0 0 0 0x1000>;
+		};
+	};
+
+	timer {
+		compatible = "arm,armv8-timer";
+		interrupts = <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(8)
+					 | IRQ_TYPE_LEVEL_LOW)>,
+			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(8)
+					 | IRQ_TYPE_LEVEL_LOW)>;
+		clock-frequency = <26000000>;
+	};
+};
+
+&hwslock1 {
+	clock-names = "enable";
+	clocks = <&clk_aon_apb_gates0 22>;
+};
+
+&i2c0 {
+	clocks = <&clk_ap_apb_gates 9>;
+};
+
+&i2c1 {
+	clocks = <&clk_ap_apb_gates 10>;
+};
+
+&i2c2 {
+	clocks = <&clk_ap_apb_gates 11>;
+};
+
+&i2c3 {
+	clocks = <&clk_ap_apb_gates 12>;
+};
+
+&i2c4 {
+	clocks = <&clk_ap_apb_gates 13>;
+};
+
+&i2c5 {
+	clocks = <&clk_aon_apb_gates2 7>;
+};
+
+&spi0 {
+	clocks = <&clk_ap_apb_gates 5>;
+};
+
+&spi1 {
+	clocks = <&clk_ap_apb_gates 6>;
+};
+
+&spi2 {
+	clocks = <&clk_ap_apb_gates 7>;
+};
+
+&spi3 {
+	clocks = <&clk_ap_apb_gates 8>;
+};
+
+&uart0 {
+	clocks = <&clk_ap_apb_gates 14>;
+	status = "okay";
+};
+
+&uart1 {
+	clocks = <&clk_ap_apb_gates 15>;
+	status = "okay";
+};
+
+&uart2 {
+	clocks = <&clk_ap_apb_gates 16>;
+};

@@ -1,0 +1,560 @@
+/*
+ * Spreadtrum sharkl3 board DTS file
+ *
+ * Copyright (C) 2018, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+/dts-v1/;
+
+#include "sc9863a.dtsi"
+#include "sp9863a-common.dtsi"
+#include "sc9863a-wcn.dtsi"
+
+/ {
+	model = "Spreadtrum SC9863A3H10_GOFU Board";
+
+	compatible = "sprd,sp9863a", "sprd,sc9863a";
+
+	sprd,sc-id = <9863 1 0x20000>;
+
+	aliases {
+		serial0 = &uart0;
+		serial1 = &uart1;
+	};
+
+	memory: memory@80000000 {
+		device_type = "memory";
+		reg = <0x0 0x80000000 0x0 0x80000000>;
+	};
+
+	chosen {
+		stdout-path = &uart1;
+		bootargs = "earlycon=sprd_serial,0x70100000,115200n8 console=ttyS1,115200n8 loglevel=1 init=/init root=/dev/mmcblk0p30 rootfstype=ext4 ro rootwait androidboot.hardware=s9863a3h10_go androidboot.dtbo_idx=0 androidboot.selinux=permissive ";
+	};
+
+	ipi: interrupt-controller {
+		compatible = "android,CustomIPI";
+		#interrupt-cells = <1>;
+		interrupt-controller;
+	};
+
+	trusty {
+		compatible = "android,trusty-smc-v1";
+
+		irq {
+			compatible = "android,trusty-irq-v1";
+			interrupt-templates = <&ipi 0>,
+						<&gic 1 GIC_PPI 0>,
+						<&gic 1 GIC_SPI 0>;
+			interrupt-ranges = < 0  15 0>,
+						<16  31 1>,
+						<32 223 2>;
+		};
+
+		virtio {
+			compatible = "android,trusty-virtio-v1";
+		};
+
+		log {
+			compatible = "android,trusty-log-v1";
+		};
+	};
+
+	sprd-sysdump {
+		memory-region = <&memory>;
+		memory-region-re = <&cp_reserved>, <&smem_reserved>,
+				   <&scproc_pubpm>, <&gnss_reserved>,
+				   <&wcn_reserved>;
+	};
+
+	ion {
+		compatible = "sprd,ion";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		heap@0 {
+			reg = <0>;
+			label = "system";
+			type = <0>;
+		};
+
+		heap@3 {
+			reg = <3>;
+			label = "carveout_fb";
+			type = <2>;
+			memory-region = <&fb_reserved>;
+		};
+	};
+
+	sprd-iq {
+		compatible = "sprd,iq";
+		sprd,region = <&iq_reserved>;
+		sprd,mapping-offs = <0x0>;
+	};
+
+	sprd-wlan {
+		compatible = "sprd,sp9863a";
+	};
+
+	gpio-keys {
+		compatible = "gpio-keys";
+		input-name = "sprd-gpio-keys";
+		status = "okay";
+
+		key-volumedown {
+			label = "Volume Down Key";
+			linux,code = <114>;
+			gpios = <&ap_gpio 124 1>;
+			debounce-interval = <2>;
+			gpio-key,wakeup;
+			gpio-key,level-trigger;
+		};
+
+		key-volumeup {
+			label = "Volume Up Key";
+			linux,code = <115>;
+			gpios = <&pmic_eic 10 0>;
+			debounce-interval = <2>;
+			gpio-key,wakeup;
+			gpio-key,level-trigger;
+		};
+
+		key-power {
+			label = "Power Key";
+			linux,code = <116>;
+			gpios = <&pmic_eic 1 1>;
+			gpio-key,wakeup;
+			gpio-key,level-trigger;
+		};
+	};
+
+	fingerprint@0 {
+		compatible = "microarray,afs121";
+		fpint-gpios = <&ap_gpio 130 0>;
+	};
+};
+
+&dispc0 {
+	status = "okay";
+};
+
+&dsi0 {
+	status = "okay";
+};
+
+&dphy0 {
+	status = "okay";
+};
+
+&pwms {
+	status = "okay";
+};
+
+&pmic_bltc_rgb {
+	status = "okay";
+};
+
+&dcam {
+	status = "okay";
+};
+
+&iommu_dcam {
+	status = "okay";
+};
+
+&isp {
+	status = "okay";
+};
+
+&iommu_isp {
+	status = "okay";
+};
+
+&vsp {
+	status = "okay";
+};
+
+&iommu_vsp {
+	status = "okay";
+};
+
+&jpg {
+	status = "okay";
+};
+
+&iommu_jpg {
+	status = "okay";
+};
+
+&cpp {
+	status = "okay";
+};
+
+&iommu_cpp {
+	status = "okay";
+};
+
+&iommu_dispc {
+	status = "okay";
+};
+
+&csi0 {
+	status = "okay";
+};
+
+&csi1 {
+	status = "okay";
+};
+
+&csi2 {
+	status = "okay";
+};
+
+&i2c0 {
+	status = "okay";
+	clock-frequency = <400000>;
+
+	sensor_main: sensor-main@20 {
+		compatible = "sprd,sensor-main";
+		reg = <0x20>;
+		clock-names = "clk_src","sensor_eb",
+			"clk_96m","clk_76m8",
+			"clk_48m","clk_26m";
+		clocks = <&clk_sensor0>, <&clk_mckg_gates 5>,
+			<&clk_twpll_96m>,<&clk_twpll_76m8>,
+			<&clk_twpll_48m>,<&ext_26m>;
+		vddio-supply = <&vddcamio>;
+		vddcama-supply = <&vddcama>;
+		vddcamd-supply = <&vddcamd>;
+		vddcammot-supply = <&vddcammot>;
+		reset-gpios = <&ap_gpio 44 0>;
+		power-down-gpios = <&ap_gpio 46 0>;
+		host = "dcam0";
+		port {
+			sensor_main_0: endpoint {
+				remote-endpoint = <&phy1_out>;
+			};
+		};
+	};
+};
+
+&i2c1 {
+	status = "okay";
+	clock-frequency = <400000>;
+
+	sensor_sub: sensor-sub@20 {
+		compatible = "sprd,sensor-sub";
+		reg = <0x20>;
+		clock-names = "clk_src","sensor_eb",
+			"clk_96m","clk_76m8",
+			"clk_48m","clk_26m";
+		clocks = <&clk_sensor1>, <&clk_mckg_gates 6>,
+			<&clk_twpll_96m>,<&clk_twpll_76m8>,
+			<&clk_twpll_48m>,<&ext_26m>;
+		vddio-supply = <&vddcamio>;
+		vddcama-supply = <&vddcama>;
+		vddcamd-supply = <&vddcamd>;
+		vddcammot-supply = <&vddcammot>;
+		reset-gpios = <&ap_gpio 41 0>;
+		power-down-gpios = <&ap_gpio 40 0>;
+		host = "dcam0";
+		port {
+			sensor_sub_0: endpoint {
+				remote-endpoint = <&phy0_s_out>;
+			};
+		};
+	};
+
+	sensor_main2: sensor-main2@6c {
+		compatible = "sprd,sensor-main2";
+		reg = <0x6c>;
+		clock-names = "clk_src","sensor_eb",
+			"clk_96m","clk_76m8",
+			"clk_48m","clk_26m";
+		clocks = <&clk_sensor1>, <&clk_mckg_gates 6>,
+			<&clk_twpll_96m>,<&clk_twpll_76m8>,
+			<&clk_twpll_48m>,<&ext_26m>;
+		vddio-supply = <&vddcamio>;
+		vddcama-supply = <&vddcama>;
+		vddcamd-supply = <&vddcamd>;
+		vddcammot-supply = <&vddcammot>;
+		dvdd-gpios=<&ap_gpio 62 0>;
+		reset-gpios = <&ap_gpio 45 0>;
+		power-down-gpios = <&ap_gpio 47 0>;
+		host = "dcam1";
+		port {
+			sensor_main_2: endpoint {
+				remote-endpoint = <&phy0_m_out>;
+			};
+		};
+	};
+};
+
+&i2c3 {
+	status = "okay";
+
+	adaptive-touchscreen@38 {
+		compatible = "adaptive-touchscreen";
+		reg = <0x38>;
+		gpios = <&ap_gpio 145 0
+			&ap_gpio 144 0>;
+		controller = "focaltech,FT5436";
+		virtualkeys = <580 120 1350 60 45
+			172 360 1350 60 45
+			158 600 1350 60 45>;
+		private-data {
+			a8 = /bits/ 8 <0x5A>;
+		};
+	};
+};
+
+&i2c7 {
+	status = "okay";
+	clock-frequency = <400000>;
+
+	charger: sc2703@4c {
+		compatible = "sprd,sc2703";
+		reg = <0x4c>;
+
+		interrupt-parent = <&ap_gpio>;
+		interrupts = <8 8>;
+
+		adc: sc2703-adc {
+			compatible = "sprd,sc2703-adc";
+			#io-channel-cells = <1>;
+		};
+
+		sc2703-charger {
+			compatible = "sprd,sc2703-charger";
+
+			io-channels = <&adc 0>,
+				      <&adc 1>,
+				      <&adc 2>,
+				      <&adc 3>,
+				      <&adc 4>,
+				      <&adc 5>;
+			io-channel-names = "VIN",
+					   "VBAT",
+					   "IIN",
+					   "IBAT",
+					   "TJUNC",
+					   "TBAT";
+
+			sprd,ibat-pre-microamp = <200000>;
+			sprd,vbat-chg-microvolt = <4200000>;
+			sprd,ibat-chg-microamp = <2000000>;
+			sprd,ibat-term-microamp = <100000>;
+			sprd,t-eoc-sec = <3600>;
+			sprd,vbat-rechg-microvolt = <100000>;
+			sprd,dcdc-peak-ilim-microamp = <6000000>;
+			sprd,vbat-ov-microvolt = <4600000>;
+			sprd,vbat-uv-microvolt = <2800000>;
+			sprd,vsys-min-microvolt = <3420000>;
+			sprd,timeout-pre-sec = <900>;
+			sprd,timeout-cccv-sec = <36000>;
+			sprd,timer-load-sec = <60>;
+			sprd,iin-rev-lim-microamp = <2000000>;
+			sprd,dcdc-rev-peak-ilim-microamp = <5000000>;
+			sprd,bat-det-src = "VBAT";
+
+			sprd,tbat-t3-celsius = <40>;
+			sprd,tbat-t4-celsius = <55>;
+			sprd,vbat-cold-microvolt = <100000>;
+			sprd,ibat-cold-enable;
+			sprd,vbat-warm-microvolt = <100000>;
+			sprd,ibat-warm-enable;
+		};
+	};
+
+	ext_pmic: sc2703-buck@49 {
+		compatible = "sprd,sc2703-buck";
+		reg = <0x49>;
+		buck-gpios = <&ap_gpio 88 0>;
+
+		sprd,buck-ch1-b-out = <1000000>;
+
+		regulator-name = "sc2703-buck";
+		regulator-min-microvolt = < 300000>;
+		regulator-max-microvolt = <1570000>;
+		regulator-min-microamp = <5600000>;
+		regulator-max-microamp = <10800000>;
+		regulator-boot-on;
+		regulator-always-on;
+	};
+
+	/*virtual i2c device for cpu hw dvfs,sc2703*/
+	cpufreqhw@61 {
+		compatible = "sprd,cpufreqhw-regulator-sharkl3";
+		reg = <0x61>;
+	};
+
+	flash: sc2703-flash@4a {
+		compatible = "sprd,sc2703-flash";
+		reg = <0x4a>;
+		flash-chip-en-gpios = <&ap_gpio 89 0>;
+	};
+
+	sc2703-disp@4b {
+		compatible = "sprd,sc2703-disp";
+		reg = <0x4b>;
+
+		lcd_vdd: lcd-regulator {
+			compatible = "sprd,sc2703-lcd-regulator";
+			regulator-name = "sc2703-lcd";
+			regulator-boot-on;
+		};
+
+		sc2703-backlight {
+			compatible = "sprd,sc2703-backlight";
+
+			pwms = <&pwms 0 40000>;
+			pwm-names = "wled-pwm";
+			//int-gpios = <&ap_gpio 96 0>;
+
+			sprd,wled-mode = "duty-det-analog-mode";
+			sprd,max-brightness = <255>;
+		};
+	};
+};
+
+&lcd_nt35596_mipi_fhd {
+	power-supply = <&lcd_vdd>;
+};
+
+&spi0 {
+	/*used for fingerprint sensor*/
+	status = "okay";
+};
+
+&mipi_csi_phy1 {
+	status = "okay";
+	sprd,phyid = <1>;
+	sprd,csi = <&csi0>;
+	status = "okay";
+	port {
+		phy1_out: endpoint {
+			remote-enpoint = <&sensor_main_0>;
+		};
+	};
+};
+
+&mipi_csi_phy0_m {
+	status = "okay";
+	sprd,phyid = <3>;
+	sprd,csi = <&csi1>;
+	status = "okay";
+	port {
+		phy0_m_out: endpoint {
+			remote-enpoint = <&sensor_main_2>;
+		};
+	};
+};
+
+&mipi_csi_phy0_s {
+	status = "okay";
+	sprd,phyid = <4>;
+	sprd,csi = <&csi0>;
+	status = "okay";
+	port {
+		phy0_s_out: endpoint {
+			remote-enpoint = <&sensor_sub_0>;
+		};
+	};
+};
+
+&hsphy {
+	vdd-supply = <&vddusb33>;
+};
+
+&usb {
+	sprd,cable-detection-method = "typec";
+	sprd,vbus-gpios = <&pmic_eic 0 0>;
+};
+
+&pmic_typec {
+	status = "okay";
+};
+
+&battery {
+	battery-adapt-support = <0>;
+	battery-adapt-fun = <0>;
+	adp-cdp-cur = <1150>;
+	adp-dcp-cur = <2000>;
+	adp-sdp-cur = <500>;
+	adp-unknown-cur = <500>;
+	chg-end-vol = <4350>;
+	chg-end-vol-check = <4306>;
+	chg-bat-safety-vol = <4400>;
+	rechg-vol = <4246>;
+	rsense-real = <200>;
+	rint = <320>;
+	cnom = <2780>;
+	chg-polling-time = <15>;
+	ocv-tab-vol = <4360 4249 4189 4133 4081 4034 3991
+			3953 3910 3866 3836 3813 3795 3782
+			3774 3765 3750 3726 3687 3658 3400>;
+	ocv-tab-cap = <100  95   90   85   80   75   70
+			65   60   55   50   45   40   35
+			30   25   20   15   10   5    0>;
+};
+
+&pmic_fgu {
+	ocv-type = <1>;
+};
+
+&pmic_fchg {
+	status = "okay";
+};
+
+&sdio0 {
+	 cd-gpios = <&ap_eic_async 9 1>;
+};
+
+&dmc_mpu {
+	status = "okay";
+	sprd,panic;
+};
+
+&sprd_cpufreqhw {
+	sprd,vtune-step-fast-core00 = <0x0>;
+	sprd,vtune-step-val-core00 = <0x8>;
+	sprd,vtune-step-fast-core01 = <0x0>;
+	sprd,vtune-step-val-core01 = <0x3ff>;
+	sprd,vtune-vld-bit-core01 = <0x7f>;
+	sprd,vtune-vld-bit-core00 = <0x3ff>;
+	/*chnl0-[3:0],chnl0-[7:4],chnl2-[11:8]*/
+	sprd,chnl-in-i2c = <0x001>;
+	/*chnl_0-core1-i2c,chnl_1_2-core0-adi*/
+	sprd,chnl-core-map = <0x01>;
+	/*vddarm0 chnl0 at DCDC_2703_VOL0*/
+	sprd,chnl0-dcdc-index = <0x03>;
+	/*vddarm1 chnl1 at DCDC_2731_VOL0*/
+	sprd,chnl1-dcdc-index = <0x00>;
+	/*vddarm1 chnl2 at DCDC_2731_VOL0*/
+	sprd,chnl2-dcdc-index = <0x00>;
+	sprd,hold-val-core00 = <50>;
+	sprd,pause-val-core00 = <5>;
+	sprd,to-val-core00 = <800>;
+	sprd,stable-val-core00 = <15>;
+	sprd,hold-val-core01 = <25>;
+	sprd,pause-val-core01 = <5>;
+	sprd,to-val-core01 = <800>;
+	sprd,stable-val-core01 = <60>;
+};
+
+&CPU0 {
+	cpu-supply = <&ext_pmic>;
+};
+
+&CPU1 {
+	cpu-supply = <&ext_pmic>;
+};
+
+&CPU2 {
+	cpu-supply = <&ext_pmic>;
+};
+
+&CPU3 {
+	cpu-supply = <&ext_pmic>;
+};

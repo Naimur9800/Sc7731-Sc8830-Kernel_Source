@@ -1,0 +1,31 @@
+#
+# Spreadtrum GNSS devices
+#
+config SPRD_WCN_DOWNLOAD_IMG
+	tristate "Spreadtrum Marlin Download Image File"
+	depends on MARLIN
+	default n
+	help
+	 If you say yes here you get support for the wcn Marlin chip.
+	 This driver would support download the firmware to Marlin,
+	 And this driver can also be built as a module.  If so, the module
+	 Will be called DOWNLOAD_IMG.
+
+config GNSS_POWER_CTL
+	bool "Spreadtrum GNSS Power Control"
+	depends on GREENEYE2
+	default n
+	help
+	  This driver provides support for the Marlin and GE2 chip
+	  Power on, reset, clk, etc.
+	  If you say yes here, you can get Marlin chip or GE2 chip
+	  Control service
+	  If unsure, say n.
+
+config GNSS_DBG
+	tristate "Spreadtrum GNSS Debug"
+	depends on GREENEYE2
+	default n
+	help
+	  Debug system for Spreadtrum GE2 chip
+	  If unsure, say n.

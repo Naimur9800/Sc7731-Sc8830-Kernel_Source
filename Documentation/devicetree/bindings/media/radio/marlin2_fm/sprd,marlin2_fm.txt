@@ -1,0 +1,13 @@
+Spreadtrum FM Radio Device
+
+This node provides properties for controlling the Spreadtrum FMRadio SDIO device.
+
+Required properties:
+
+- compatible: should be "sprd,marlin2-fm"
+
+Example:
+sprd-fm: sprd-fm@400b0000{
+	compatible  = "sprd,marlin2-fm";
+	reg = <0x400b0000 0x0000>;
+};

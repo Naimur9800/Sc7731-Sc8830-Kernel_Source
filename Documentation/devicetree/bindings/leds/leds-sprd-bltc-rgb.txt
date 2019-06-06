@@ -1,0 +1,20 @@
+Spreadtrum leds driver bindings
+Each LED is represented as a sub-node of the leds device.
+Each node's name represents the name of the corresponding LED.
+
+Required properties:
+- compatible: must be one of
+	"sprd,sc2723t-bltc-rgb"
+	"sprd,sc2731-bltc-rgb"
+	"sprd,sc2721-bltc-rgb"
+	"sprd,sc2720-bltc-rgb"
+
+- reg: the chip addr offset
+
+Example:
+
+pmic_bltc_rgb: bltc-rgb@180 {
+	compatible = "sprd,sc2720-bltc-rgb";
+	reg = <0x180>;
+	status = "disabled";
+};

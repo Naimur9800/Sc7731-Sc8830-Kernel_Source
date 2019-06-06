@@ -1,0 +1,62 @@
+/*
+ * Spreadtrum SP9855A board common DTS file
+ *
+ * Copyright (C) 2017, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+#include "lcd/lcd_nt35596_mipi_fhd.dtsi"
+#include "lcd/lcd_dummy_mipi.dtsi"
+
+/ {
+	panel_if: sprd-panel-if {
+		compatible = "sprd-panel-if";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		panel-drivers = <
+			&lcd_nt35596_mipi_fhd
+			&lcd_dummy_mipi_hd
+		>;
+
+		/* input port */
+		port@1 {
+		/* WARNING: the reg property must be 1 ! */
+			reg = <1>;
+			panel_in: endpoint@0 {
+				remote-endpoint = <&dphy0_out>;
+			};
+		};
+	};
+
+	adf: sprd-adf {
+		compatible = "sprd-adf";
+		status = "okay";
+		sprd,display-mode = <3>;
+		sprd,dispc = <&dispc0>;
+	};
+};
+
+&aon_timer0 {
+	status = "okay";
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&uart1 {
+	status = "okay";
+};
+
+&dispc0 {
+	status = "okay";
+};
+
+&dsi0 {
+	status = "okay";
+};
+
+&dphy0 {
+	status = "okay";
+};
+

@@ -1,0 +1,60 @@
+Spreadtrum PMIC based PWM Subsystem
+===================================
+
+Spreadtrum PMIC contain PWM controller which can be used provide PWM signal
+to LED flash.
+--------------------------------------------------------------------------
+
+Required porperties:
+
+- compatible: should be one of:
+		"sprd,sc2723-pwm"
+		"sprd,flash-ocp8137"
+- #pwm-cells: Should be 2. See pwm.txt in this directory for a description of
+the cells format.
+
+- reg: Offset to pwm control registers from pmic base
+--------------------------------------------------------------------------
+
+Optional properties:
+- None
+-------------------
+
+PWM user nodes
+-----------------
+
+Required porperties:
+
+- compatible: should be compatible to LED flash e.g. "sprd,pwm-led-flash".
+
+- reg: Contains the addresses of registers RGB_CTRL and WHTLED_CTRL
+		respectively.
+
+- pwms: PWM properties: phandle to pwm node, the chip-relative PWM number
+		and the PWM period in nanoseconds.
+
+- flash-levels: Brightness level of led-flash.
+		value can be from 0 to 255.
+----------------------------------------------------------------------
+
+Optional properties:
+- pwm-names: contain a list of strings corresponding to pwm devices
+		in pwms property.
+
+------------------------------------------------------------------
+
+Example:
+
+	pmic_pwm: pwm@20 {
+		compatible = "sprd,sc2723-pwm";
+		#pwm-cells = <2>;
+		reg = <0x20>;
+	};
+
+	pmic_led_flash: pmic-led-flash@8ec {
+		compatible = "sprd,pwm-led-flash";
+		reg = <0x8ec>, <0x8f0>;
+		pwms = <&pmic_pwm 0 5000000>;
+		pwm-names = "sprd-led-flash";
+		flash-levels = <255>;
+	};

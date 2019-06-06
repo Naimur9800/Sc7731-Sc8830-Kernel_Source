@@ -1,0 +1,226 @@
+/*
+ * Spreadtrum SC9830 SoC DTS file
+ *
+ * Copyright (C) 2015, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#include "sharkl.dtsi"
+#include "sc9830-clocks.dtsi"
+
+/ {
+	compatible = "sprd,sc9830";
+
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		cpu0: cpu@f00 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a7";
+			enable-method = "sprd,sc9830-smp";
+			reg = <0xf00>;
+			operating-points = <
+				/* kHz	uV */
+				1000000	950000
+				900000	950000
+				768000	950000>;
+			clocks = <&clk_mcu>,
+				<&clk_twpll_768m>,
+				<&clk_mpll>;
+			clock-names = "core_clk",
+				"low_freq_clk_parent",
+				"high_freq_clk_parent";
+			cpu0-supply = <&vddarm>;
+			clock-latency = <50000>;
+			voltage-tolerance = <0>;
+			cpu-idle-states = <&LIGHT_SLEEP>;
+			sprd,sys-ap-ahb = <&ap_ahb_controller>;
+			sprd,sys-aon-apb = <&aon_apb_controller>;
+			sprd,sys-pmu-apb = <&pmu_apb_controller>;
+		};
+
+		cpu1: cpu@f01 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a7";
+			enable-method = "sprd,sc9830-smp";
+			reg = <0xf01>;
+			cpu-idle-states = <&LIGHT_SLEEP>;
+			sprd,sys-ap-ahb = <&ap_ahb_controller>;
+			sprd,sys-aon-apb = <&aon_apb_controller>;
+			sprd,sys-pmu-apb = <&pmu_apb_controller>;
+		};
+
+		cpu2: cpu@f02 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a7";
+			enable-method = "sprd,sc9830-smp";
+			reg = <0xf02>;
+			cpu-idle-states = <&LIGHT_SLEEP>;
+			sprd,sys-ap-ahb = <&ap_ahb_controller>;
+			sprd,sys-aon-apb = <&aon_apb_controller>;
+			sprd,sys-pmu-apb = <&pmu_apb_controller>;
+		};
+
+		cpu3: cpu@f03 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a7";
+			enable-method = "sprd,sc9830-smp";
+			reg = <0xf03>;
+			cpu-idle-states = <&LIGHT_SLEEP>;
+			sprd,sys-ap-ahb = <&ap_ahb_controller>;
+			sprd,sys-aon-apb = <&aon_apb_controller>;
+			sprd,sys-pmu-apb = <&pmu_apb_controller>;
+		};
+	};
+
+	gsp: sprd-gsp {
+		 compatible = "sprd,gsp-r1p1-sc9830";
+		 name = "sprd-gsp";
+		 core-cnt = <1>;
+		 io-cnt = <7>;
+		 cores = <&gsp_core0>;
+	};
+
+	gic: interrupt-controller@12001000 {
+		compatible = "arm,cortex-a15-gic", "arm,cortex-a9-gic";
+		#interrupt-cells = <3>;
+		#address-cells = <0>;
+		interrupt-controller;
+		reg = <0x12001000 0x1000>,
+			<0x12002000 0x1000>;
+	};
+
+	idle-states{
+		sprd,sys-ap-ahb = <&ap_ahb_controller>;
+		sprd,sys-aon-apb = <&aon_apb_controller>;
+		sprd,sys-pmu-apb = <&pmu_apb_controller>;
+
+		LIGHT_SLEEP: light_sleep {
+			compatible = "arm,idle-state";
+			entry-latency-us = <50>;
+			exit-latency-us = <50>;
+			min-residency-us = <1000>;
+		};
+
+		CORE_PD: core_pd {
+			compatible = "arm,idle-state";
+			entry-latency-us = <2000>;
+			exit-latency-us = <1070>;
+			min-residency-us = <2500>;
+		};
+
+	};
+
+	soc {
+		mm {
+			gpu@60000000 {
+				compatible = "arm,mali-400", "arm,mali-utgard";
+				reg = <0x60000000 0x10000>;
+				sprd,syscon-pmu-apb = <&pmu_apb_controller>;
+				interrupts = <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>,
+					<GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>,
+					<GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>,
+					<GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>,
+					<GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>,
+					<GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>,
+					<GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>;
+				interrupt-names = "IRQGP",
+					"IRQGPMMU",
+					"IRQPP0",
+					"IRQPPMMU0",
+					"IRQPP1",
+					"IRQPPMMU1",
+					"IRQPMU";
+
+				pmu_domain_config = <0x1000 0x1000 0x1000
+					0x0 0x0 0x0
+					0x0 0x0 0x0
+					0x1000 0x0 0x0>;
+				pmu_switch_delay = <0xffff>;
+
+				clocks = <&clk_aon_apb_gates0 27>,<&clk_gpu>,
+					<&clk_twpll_153m6>,<&clk_twpll_192m>,
+					<&clk_twpll_256m>,<&clk_twpll_307m2>,
+					<&clk_twpll_384m>,<&clk_twpll_512m>;
+
+				sprd,dfs-lists = <
+					/* kHz	idx	div */
+					153600	2	1
+					256000	4	1
+					384000	6	1
+					512000	7	1
+					>;
+
+				sprd,dfs-default = <1>;
+				sprd,dfs-scene-extreme = <2>;
+				sprd,dfs-scene-high = <1>;
+				sprd,dfs-scene-medium = <1>;
+				sprd,dfs-scene-low = <0>;
+				sprd,dfs-range-max = <3>;
+				sprd,dfs-range-min = <0>;
+			};
+
+			dcam: dcam@60800000 {
+				compatible = "sprd,dcam-r3p0";
+				reg = <0x60800000 0x100000>;
+				interrupts = <GIC_SPI 45 IRQ_TYPE_LEVEL_HIGH>;
+				clock-names = "clk_dcam","clk_dcam_parent",
+					"clk_mm_eb","mm_axi_eb",
+					"clk_mm_ahb","clk_mm_ahb_parent",
+					"dcam_axi_eb","dacm_eb";
+				clocks = <&clk_dcam>,<&clk_twpll_307m2>,
+					<&clk_aon_apb_gates0 25>,<&clk_mm_axi_gate 7>,
+					<&clk_mm_ahb>,<&clk_twpll_153m6>,
+					<&clk_mm_axi_gate 3>,<&clk_mm_ahb_gate 0>;
+				sprd,syscon-mm-ahb = <&mm_ahb_controller>;
+				sprd,syscon-pmu-apb = <&pmu_apb_controller>;
+				sprd,path1-line-buf-len = <2048>;
+				sprd,path2-line-buf-len = <4092>;
+				sprd,isp-line-buf-len = <3280>;
+				sprd,scale-line-len = <2600>;
+				status = "disabled";
+			};
+
+			isp: isp@60a00000 {
+				compatible  = "sprd,isp-r1p0";
+				reg = <0x60a00000 0x100000>;
+				interrupts = <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>;
+				clocks = <&clk_aon_apb_gates0 25>,<&clk_isp>,<&clk_twpll_307m2>,
+					<&clk_mm_axi_gate 4>, <&clk_mm_ahb_gate 2>;
+				clock-names = "clk_mm_i","clk_isp","clk_isp_parent",
+					"isp_axi_eb","isp_eb";
+				sprd,sys-mm-ahb = <&mm_ahb_controller>;
+				status = "disabled";
+			};
+
+			csi: csi@60c00000 {
+				compatible = "snps,csi-controller";
+				reg = <0x60c00000 0x10000>;
+				interrupts = <GIC_SPI 40 IRQ_TYPE_LEVEL_HIGH>,
+					<GIC_SPI 41 IRQ_TYPE_LEVEL_HIGH>;
+				clock-names = "clk_cphy_gate",
+						"clk_mipi_gate",
+						"clk_csi_eb",
+						"clk_mm_i";
+				clocks = <&clk_mm_axi_gate 0>,
+						<&clk_mm_axi_gate 1>,
+						<&clk_mm_ahb_gate 4>,
+						<&clk_aon_apb_gates0 25>;
+				sprd,ip-version = <0x3130332A>;
+				sprd,mm-ahb-syscon = <&mm_ahb_controller>;
+				sprd,aon-apb-syscon = <&aon_apb_controller>;
+				phys = <&mipi_csi_phy>;
+				status = "disabled";
+			};
+
+			mipi_csi_phy: mipi-csi-phy@60d00008 {
+				compatible = "snps,mipi-csi-phy";
+				reg = <0x60d00008 0x4>;
+				#phy-cells = <1>;
+				status = "disabled";
+			};
+		};
+	};
+};

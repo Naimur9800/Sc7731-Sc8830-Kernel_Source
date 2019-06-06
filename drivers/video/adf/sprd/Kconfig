@@ -1,0 +1,9 @@
+
+config ADF_SPRD
+	depends on ADF
+	select VIDEOMODE_HELPERS
+	bool "Enable adf driver for spreadtrum"
+	help
+	  This driver implements adf core to enable spreadtrum
+	  adf support.
+source "drivers/video/adf/sprd/drv/Kconfig"

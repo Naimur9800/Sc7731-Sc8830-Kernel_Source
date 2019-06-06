@@ -1,0 +1,350 @@
+/*
+ * Spreadtrum SP98x0 board common DTS file
+ *
+ * Copyright (C) 2017, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#include "sc2721.dtsi"
+#include "sc9820e-modem.dtsi"
+#include "sc9820e-wcn.dtsi"
+#include "sprd-battery.dtsi"
+#include "sprd-sound.dtsi"
+#include "lcd/lcd_gc9305_spi_qvga.dtsi"
+#include "lcd/lcd_gc9306_spi_qvga.dtsi"
+#include "lcd/lcd_st7789v2_spi_qvga.dtsi"
+#include "lcd/lcd_dummy_spi.dtsi"
+#include <dt-bindings/thermal/thermal.h>
+
+/ {
+	aliases {
+		thm-sensor11 = &cpu_thmzone;
+		cooling-device0 = &cluster0_cooling;
+		gpu-cooling0 = &gpu_cooling0;
+	};
+
+	thermal_zones: thermal-zones {
+		cpu_thmzone: cpu-thmzone {
+			polling-delay-passive = <100>;
+			polling-delay = <1000>;
+			sustainable-power = <2000>;
+			thermal-sensors = <&cpu_thm  1>;
+			trips {
+				cpu_threshold: trip-point@0 {
+					temperature = <70000>;
+					hysteresis = <1000>;
+					type = "passive";
+				};
+				cpu_target: trip-point@1 {
+					temperature = <85000>;
+					hysteresis = <1000>;
+					type = "passive";
+				};
+				cpu_crit: cpu_crit {
+					temperature = <110000>;
+					hysteresis = <2000>;
+					type = "critical";
+				};
+			};
+
+			cooling-maps {
+				map0 {
+					trip = <&cpu_target>;
+					contribution = <1024>;
+					cooling-device =
+					<&cluster0_cooling
+						THERMAL_NO_LIMIT
+						THERMAL_NO_LIMIT>;
+				};
+			};
+		};
+
+		gpu_thmzone: gpu-thmzone {
+			polling-delay-passive = <100>;
+			polling-delay = <1000>;
+			sustainable-power = <2000>;
+			thermal-sensors = <&gpu_thm  0>;
+			trips {
+				gpu_threshold: trip-point@0 {
+					temperature = <70000>;
+					hysteresis = <1000>;
+					type = "passive";
+				};
+				gpu_target: trip-point@1 {
+					temperature = <85000>;
+					hysteresis = <1000>;
+					type = "passive";
+				};
+				gpu_crit: gpu_crit {
+					temperature = <110000>;
+					hysteresis = <2000>;
+					type = "critical";
+				};
+			};
+
+			cooling-maps {
+				map0 {
+					trip = <&gpu_target>;
+					contribution = <1024>;
+					cooling-device =
+					<&gpu_cooling0
+						THERMAL_NO_LIMIT
+						THERMAL_NO_LIMIT>;
+				};
+			};
+		};
+	};
+
+	cooling-devices {
+		cluster0_cooling: cluster0-cooling {
+			compatible = "sprd,cluster-cooling";
+			#cooling-cells = <2>; /* min followed by max */
+			sprd,efuse-block7 = <7>;
+			sprd,efuse-block15 = <15>;
+			/* core_leak =                             */
+			/*(LIT_LEAK[4:0]+1) x 2mA x 0.85V x 18.69% */
+			sprd,leak-core = <2 85 1869>;
+			/* cluster_leak =                           */
+			/* (LIT_LEAK[4:0]+1) x 2mA x 0.85V x 25.24% */
+			sprd,leak-cluster = <2 85 2524>;
+			/*core Tscale = aT^3 + bT^2 + cT +di   */
+			sprd,core-temp-scale =
+			/* a*10^7   b*10^7      c*10^7     d*10^7 */
+			<  34       (-3000)     147000     (-1367000)>;
+			/*core Vscale = eV^3 + fV^2 + gV + h */
+			sprd,core-voltage-scale =
+			/* e*10^2   f*10^2     g*10^2  h*10^2*/
+			<  2863     (-7860)    7541    (-2408)>;
+			/*cluster Tscale = aT^3 + bT^2 + cT +di   */
+			sprd,cluster-temp-scale =
+			/* a*10^7   b*10^7      c*10^7     d*10^7 */
+			<  26       (-2000)     115000     (-1000000)>;
+			/*cluster Vscale = eV^3 + fV^2 + gV + h */
+			sprd,cluster-voltage-scale =
+			/* e*10^2   f*10^2     g*10^2  h*10^2*/
+			<  1582     (-4201)    4063    (-1307)>;
+			sprd,efuse-switch = <0>;
+			sprd,hotplug-period = <0>;
+			sprd,min-cpufreq = <768000>;
+			sprd,min-cpunum = <4>;
+			sprd,core-base = <267>;
+			sprd,cluster-base = <294>;
+			sprd,dynamic-core =
+			/*Pdynperghz    Freq     Vbase  */
+			< 850          768       900>;
+			sprd,dynamic-cluster =
+			/*Pdynperghz    Freq     Vbase  */
+			< 980           768      900>;
+		};
+	};
+
+	gpu-cooling-devices {
+		gpu_cooling0: gpu-cooling0 {
+			compatible = "sprd,mali-power-model";
+			#cooling-cells = <2>;
+			sprd,efuse-block7 = <7>;
+			sprd,efuse-block15 = <15>;
+			/* core_leak =                             */
+			/*(LIT_LEAK[4:0]+1) x 2mA x 0.85V x 18.69% */
+			sprd,leak-core = <2 85 1869>;
+			/* cluster_leak =                           */
+			/* (LIT_LEAK[4:0]+1) x 2mA x 0.85V x 25.24% */
+			sprd,leak-cluster = <2 85 2524>;
+			/*Tscale = aT^3 + bT^2 + cT +di   */
+			sprd,temp-scale =
+			/* a*10^7   b*10^7      c*10^7     d*10^7 */
+			<  400      100        100000    6940000>;
+			/*Vscale = eV^3 + fV^2 + gV + h */
+			sprd,voltage-scale =
+			/* e*10^2   f*10^2     g*10^2  h*10^2*/
+			<  195      (-358)     343     91>;
+			sprd,hotplug-period = <0>;
+			sprd,core-base = <716>;
+			sprd,cluster-base = <0>;
+			sprd,dynamic-core =
+			/*Pdynperghz    Freq     Vbase  */
+			< 9230           768     1050>;
+			sprd,dynamic-cluster =
+			/*Pdynperghz    Freq     Vbase  */
+			< 0              0       0>;
+		};
+	};
+
+	/* smartphone board only */
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		pub0_mpu_reserved: mpu0-dump@877ff000 {
+			reg = <0x877ff000 0x1000>;
+		};
+
+		smem_reserved: sipc-mem@87800000 {
+			reg = <0x87800000 0x003d0000>;
+		};
+
+		/* must be 32M aligned */
+		wcn_reserved: wcn-mem@88000000{
+			reg = <0x88000000 0x00280000>;
+		};
+
+		gnss_reserved: gnss-mem@88300000{
+			reg = <0x88300000 0x0015a800>;
+		};
+
+		/* cp_reserved = cp region + debug region */
+		/* debug region: not reserved in normal mode, it */
+		/* will be proccessed in u-boot */
+		cp_reserved: cp-modem@89600000 {
+			reg = <0x89600000 0x03c80000>;
+			/* This prop specifies the size of debug region */
+			/* in the cp tail */
+			sprd,cpdbg-size = <0x280000>;
+		};
+
+		/* must be 64M aligned */
+		sml_reserved: sml-mem@8e000000{
+			reg = <0x8e000000 0x00100000>;
+		};
+
+		tos_reserved: tos-mem@8e100000{
+			reg = <0x8e100000 0x00100000>;
+		};
+
+		/* this is adjust by FO */
+		iq_reserved: iq-mem@8f000000{
+			compatible = "sprd,iq-mem";
+			reg = <0x8f000000 0x00000000>;
+		};
+
+		fb_reserved: fb@8fb3e000{
+			reg = <0x8fb3e000 0x000e1000>;
+		};
+
+		uboot_reserved: sysdump-uboot@9f000000 {
+			compatible = "detour-mem";
+			reg = <0x9f000000 0x00fc0000>;
+		};
+	};
+
+	ion {
+		compatible = "sprd,ion";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		heap@0 {
+			reg = <0>;
+			label = "system";
+			type = <0>;
+		};
+
+		heap@3 {
+			reg = <3>;
+			label = "carveout_fb";
+			type = <2>;
+			memory-region = <&fb_reserved>;
+		};
+	};
+
+	swdispc: swdispc {
+		compatible = "sprd,display-controller";
+		dev-id = <0>;
+		status = "okay";
+
+		sprd,ip = "swdispc";
+
+					/* output port */
+		port {
+			swdispc_out: endpoint@0 {
+
+				remote-endpoint = <&spi_intf_in>;
+			};
+		};
+	};
+
+	spi_intf: spi-intf {
+		compatible = "sprd,spi-intf";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		dev-id = <0>;
+		status = "okay";
+		/* output port */
+		port@0 {
+			reg = <0>;
+			spi_intf_out: endpoint {
+				remote-endpoint = <&panel_in>;
+			};
+		};
+
+					/* input port */
+		port@1 {
+			reg = <1>;
+			spi_intf_in: endpoint {
+				remote-endpoint = <&swdispc_out>;
+			};
+		};
+	};
+
+	panel_if: sprd-panel-if {
+		compatible = "sprd-panel-if";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		panel-drivers = <
+			&lcd_gc9305_spi_qvga
+			&lcd_gc9306_spi_qvga
+			&lcd_st7789v2_spi_qvga
+			&lcd_dummy_spi
+		>;
+		/* input port */
+		port@1 {
+				/* WARNING: the reg property must be 1 ! */
+				reg = <1>;
+				panel_in: endpoint@0 {
+				remote-endpoint = <&spi_intf_out>;
+			};
+		};
+	};
+
+	adf: sprd-adf {
+		compatible = "sprd-adf";
+		status = "okay";
+		sprd,display-mode = <3>;
+		sprd,dispc = <&swdispc>;
+	};
+
+	scene-frequency {
+		compatible = "sprd,dfs";
+		sprd-scene = "lcdon", "lcdoff", "camlow", "camhigh";
+		sprd-freq = <256 256 384 667>;
+	};
+};
+
+&uart1 {
+	status = "okay";
+};
+
+&battery {
+	charger-det-gpios = <&pmic_eic 0 0>;
+	battery-det-gpios = <&pmic_eic 9 0>;
+	io-channels = <&pmic_adc 1>,<&pmic_adc 10>,
+		<&pmic_adc 36>,<&pmic_adc 16>;
+	io-channel-names = "adc_temp","adc_vbat",
+		"adc_vchg","adc_isense";
+	status = "okay";
+};
+
+
+&spi1 {
+	clocks = <&clk_aon_eb0_gates 9>, <&clk_hs_spi>, <&clk_twpll_192m>;
+	status = "okay";
+	sprd,spi-interval = <1>;
+	sprd,spi-mode = <3>;
+	sprd,dma-mode = <1>;
+	spi-panel {
+		compatible = "sprd,spi-panel";
+		reg = <0x0>;
+		spi-max-frequency = <48000000>;
+	};
+};

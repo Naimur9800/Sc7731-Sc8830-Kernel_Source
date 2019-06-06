@@ -1,0 +1,203 @@
+/*
+ * Spreadtrum SP98x0 board common DTS file
+ *
+ * Copyright (C) 2016, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#include "sc2721.dtsi"
+#include "sc9835-modem.dtsi"
+#include "sprd-sound-sharkl.dtsi"
+#include "lcd/lcd_nt35597_mipi_2k_fpga.dtsi"
+#include "lcd/lcd_ili9881c_mipi_hd.dtsi"
+#include "lcd/lcd_dummy_rgb.dtsi"
+
+/ {
+	/* smartphone board only */
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		smem_reserved: sipc-mem@87800000 {
+			reg = <0x0 0x87800000 0x0 0x00680000>;
+		};
+
+		ldsp_reserved: cp-ldspdubug@88800000 {
+			reg = <0x0 0x88800000 0x0 0x00800000>;
+		};
+
+		cp_reserved: cp-modem@89600000 {
+			reg = <0x0 0x89600000 0x0 0x05800000>;
+		};
+
+		audio_dma_reserved: audio_dma@8ee00000 {
+			reg = <0x0 0x8ee00000 0x0 0x80000>;
+		};
+
+		/* must be 256M aligned */
+		wcn_reserved: wcn-mem@90000000{
+			reg = <0x0 0x90000000 0x0 0x00400000>;
+		};
+
+		gnss_reserved: gnss-mem@90400000{
+			reg = <0x0 0x90400000 0x0 0x00200000>;
+		};
+
+		/* must be 64M aligned */
+		sml_reserved: sml-mem@94000000{
+			reg = <0x0 0x94000000 0x0 0x00100000>;
+		};
+
+		tos_reserved: tos-mem@94100000{
+			reg = <0x0 0x94100000 0x0 0x00f00000>;
+		};
+
+		tos_shm_reserved: sh-mem@95000000{
+			reg = <0x0 0x95000000 0x0 0x00100000>;
+		};
+
+		/* Only used for iq, will be removed in normal mode by uboot */
+		iq_reserved: iq-mem@98100000{
+			compatible = "sprd,iq-mem";
+			reg = <0x0 0x98100000 0x0 0x8000000>;
+		};
+
+		/* only be used in bringing up */
+		mm_reserved: mm-mem@abf6c000{
+			reg = <0x0 0xabf6c000 0x0 0x12c00000>;
+		};
+		/* if changed ,uboot dts also need change */
+		fb_reserved: fb@beb6c000{
+			reg = <0x0 0xbeb6c000 0x0 0x00a8c000>;
+		};
+
+		overlay_reserved: overlaybuffer@bf5f8000{
+			reg = <0x0 0xbf5f8000 0x0 0x00708000>;
+		};
+	};
+
+	ion {
+		compatible = "sprd,ion";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		heap@0 {
+			reg = <0>;
+			label = "system";
+			type = <0>;
+		};
+
+		heap@1 {
+			reg = <1>;
+			label = "carveout_mm";
+			type = <2>;
+			memory-region = <&mm_reserved>;
+		};
+
+		heap@2 {
+			reg = <2>;
+			label = "carveout_overlay";
+			type = <2>;
+			memory-region = <&overlay_reserved>;
+		};
+
+		heap@3 {
+			reg = <3>;
+			label = "carveout_fb";
+			type = <2>;
+			memory-region = <&fb_reserved>;
+		};
+	};
+
+	panel_if: sprd-panel-if {
+		compatible = "sprd-panel-if";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		panel-drivers = <
+			&lcd_ili9881c_mipi_hd
+			&lcd_nt35597_mipi_2k_fpga
+			&lcd_dummy_rgb
+		>;
+
+		/* input port */
+		port@1 {
+		/* WARNING: the reg property must be 1 ! */
+			reg = <1>;
+			panel_in: endpoint@0 {
+				remote-endpoint = <&dphy0_out>;
+			};
+		};
+	};
+
+	adf: sprd-adf {
+		compatible = "sprd,sc9835-adf";
+		status = "okay";
+		sprd,display-mode = <3>;
+		sprd,dispc = <&dispc0>;
+	};
+
+	sprd_backlight {
+		compatible = "pwm-backlight";
+		pwms = <&pwms 0 20000>;
+		pwm-names = "backlight";
+		brightness_max = <256>;
+		brightness-levels = <
+						6   6   6   6
+			6   6   6   6   6   6   6   7   8   9
+			10  11  12  13  14  15  16  17  18  19
+			20  21  22  23  24  25  26  27  28  29
+			30  31  32  33  34  35  36  37  38  39
+			40  41  42  43  44  45  46  47  48  49
+			50  51  52  53  54  55  56  57  58  59
+			60  61  62  63  64  65  66  67  68  69
+			70  71  72  73  74  75  76  77  78  79
+			80  81  82  83  84  85  86  87  88  89
+			90  91  92  93  94  95  96  97  98  99
+			100 101 102 103 104 105 106 107 108 109
+			110 111 112 113 114 115 116 117 118 119
+			120 121 122 123 124 125 126 127 128 129
+			130 131 132 133 134 135 136 137 138 139
+			140 141 142 143 144 145 146 147 148 149
+			150 151 152 153 154 155 156 157 158 159
+			160 161 162 163 164 165 166 167 168 169
+			170 171 172 173 174 175 176 177 178 179
+			180 181 182 183 184 185 186 187 188 189
+			190 191 192 193 194 195 196 197 198 199
+			200 201 202 203 204 205 206 207 208 209
+			210 211 212 213 214 215 216 217 218 219
+			220 221 222 223 224 225 226 227 228 229
+			230 231 232 233 234 235 236 237 238 239
+			240 241 242 243 244 245 246 247 248 249
+			250 251
+			>;
+		default-brightness-level = <25>;
+	};
+
+
+};
+
+&uart1 {
+	status = "okay";
+};
+
+&i2s0 {
+	status = "okay";
+};
+&dispc0 {
+	    status = "okay";
+};
+
+&dsi0 {
+	    status = "okay";
+};
+
+&dphy0 {
+	    status = "okay";
+};
+
+&pwms {
+	status = "okay";
+};
+

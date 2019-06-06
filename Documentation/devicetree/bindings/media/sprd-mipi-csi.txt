@@ -1,0 +1,86 @@
+Spreadtrum CSI Controller driver binding file
+----------------------------------------------------------------
+
+CSI is MIPI host controller and provide communication between camera
+ sensor and Camera controller.
+Data path: Sensor -> CSI -> Camera Controller
+----------------------------------------------------------------
+
+Required Properties:
+
+- compatible: compatible = "snps,csi-controller"
+- reg: physical base address and length of registers
+		   for the device;
+- clock-names: must contain "clk_cphy_gate", "clk_mipi_gate",
+		   "clk_csi_eb" and "clk_mm_i"entries, matching entries
+		   in the clocks property.
+- clocks: list of clock specifiers, corresponding to
+		   entries in the clock-names property
+- sprd,ip-version: version of the csi controller.
+
+- phys: phy provider specifier for the CSI.
+
+
+port node:
+----------
+Required properties:
+
+- endpoint: description of endpoints
+- subnode endpoint:
+	- remote_endpoint: connects the device node to the remote
+				end-point of the node sensor_main_1.
+Example:
+
+/* SOC properties */
+
+	 csi: csi-controller@60c00000 {
+			compatible = "snps,csi-controller";
+			reg = <0x60c00000 0x10000>;
+			interrupts = <GIC_SPI 40 IRQ_TYPE_LEVEL_HIGH>,
+					<GIC_SPI 41 IRQ_TYPE_LEVEL_HIGH>;
+			clock-names = "clk_cphy_gate",
+					"clk_mipi_gate",
+					"clk_csi_eb",
+					"clk_mm_i";
+			clocks = <&clk_mm_axi_gate 0>,
+				<&clk_mm_axi_gate 1>,
+				<&clk_mm_ahb_gate 4>,
+				<&clk_aon_apb_gates0 25>;
+			sprd,ip-version = <0x3130332A>;
+			sprd,mm-ahb-syscon = <&mm_ahb_controller>;
+			sprd,aon-apb-syscon = <&aon_apb_controller>;
+			status = "disabled";
+			phys = <&mipi_csi_phy>;
+	};
+
+	mipi_csi_phy: mipi-csi-phy@60d00008 {
+			compatible = "snps,mipi-csi-phy";
+			...
+			#phy-cells = <1>;
+	};
+
+/* Board Properties */
+
+&csi2 {
+	status = "okay";
+	port {
+		csi2_out: endpoint {
+			remote-endpoint = <&sensor_main_1>;
+			};
+	};
+};
+
+&i2c0 {
+
+	status = "okay";
+	sensor_main: sensor-main@3c {
+		compatible = "sprd,sensor-main";
+		reg = <0x3c>;
+		....
+		port {
+			sensor_main_1: endpoint {
+				remote-endpoint = <&csi_out>;
+			};
+		};
+	};
+};

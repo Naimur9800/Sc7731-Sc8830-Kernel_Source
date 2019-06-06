@@ -1,0 +1,148 @@
+#
+# SPRD Soc drivers
+#
+config SPRD_WAKEUPEN_INTC
+        bool "SPRD wakeupen interrupt controller interface"
+        depends on ARCH_SPRD
+	default y if SUSPEND
+        help
+          Say y here to enable SPRD wakeupen intc support,which enable irqs
+	  to wakeup system from suspend.
+
+config SPRD_MEMDISK
+	tristate "SPRD memdisk driver"
+	depends on ARCH_SPRD
+	help
+	  This option can support sprd memdisk driver, which can use a block of
+	  DDR memory as a disk. we can load the android image to this disk when
+	  mmc driver is not ready, for example in vdk and FPGA platform.
+
+config SPRD_VIBRATOR
+	tristate "Spreadtrum vibrator driver"
+	depends on SPI_SPRD_ADI
+	help
+	  This driver provides support for the vibrator of the
+	  PMIC.
+
+config SPRD_HOTPLUG
+	tristate "SPRD hotplug driver for arm32"
+	depends on ARCH_SPRD && ARM && HOTPLUG_CPU
+	help
+	This option enable the SPRD'S hotplug driver for arm32.
+
+config SPRD_ARM32_SMP_WITH_PSCI
+	bool "SPRD ARM32 SMP With PSCI"
+	depends on ARM_PSCI && SMP
+	default n
+	---help---
+	Select this configuration, mainly in order to distinguish between orignal psci smp
+	and sprd psci smp drivers. It only helps to realize PSCI SMP under SPRD ARM32 platform
+
+source drivers/soc/sprd/iommu/Kconfig
+
+source "drivers/soc/sprd/sdiodev/Kconfig"
+
+source "drivers/soc/sprd/debug/sysdump/Kconfig"
+
+source "drivers/soc/sprd/debug/dmc_drv/Kconfig"
+
+config SPRD_DEBUG
+	tristate "Spreadtrum debug modular"
+	help
+		Say y here to enable Debug support.
+
+config SPRD_REG_ACCESS_32BITS
+	tristate "Spreadtrum register access 32bit alinged"
+	help
+		Say y here to only access register only 32bit aligned.
+
+source "drivers/soc/sprd/debug/Kconfig"
+source "drivers/soc/sprd/performance/Kconfig"
+
+menu "ARM CPU DeepSleep Drivers"
+
+#
+# ARM64 CPU DeepSleep drivers
+#
+
+config ARM32_SPRD_DEEPSLEEP
+	bool "GENERIC ARM32 DeepSleep Driver"
+	depends on PM_SLEEP && ARM
+	default y
+	---help---
+	Select this to enable generic deepsleep driver for ARM32.
+	It provides a generic deepsleep driver whose deepsleep states are
+	configured.The deepsleep suspend backend is initialized by calling the
+	CPU operations init deepslep hook provided by architecture code.
+	In deepsleep state, the ahb/aph clk are off, both master and
+	peripherals are closed, chip enter lower power state,
+	only the static power consumption.
+
+config SPRD_DEEPSLEEP_WITH_PSCI
+	bool "SPRD DeepSleep With PSCI"
+	depends on PM_SLEEP && ARM_PSCI
+	default n
+	---help---
+	Select this configuration, mainly in order to save the register
+	before entering the deep sleep, after exiting deep restore the register.
+	At the same time print some deep sleep related information to help debug deep.
+
+config SPRD_DEEPSLEEP_SHARKLE
+	bool "SPRD SHARKLE DeepSleep"
+	depends on PM_SLEEP && !ARM64_SPRD_DEEPSLEEP
+	default n
+	---help---
+	Select this to enable deepsleep driver for SharkLE.
+	It provides a generic deepsleep driver whose deepsleep states are
+	configured.The deepsleep suspend backend is initialized by calling the
+	CPU operations init deepslep hook provided by architecture code.
+	In deepsleep state, the ahb/aph clk are off, both master and
+	peripherals are closed, chip enter lower power state.
+
+config SPRD_DEEPSLEEP_PIKE2
+	bool "SPRD PIKE2 DeepSleep"
+	depends on PM_SLEEP && ARM_PSCI && !SPRD_DEEPSLEEP_WITH_PSCI
+	default n
+	---help---
+	Select this to enable deepsleep driver for Pike2.
+	It provides a generic deepsleep driver whose deepsleep states are
+	configured.The deepsleep suspend backend is initialized by calling the
+	CPU operations init deepslep hook provided by architecture code.
+	In deepsleep state, the ahb/aph clk are off, both master and
+	peripherals are closed, chip enter lower power state.
+
+config SPRD_DEEPSLEEP_SHARKL3
+	bool "SPRD SHARKL3 DeepSleep"
+	depends on PM_SLEEP && ARM64 && !ARM64_SPRD_DEEPSLEEP
+	default n
+	---help---
+	Select this to enable deepsleep driver for SharkL3.
+	It provides a generic deepsleep driver whose deepsleep states are
+	configured.The deepsleep suspend backend is initialized by calling the
+	CPU operations init deepslep hook provided by architecture code.
+	In deepsleep state, the ahb/aph clk are off, both master and
+	peripherals are closed, chip enter lower power state.
+
+
+config ARM64_SPRD_DEEPSLEEP
+	bool "GENERIC ARM64 DeepSleep Driver"
+	depends on PM_SLEEP && ARM64
+	default y
+	---help---
+	Select this to enable generic deepsleep driver for ARM64.
+	It provides a generic deepsleep driver whose deepsleep states are
+	configured.The deepsleep suspend backend is initialized by calling the
+	CPU operations init deepslep hook provided by architecture code.
+	In deepsleep state, the ahb/aph clk are off, both master and
+	peripherals are closed, chip enter lower power state,
+	only the static power consumption.
+endmenu
+
+config SPRD_WHALE2_ISP_REGISTER_ACCESS_RETRY
+	bool "SPRD whale2 isp register access retry"
+	depends on ARCH_SPRD && ARM64
+	help
+	  Access to whale2 isp module's register may cause synchronous exception
+	  because of IC design error. This option can support modify the
+	  original synchronous exception handler, but after metal fix, this option
+	  is not needed.

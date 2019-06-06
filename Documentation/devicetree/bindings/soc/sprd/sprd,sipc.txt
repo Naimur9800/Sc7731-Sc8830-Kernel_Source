@@ -1,0 +1,17 @@
+Spreadtrum spipe bindings
+
+Required properties:
+- compatible: must be "sprd,sipc-v1".
+- sprd,name: the name of the associated sipc device.
+- sprd,dst: communication with the processor ID.
+- sprd,smem-info: ap/cp shared memory info.
+
+Example:
+
+sipc@7800000 {
+	compatible = "sprd,sipc-v1";
+	sprd,name = "sipc-lte";
+	sprd,dst = <5 2>; /* <dst core-id> */
+	/* <ap-addr dst-maped-addr size> */
+	sprd,smem-info = <0x07800000 0x87800000 0x5b0000>;
+};

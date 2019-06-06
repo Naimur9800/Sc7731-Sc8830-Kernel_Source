@@ -1,0 +1,36 @@
+* MStar msg2138 touchscreen controller
+
+Required properties:
+- compatible: must be "Mstar,msg2138_ts"
+- reg: I2C address of the chip
+- gpios: GPIO specification for RESET and INT pins
+- touchscreen-size-x: horizontal resolution of touchscreen (in pixels)
+- touchscreen-size-y: vertical resolution of touchscreen (in pixels)
+- virtualkeys: the coordinate of the touchscreen's keys.
+		<X Y W H>, X: the x coordinate of the center of key region
+			   Y: the y coordinate of the center of key region
+			   W: the width of key region
+			   H: the height of key region
+
+Optional properties:
+- avdd-supply: Phandle to a regulator supply
+
+
+Example:
+i2c3: i2c@70800000 {
+	/* ... */
+	msg2138_ts@26{
+		compatible = "Mstar,msg2138_ts";
+		reg = <0x26>;
+		gpios = <&ap_gpio 145 0
+			&ap_gpio 144 0>;
+		avdd-supply = "vdd28";
+		virtualkeys = <256 1068 64 64
+			128 1068 64 64
+			192 1068 64 64>;
+		touchscreen-size-x = <480>;
+		touchscreen-size-y = <800>;
+	};
+	/* ... */
+};
+

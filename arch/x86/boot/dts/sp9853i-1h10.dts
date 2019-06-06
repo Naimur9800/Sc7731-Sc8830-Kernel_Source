@@ -1,0 +1,493 @@
+/*
+ * Spreadtrum isharkl2 fpga board DTS file
+ *
+ * Copyright (C) 2016, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+/dts-v1/;
+
+#include "sp9853i-common.dtsi"
+#include "sp9853i-memory.dtsi"
+#include "sprd-sound-isharkl2.dtsi"
+
+/ {
+	model = "Spreadtrum isharkl2 1h10 SoC (x86 based)";
+
+	compatible = "sprd,isharkl2-1h10";
+
+	sprd,sc-id = <9868 1 0x20000>;
+
+	aliases {
+		serial0 = &uart0;
+		serial1 = &uart1;
+		serial2 = &uart2;
+		serial3 = &uart3;
+	};
+
+	chosen {
+		stdout-path = &uart1;
+		bootargs = "earlycon irq_affinity=0xf console=ttyS1,115200n8 androidboot.hardware=sp9853i_1h10 loglevel=1 code_bytes=128 boost_fuse_wa=0x1a";
+	};
+
+	sysdump-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		cm4_dump: cm4_iram@e6040000 {
+			reg = <0x0 0xe6040000 0x0 0x40000>;
+		};
+	};
+
+	sprd-sysdump {
+		magic-addr = <0x0 0x3b800000>;
+		version = <0xa1>;
+		memory-region-re = <&cp_reserved>, <&smem_reserved>,
+				   <&cm4_dump>;
+	};
+
+	ion {
+		compatible = "sprd,ion";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		heap@0 {
+			reg = <0>;
+			label = "system";
+			type = <0>;
+		};
+
+		heap@2 {
+			reg = <2>;
+			label = "carveout_overlay";
+			type = <2>;
+			memory-region = <&overlay_reserved>;
+		};
+
+		heap@3 {
+			reg = <3>;
+			label = "carveout_fb";
+			type = <2>;
+			memory-region = <&fb_reserved>;
+		};
+	};
+
+	sprd-iq {
+		compatible = "sprd,iq";
+		sprd,region = <&iq_reserved>;
+		sprd,mapping-offs = <0x80000000>;
+	};
+
+	sprd-marlin2 {
+		compatible = "sprd,marlin2";
+		sprd,syscon-pmu-apb = <&aon_pwu_apb_controller>;
+		sprd,reg-m2-apb-xtl-wait-addr = <0x40060218>;
+		m2-to-ap-coexist-gpios = <&ap_gpio 119 0>;
+		m2-wakeup-ap-gpios = <&ap_gpio 113 0>;
+		permit-ap-send-gpios = <&ap_gpio 19 0>;
+		rstn-gpios = <&ap_gpio 111 0>;
+		chip-en-gpios = <&ap_gpio 112 0>;
+		m2-to-ap-irq-gpios = <&ap_gpio 86 0>;
+		vddwcn-supply = <&dcdcrf>;
+		clock-names = "clk_32k","source","enable";
+		clocks = <&clk_aux0>,<&ext_32k>,
+			 <&clk_aon_apb_gates1 2>;
+		sdhci-name = <&sdio1>;
+		common_chip_en;
+		power-ctl-disabled;
+	};
+
+	sprd-wlan {
+		compatible = "sprd,sc2332";
+	};
+
+	flash-sc2731 {
+		compatible = "sprd,flash-sc2731";
+		sprd,pmic-flash = <&pmic_flash>;
+		flash0-gpios = <&ap_gpio 23 0>;
+		flash1-gpios = <&ap_gpio 24 0>;
+	};
+
+	sprd-ge2 {
+		compatible = "sprd,ge2";
+		vddwcn-supply = <&dcdcrf>;
+		clock-names = "clk_32k","source","enable";
+		clocks = <&clk_aux0>,<&ext_32k>,
+			 <&clk_aon_apb_gates1 2>;
+		chip-en-gpios = <&ap_gpio 112 0>;
+	};
+
+	scene-frequency {
+		compatible = "sprd,dfs";
+		sprd-scene = "lcdon", "lcdoff", "camlow", "camhigh", "camveryhigh", "dpulow", "dpuhigh";
+		sprd-freq = <460 230 460 613 920 460 613>;
+	};
+
+	fingerprint@0 {
+		compatible = "microarray,afs121";
+		reg = <0x0>;
+		spi-max-frequency = <8000000>;
+		fpint-gpios = <&ap_eic_async 12 0>;
+	};
+};
+
+&dmc_mpu {
+	sprd,ddr-interleaved = <0>;
+	sprd,ddr-chn = <6>;
+	chn-name = "BIA", "VSP/GSP/AP", "DISP/CAM",
+			"GPU", "PUBCP", "WTLCP/AON";
+	memory-region = <&pub0_mpu_reserved>;
+};
+
+&vsp {
+	status = "okay";
+};
+
+&iommu_vsp {
+	status = "okay";
+};
+
+&iommu_gsp {
+	status = "okay";
+};
+
+&iommu_dispc {
+	status = "okay";
+};
+
+&sprd_backlight	{
+	brightness-levels=<
+		3   3   3   3   3   3   3
+		3   3   3   3   4   5   6   7   8   9
+		10  11  12  13  14  15  16  17  18  19
+		20  21  22  23  24  25  26  27  28  29
+		30  31  32  33  34  35  36  37  38  39
+		40  41  42  43  44  45  46  47  48  49
+		50  51  52  53  54  55  56  57  58  59
+		60  61  62  63  64  65  66  67  68  69
+		70  71  72  73  74  75  76  77  78  79
+		80  81  82  83  84  85  86  87  88  89
+		90  91  92  93  94  95  96  97  98  99
+		100 101 102 103 104 105 106 107 108 109
+		110 111 112 113 114 115 116 117 118 119
+		120 121 122 123 124 125 126 127 128 129
+		130 131 132 133 134 135 136 137 138 139
+		140 141 142 143 144 145 146 147 148 149
+		150 151 152 153 154 155 156 157 158 159
+		160 161 162 163 164 165 166 167 168 169
+		170 171 172 173 174 175 176 177 178 179
+		180 181 182 183 184 185 186 187 188 189
+		190 191 192 193 194 195 196 197 198 199
+		200 201 202 203 204 205 206 207 208 209
+		210 211 212 213 214 215 216 217 218 219
+		220 221 222 223 224 225 226 227 228 229
+		230 231 232 233 234 235 236 237 238 239
+		240 241 242 243 244 245 246 247 248
+	>;
+};
+
+&lcd_nt35532_2_mipi_fhd {
+	power-on-sequence = <
+				31  1  5
+				32  1  5
+				126  1  5
+				126  0  5
+				126  1  20
+				>;
+	power-off-sequence = <
+				32  0  5
+				31  0  5
+				126  1  5
+				>;
+	display-timings {
+		clock-frequency = <979800>;
+		hactive = <1080>;
+		vactive = <1920>;
+		hback-porch = <16>;
+		hfront-porch = <176>;
+		vback-porch = <32>;
+		vfront-porch = <32>;
+		hsync-len = <10>;
+		vsync-len = <4>;
+	};
+};
+
+&iommu_dcam {
+	status = "okay";
+};
+
+&iommu_dcam1 {
+	status = "okay";
+};
+
+&iommu_isp {
+	status = "okay";
+};
+
+&iommu_isp1 {
+	status = "okay";
+};
+
+&iommu_jpg {
+	status = "okay";
+};
+
+&iommu_cpp {
+	status = "okay";
+};
+
+&jpg {
+	status = "okay";
+};
+
+&usb2 {
+	status = "okay";
+	sprd,cable-detection-method = "typec";
+};
+
+&intelphy {
+	status = "okay";
+	vdd-supply = <&vddusb33>;
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&uart1 {
+	status = "okay";
+};
+
+&uart2 {
+	status = "okay";
+};
+
+&uart3 {
+	status = "okay";
+};
+
+&sprd_audio_codec_ana {
+	status = "okay";
+	digital-codec = <&sprd_audio_codec_dig>;
+};
+
+&sound_vbc_r1p0v3_sprd_codec {
+	status = "okay";
+};
+
+&sprd_headset {
+	status = "okay";
+};
+
+&sound_sprd_ap_alliis {
+	status = "okay";
+};
+
+&hdlcd {
+	reg = <0x0 0xd3200000 0x0 0x1000>; /* use dispc0 */
+	interrupts = <DISPC0_IRQ 2>; /* use dispc0 */
+};
+
+&spi0 {
+	clocks = <&clk_spi0>,<&clk_twpll_192m>,<&clk_ap_apb_gates 5>;
+	status = "okay";
+
+};
+
+&i2c0 {
+	status = "okay";
+	clock-frequency = <400000>;
+		sensor_main: sensor-main@3c {
+			compatible = "sprd,sensor-main";
+			reg = <0x3c>;
+			clock-names = "clk_src","sensor_eb",
+				"clk_96m","clk_76m8",
+				"clk_48m","clk_26m";
+			clocks = <&clk_sensor0>,<&clk_cam_ahb_gates 21>,
+				<&clk_twpll_96m>,<&clk_twpll_76m8>,
+				<&clk_twpll_48m>,<&ext_26m>;
+			vddio-supply = <&vddcamio>;
+			vddcama-supply = <&vddcama0>;
+			vddcamd-supply = <&vddcamd0>;
+			vddcammot-supply = <&vddcammot>;
+			reset-gpios = <&ap_gpio 123 0>;
+			power-down-gpios = <&ap_gpio 124 0>;
+			host = "dcam0";
+			port {
+				sensor_main_0: endpoint {
+				remote-endpoint = <&phy0_out>;
+				};
+			};
+	};
+};
+
+&i2c1 {
+	status = "okay";
+	clock-frequency = <400000>;
+
+	adaptive-touchscreen@38 {
+		compatible = "adaptive-touchscreen";
+		reg = <0x38>;
+		gpios = <&ap_gpio 136 0
+			&ap_gpio 137 0>;
+		controller = "focaltech,FT5436";
+		virtualkeys = <580 60 1320 60 45
+				172 360 1320 60 45
+				158 600 1320 60 45>;
+	};
+};
+
+&i2c5 {
+	status = "okay";
+	clock-frequency = <400000>;
+
+	sensor_sub: sensor-sub@20 {
+		compatible = "sprd,sensor-sub";
+		reg = <0x20>;
+		clock-names = "clk_src","sensor_eb",
+			"clk_96m","clk_76m8",
+			"clk_48m","clk_26m";
+		clocks = <&clk_sensor1>,<&clk_cam_ahb_gates 22>,
+			<&clk_twpll_96m>,<&clk_twpll_76m8>,
+			<&clk_twpll_48m>,<&ext_26m>;
+			vddio-supply = <&vddcamio>;
+			vddcama-supply = <&vddcama1>;
+			vddcamd-supply = <&vddcamd1>;
+			vddcammot-supply = <&vddcammot>;
+			reset-gpios = <&ap_gpio 157 0>;
+			power-down-gpios = <&ap_gpio 125 0>;
+			mipi-switch-en-gpios = <&ap_gpio 18 0>;
+			mipi-switch-mode-gpios = <&ap_gpio 17 0>;
+			host = "dcam0";
+			port {
+				sensor_sub_0: endpoint {
+				remote-endpoint = <&phy1_out>;
+				};
+			};
+	};
+	sensor_main2: sensor-main2@6C {
+		compatible = "sprd,sensor-main2";
+		reg = <0x21>;
+		clock-names = "clk_src","sensor_eb",
+		"clk_96m","clk_76m8",
+		"clk_48m","clk_26m";
+		clocks  = <&clk_sensor1>,<&clk_cam_ahb_gates 22>,
+		<&clk_twpll_96m>,<&clk_twpll_76m8>,
+		<&clk_twpll_48m>,<&ext_26m>;
+
+		vddio-supply = <&vddcamio>;
+		vddcamd-supply = <&vddcamd1>;
+		vddcama-supply = <&vddcama1>;
+		vddcammot-supply = <&vddcammot>;
+		reset-gpios = <&ap_gpio 9 0>;
+		power-down-gpios = <&ap_gpio 7 0>;
+		mipi-switch-en-gpios = <&ap_gpio 18 0>;
+		mipi-switch-mode-gpios = <&ap_gpio 17 0>;
+		host = "dcam1";
+		port {
+			sensor_main_2: endpoint {
+				remote-endpoint = <&phy1_out>;
+			};
+		};
+	};
+};
+
+&dcam {
+	status = "okay";
+};
+
+&dcam1 {
+	status = "okay";
+};
+
+&isp {
+	status = "okay";
+};
+
+&isp1 {
+	status = "okay";
+};
+
+&csi0 {
+	status = "okay";
+};
+
+&cpp {
+	status = "okay";
+};
+
+&csi1 {
+	status = "okay";
+};
+
+&mipi_csi_phy0 {
+	status = "okay";
+	sprd,phyid = <0>;
+	sprd,csi = <&csi0>;
+	port {
+	phy0_out: endpoint {
+		remote-enpoint = <&sensor_main_0>;
+		};
+	};
+};
+
+&mipi_csi_phy1 {
+	status = "okay";
+	sprd,phyid = <1>;
+	sprd,csi = <&csi1>;
+	port {
+	phy1_out: endpoint {
+		remote-enpoint = <&sensor_sub_0>;
+		};
+	};
+};
+
+
+&battery {
+	adp-cdp-cur = <700>;
+	adp-dcp-cur = <1200>;
+	adp-sdp-cur = <450>;
+	chg-end-vol = <4350>;
+	chg-end-vol-check = <4330>;
+	chg-bat-safety-vol = <4430>;
+	rechg-vol = <4270>;
+	rsense-real = <100>;
+	rint = <250>;
+	cnom = <2580>;
+	ocv-tab-vol = <4340 4216 4154 4102 4055 4011 3971
+			3935 3903 3865 3827 3802 3786 3776
+			3771 3767 3757 3732 3683 3605 3400>;
+	ocv-tab-cap = <100  95   90   85   80   75   70
+			65   60   55   50   45   40   35
+			30   25   20   15   10   5    0>;
+};
+
+&pmic_charger {
+	status = "okay";
+};
+
+&pmic_fgu {
+	ocv-type = <1>;
+};
+
+&pmic_bltc_rgb {
+	status = "okay";
+};
+
+&sdio0 {
+	cd-gpios = <&ap_gpio 27 1>;
+};
+
+&pmic_typec {
+	status = "okay";
+};
+
+&vddarm0 {
+		supply = <&vddarm0>;
+};
+
+&vddarm1 {
+		supply = <&vddarm1>;
+};

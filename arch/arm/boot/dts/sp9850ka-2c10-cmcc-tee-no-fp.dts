@@ -1,0 +1,18 @@
+/*
+ * Spreadtrum SP9850KA 2H10 CMCC TEE NO FP board DTS file
+ *
+ * Copyright (C) 2016-2017, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+#include "sp9850ka-2c10-cmcc-tee.dts"
+
+/ {
+	model = "Spreadtrum SP9850KA-2C10-CMCC-TEE-NO-FP Board";
+
+	reserved-memory {
+		tos_reserved: tos-mem@94100000{
+			reg = <0x94100000 0x0300000>;
+		};
+	};
+};

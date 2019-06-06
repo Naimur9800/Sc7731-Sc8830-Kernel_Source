@@ -1,0 +1,23 @@
+/*
+ * this file is ued to change sprd dtsi which can't be changed by overlay
+ * such as /delete-node/ /delete-property/ and alises
+ */
+
+#include "../lcd/lcd_st7703_mipi_hd.dtsi"
+#include "../lcd/lcd_zte_st7701s_mipi_fwvga.dtsi"
+#include "../lcd/lcd_zte_st7701s_ykl_boe_mipi_fwvga.dtsi"
+#include "../lcd/lcd_zte_st7701s_jingtai_ctc_mipi_fwvga.dtsi"
+#include "../lcd/lcd_zte_jd9161_holitech_hsd_mipi_fwvga.dtsi"
+#include "../lcd/lcd_zte_st7701s_zgd_ctc_mipi_fwvga.dtsi"
+#include "../lcd/lcd_zte_ili9806e_lcetron_hsd_mipi_fwvga.dtsi"
+&panel_if {
+	panel-drivers = <
+		&lcd_st7701s_mipi_wvga
+		&lcd_st7701s_ykl_mipi_wvga
+		&lcd_st7701s_jingtai_mipi_wvga
+		&lcd_jd9161_holitech_mipi_wvga
+		&lcd_st7701s_zgd_mipi_wvga
+		&lcd_ili9806e_lcetron_mipi_wvga
+		&lcd_st7703_boe_mipi_hd
+	>;
+};

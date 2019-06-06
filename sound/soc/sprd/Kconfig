@@ -1,0 +1,104 @@
+menuconfig SND_SOC_SPRD
+	tristate "ASoC Audio for the SPREADTRUM"
+	depends on ARCH_SPRD
+	depends on SPRD_DMA
+	help
+	  Say Y if you want to build Spreadtrum ASOC card.
+
+if SND_SOC_SPRD
+
+config SND_SOC_SPRD_I2S
+	tristate #"ASoC Spreadtrum AP I2S sound card(bypass VBC) support"
+    help
+      Say Y if you want to build in to kernel, Say M for ko module.
+      this option will build Spreadtrum AP I2S driver for card bypasses
+	  VBC module, e.g. external codec or like BT/Digital FM etc.
+
+config SND_SOC_SPRD_R3P0_SC2731
+	tristate "ASoC Spreadtrum sound card with vbc r3p0 and codec sc2731"
+        select SPRD_AUDIO_AGDSP_ACCESS
+        select SPRD_AUDIO_MEMORY_MANAGER
+        select SPRD_AUDIO_SIPC
+        select SPRD_MCDT
+	select SND_SOC_SPRD_COMPRESS
+	select SND_SOC_SPRD_AUDIO_BUFFER_USE_DDR32
+	select SND_SOC_SPRD_VBC_R3P0
+	select SND_SOC_SPRD_CODEC_SC2731
+	select SPRD_AUDIO_DSP_DUMP
+	help
+	  Say Y or M here if you want to add support for ASoC audio on Spreadtrum
+	  boards using the R3P0 VBC and the sc2731 codec.
+
+config SND_SOC_SPRD_R3P0_RT5659
+	tristate "ASoC Spreadtrum sound card with vbc r3p0 and codec rt5659"
+        select SPRD_AUDIO_AGDSP_ACCESS
+        select SPRD_AUDIO_MEMORY_MANAGER
+        select SPRD_AUDIO_SIPC
+        select SPRD_MCDT
+	select SND_SOC_SPRD_COMPRESS
+	select SND_SOC_SPRD_AUDIO_BUFFER_USE_DDR32
+	select SND_SOC_SPRD_VBC_R3P0
+	select SND_SOC_RT5659
+	select SPRD_AUDIO_DSP_DUMP
+	help
+	  Say Y or M here if you want to add support for ASoC audio on Spreadtrum
+	  boards using the R3P0 VBC and the rt5659(or compatible) codec.
+
+config SND_SOC_SPRD_R2P0_SC2723
+	tristate "ASoC Spreadtrum sound card with vbc r2p0 and codec sc2723"
+	select SND_SOC_SPRD_AUDIO_USE_AON_DMA
+	select SND_SOC_SPRD_AUDIO_BUFFER_USE_IRAM
+	select SND_SOC_SPRD_VBC_R2P0
+	select SND_SOC_SPRD_CODEC_SC2723
+	select SND_SOC_SPRD_VAUDIO
+	help
+	  Say Y or M here if you want to add support for ASoC audio on Spreadtrum
+	  boards using the R2P0 VBC and the sc2723 codec.
+
+config SND_SOC_SPRD_R1P0V3_SC2721
+	tristate "ASoC Spreadtrum sound card with vbc r1p0 v3 and codec sc2721"
+	select SND_SOC_SPRD_AUDIO_TWO_STAGE_DMAENGINE_SURPPORT
+	select SPRD_AUDIO_MEMORY_MANAGER
+	select SND_SOC_SPRD_VBC_R1P0V3
+	select SND_SOC_SPRD_CODEC_SC2721
+	select SND_SOC_SPRD_VAUDIO
+	help
+	  Say Y or M here if you want to add support for ASoC audio on Spreadtrum
+	  boards using the R1P0 V3 VBC and the sc2721 codec.
+
+
+config SND_SOC_SPRD_R1P0V3_SC2731
+	tristate "ASoC Spreadtrum sound card with vbc r1p0 v3 and codec sc2731"
+	select SND_SOC_SPRD_AUDIO_TWO_STAGE_DMAENGINE_SURPPORT
+	select SPRD_AUDIO_MEMORY_MANAGER
+	select SND_SOC_SPRD_VBC_R1P0V3
+	select SND_SOC_SPRD_CODEC_SC2731
+	select SND_SOC_SPRD_VAUDIO
+	help
+	  Say Y or M here if you want to add support for ASoC audio on Spreadtrum
+	  boards using the R1P0 V3 VBC and the sc2731 codec.
+
+config SND_SOC_SPRD_I2S_DUMMY
+	tristate "ASoC Spreadtrum sound card with AP I2S and a dummy codec"
+	select SND_SOC_SPRD_I2S
+	help
+	  Say Y or M here if you want to add support for ASoC audio on Spreadtrum
+	  boards using the AP I2S and a dummy codec.
+
+config SND_SOC_SPRD_I2S_SMARTPA
+	tristate "ASoC Spreadtrum sound card with AP I2S and smartpa"
+	select SND_SOC_SPRD_I2S
+	select SND_SOC_SPRD_AUDIO_TWO_STAGE_DMAENGINE_SURPPORT
+	select SPRD_AUDIO_MEMORY_MANAGER
+	select SND_SOC_TFA98XX
+	help
+	  Say Y or M here if you want to add support for ASoC audio on Spreadtrum
+	  boards using the AP I2S and tfasmartpa
+
+source "sound/soc/sprd/dai/vbc/Kconfig"
+source "sound/soc/sprd/dai/i2s/Kconfig"
+source "sound/soc/sprd/dai/vaudio/Kconfig"
+source "sound/soc/sprd/platform/Kconfig"
+source "sound/soc/sprd/codec/sprd/Kconfig"
+
+endif #SND_SOC_SPRD

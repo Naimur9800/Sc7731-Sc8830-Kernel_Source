@@ -1,0 +1,22 @@
+Spreadtrum pmu wakeup interrupt controllers
+
+we treat the pmu wakeup enable function as a intc, in the init
+stage, we enable the required wakeup source.
+
+Required properties:
+- compatible: shall be follows:
+	-"sprd,whale2-pmuwakeup-chip" for whale2 soc(sc9850/sp9860)
+	-"sprd,iwhale2-pmuwakeup-chip" for iwhale2 soc
+	-"sprd,sc7731-extn-intc" for sc7731
+	-"sprd,sc9836-extn-intc" for sc9836
+	-"sprd,sc9838-extn-intc" for sc9838
+- reg: Physical base address(es) of interrupt registers length of memory mapped
+  region.
+- interrupt-controller: Identifies the node as an interrupt controller.
+
+Example:
+whale2_pmuwakeup: interrupt-controller@402b0220 {
+			  compatible = "sprd,whale2-pmuwakeup-chip";
+			  interrupt-controller;
+			  reg = <0 0x402b0220 0 0x18>;
+		  };

@@ -1,0 +1,17 @@
+Spreadtrum MIPI-CSI PHY
+-----------------------
+
+Required properties:
+ - compatible:	"snps,mipi-csi-phy"
+ - reg:	physical base address and length of MIPI CSI PHY registers
+ - #phy-cells:	must be 1
+
+For generic PHY binding properties, refer to phy/phy-bindings.txt
+
+ Example:
+
+	mipi_csi_phy: mipi-csi-phy@60d00008 {
+			compatible = "snps,mipi-csi-phy";
+			reg = <0x60d00008 0x4>;
+			#phy-cells = <1>;
+	};

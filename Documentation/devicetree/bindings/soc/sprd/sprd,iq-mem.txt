@@ -1,0 +1,11 @@
+Spreadtrum iq bindings
+
+Required properties:
+- compatible: must be "sprd,iq-mem".
+- reg: address range of iq-mem device.
+
+Example:
+q_reserved: iq-mem@93100000{
+	compatible = "sprd,iq-mem";
+	reg = <0x93100000 0x8000000>;
+};

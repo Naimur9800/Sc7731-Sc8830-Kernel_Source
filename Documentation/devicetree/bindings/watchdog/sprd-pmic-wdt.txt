@@ -1,0 +1,11 @@
+*Spreadtrum system reboot functionality
+
+Required properties:
+- compatible: should be "sprd,sc2723t-wdt".
+- reg: Physical offset in PMIC address space
+
+Example node:
+	pmic_wdt: watchdog@40 {
+		compatible = "sprd,sc2723t-wdt";
+		reg = <0x40>;
+	};

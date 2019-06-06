@@ -1,0 +1,104 @@
+Spreadtrum Communications SC2703 Charger Power Supply bindings
+
+Required properties:
+- compatible: Should be "sprd,sc2703-charger"
+
+- io-channels: List of phandle and IIO specifier pairs
+- io-channel-names: List of channel names used by charger
+	["VIN", "VBAT", "IIN", "IBAT", "TJUNC", "TBAT"]
+  (See ../iio-bindings.txt for further info)
+
+- sprd,ibat-pre-microamp: IBAT Pre-charge current value
+	[50000, 100000, 200000, 400000]
+- sprd,vbat-chg-microvolt: Constant VBAT voltage value for charging
+	[Range: 3800000 - 4600000, Steps: 20000]
+- sprd,ibat-chg-microamp: Constant IBAT current value for charging
+	[Range: 500000 - 4500000, Steps: 50000]
+- sprd,ibat-term-microamp: IBAT current threshold for end of charging.
+	[Range: 100000 - 450000, Steps: 50000]
+- sprd,t-eoc-sec: End of charge detection duration.
+	[0, 60, 300, 600, 1200, 1800, 2700, 3600]
+- sprd,vbat-rechg-microvolt: VBAT Voltage drop value to trigger recharging
+	[100000, 160000, 200000, 240000]
+- sprd,dcdc-peak-ilim-microamp: Peak DCDC input current limit
+	[6000000, 7000000, 8000000, 9000000]
+- sprd,dcdc-rev-peak-ilim-microamp: Peak DCDC Iin limit in reverse boost
+	[5000000, 6000000, 7000000, 8000000]
+- sprd,vbat-ov-microvolt: VBAT over-voltage threshold
+	[Range: 4000000 - 5500000, Steps: 100000]
+- sprd,vbat-uv-microvolt: VBAT under-voltage threshold
+	[Range: 2200000 - 2950000, Steps: 50000]
+- sprd,vsys-min-microvolt: VSYS minimum voltage threshold
+	[Range: 3000000 - 3900000, Steps: 60000]
+- sprd,timeout-pre-sec: Timeout value for pre-charge charging phase
+	[900, 1800, 2700, 3600]
+- sprd,timeout-cccv-sec: Timeout value for main CC/CV charging phase
+	[7200, 14400, 21600, 28800, 36000, 43200, 50400, 64800]
+- sprd,timer-load-sec: Charging watchdog timer expiry time value
+	[Range: 0 - 255]
+- sprd,iin-rev-lim-microamp: IIN reverse boost current limit
+	[500000, 900000, 1200000, 1500000, 2000000]
+- sprd,bat-det-src: Detection type used to determine battery presence
+	["Off", "VBAT", "BATID" "TBAT"]
+
+Optional properties:
+- extcon: phandle to external connector devices. phandle should point to
+  external connector which provides "USB-HOST" cable events.
+
+- sprd,tbat-t3-celsius: TBAT T3 temperature threshold for charging
+	[40, 45, 50]
+- sprd,tbat-t4-celsius: TBAT T4 temperature threshold for charging
+	[55, 60, 65]
+- sprd,vbat-cold-microvolt: Voltage reduction for cold charging (T1 - T2)
+	[0, 100000, 200000]
+- sprd,ibat-cold-enable: Current reduction enabled for cold charging (T1 - T2)
+- sprd,vbat-warm-microvolt: Voltage reduction for warm charging (T3 - T4)
+	[0, 100000, 200000]
+- sprd,ibat-warm-enable: Current reduction enabled for warm charging (T3 - T4)
+- sprd,onkey-detect-enable: Enables the detection of long onkey presses.
+
+======
+
+Example:
+
+	sc2703-charger {
+		compatible = "sprd,sc2703-charger";
+
+		io-channels = <&adc 0>,
+			      <&adc 1>,
+			      <&adc 2>,
+			      <&adc 3>,
+			      <&adc 4>,
+			      <&adc 5>;
+		io-channel-names = "VIN",
+				   "VBAT",
+				   "IIN",
+				   "IBAT",
+				   "TJUNC",
+				   "TBAT";
+
+		sprd,ibat-pre-microamp = <200000>;
+		sprd,vbat-chg-microvolt = <4200000>;
+		sprd,ibat-chg-microamp = <2000000>;
+		sprd,ibat-term-microamp = <100000>;
+		sprd,t-eoc-sec = <60>;
+		sprd,vbat-rechg-microvolt = <100000>;
+		sprd,dcdc-peak-ilim-microamp = <8000000>;
+		sprd,dcdc-rev-peak-ilim-microamp = = <5000000>;
+		sprd,vbat-ov-microvolt = <4400000>;
+		sprd,vbat-uv-microvolt = <2800000>;
+		sprd,vsys-min-microvolt = <3420000>;
+		sprd,timeout-pre-sec = <900>;
+		sprd,timeout-cccv-sec = <7200>;
+		sprd,timer-load-sec = <60>;
+		sprd,iin-rev-lim-microamp = <2000000>;
+		sprd,bat-det-src = "VBAT";
+
+		extcon = <&usb_id>;
+		sprd,tbat-t3-celsius = <40>;
+		sprd,tbat-t4-celsius = <55>;
+		sprd,vbat-cold-microvolt = <100000>;
+		sprd,ibat-cold-enable;
+		sprd,vbat-warm-microvolt = <100000>;
+		sprd,ibat-warm-enable;
+	};

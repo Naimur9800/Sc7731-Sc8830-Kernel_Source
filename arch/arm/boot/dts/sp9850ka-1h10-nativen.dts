@@ -1,0 +1,20 @@
+/*
+ * Spreadtrum SP9850KA 1H10 CMCC board DTS file
+ *
+ * Copyright (C) 2016-2017, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+#include "sp9850ka-1h10-native.dts"
+
+&i2c1 {
+	sprd_2700_chg {
+		status = "disabled";
+	};
+
+	fan54015_chg: charger@6a {
+		compatible = "fairchild,fan54015_chg";
+		reg = <0x6a>;
+		chg-fault-gpios = <&ap_gpio 142 0>;
+	};
+};

@@ -1,0 +1,63 @@
+/ { lcds {
+	lcd_jd9161_xxx_mipi_wvga: lcd91612@91612 {
+
+		work-mode = <1>;
+		bpp = <24>;
+		lane-number = <2>;
+		need-check-esd = <0>;
+		esd-timeout = <1000>;
+		esd-check-reg = <0x0A>;
+		esd-return-code = <0x9C>;
+		fps = <60>;
+		panel-name = "lcd_jd9161_xxx_mipi_wvga";
+		power-on-sequence = <
+					50  1  5
+					50  0  10
+					50  1  120
+					>;
+		power-off-sequence = <
+					50  0  20
+					>;
+		init-data = [
+			39 00 00 04 BF 91 61 F2
+			39 00 00 03 B3 00 B5
+			39 00 00 03 B4 00 9A
+			39 00 00 07 B8 00 BF 01 00 BF 01
+			39 00 00 04 BA 34 23 00
+			23 00 00 02 C3 02
+			39 00 00 03 C4 00 64
+			39 00 00 0A C7 00 01 32 05 65 2A 12 A5 A5
+			39 00 00 27 C8 7C 6D 62 58 56 32 30 18 33 36 3A 5E 54 66 5F 67 62 5C 50 7C 6D 62 58 56 32 30 18 33 36 3A 5E 54 66 5F 67 62 5C 50
+			39 00 00 15 D8 30 00 00 10 03 10 01 02 00 01 02 06 68 00 00 71 05 06 68 0C
+			39 00 00 14 D9 00 0A 0A 88 00 00 06 80 00 80 01 5B 35 00 00 00 00 03 80
+			23 00 00 02 BE 01
+			23 00 00 02 D7 40
+			23 00 00 02 C1 10
+			39 00 00 0b CC 34 20 38 60 11 91 00 40 00 00
+			23 00 00 02 BE 00
+			23 00 00 02 35 00
+			13 78 00 01 11
+			13 0A 00 01 29
+			];
+		sleep-in = [
+			13 0A 00 01 28
+			13 78 00 01 10
+			];
+		sleep-out = [
+			13 78 00 01 11
+			13 64 00 01 29
+			];
+		display-timings {
+			clock-frequency = <500000>;
+			hactive = <480>;
+			vactive = <800>;
+			hback-porch = <30>;
+			hfront-porch = <110>;
+			vback-porch = <6>;
+			vfront-porch = <12>;
+			hsync-len = <28>;
+			vsync-len = <4>;
+		};
+	};
+};};
+

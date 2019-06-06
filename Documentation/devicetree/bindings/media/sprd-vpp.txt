@@ -1,0 +1,28 @@
+* Spreadtrum Video PostProcessing Engine
+
+Required properties:
+- compatible: Should be "sprd,vpp".
+- reg: physical base address of the controller and length of memory mapped region.
+- interrupts: VPP interrupt specifier.
+- sprd,syscon-aon-apb: AON-APB bus node, used to get VPP status
+- sprd,syscon-mm-ahb: mm-ahb bus node, used to get VPP status
+- clock-names:	List of clock input name strings sorted in the same
+		order as the clocks property.  Consumers drivers
+		will use clock-names to match clock input names
+		with clocks specifiers.
+- clocks: The freq of source clk connected to VPP.
+
+
+Optional properties:
+-
+
+Examples:
+            vpp: video-processor@61000000{
+                compatible = "sprd,vpp";
+                reg = <0 0x61000000 0 0x4000>;
+                interrupts = <0 43 0x0>;
+                sprd,syscon-aon-apb = <&aon_apb_controller>;
+		sprd,syscon-mm-ahb = <&mm_ahb_controller>;
+                clock-names = "clk_mm_i","clk_vpp";
+                clocks = <&clk_aon_apb_gates0 25>, <&clk_vpp>;
+            };

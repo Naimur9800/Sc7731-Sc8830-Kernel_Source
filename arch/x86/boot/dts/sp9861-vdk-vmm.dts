@@ -1,0 +1,107 @@
+/*
+ * Spreadtrum iwhale2 vdk board DTS file
+ *
+ * Copyright (C) 2015, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+/dts-v1/;
+
+#include "irq-vmm.h"
+#include "bia-vmm.dtsi"
+#include "sc9861.dtsi"
+
+/ {
+	model = "Spreadtrum iwhale2 SoC (x86 based)";
+
+	compatible = "sprd,iwhale2-vdk";
+
+	sprd,sc-id = <9868 2 0x20000>;
+
+	aliases {
+		serial0 = &uart0;
+		serial1 = &uart1;
+		serial2 = &uart2;
+		serial3 = &uart3;
+	};
+
+	chosen {
+		stdout-path = &uart0;
+		bootargs = "earlycon no_timer_check tsc=reliable idle=halt console=ttyS0,921600n8 mobilevisor mce=off androidboot.hardware=sp9861 pit_freq=1147290 hpet_freq=25000000 code_bytes=128";
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		memdisk_reserved: memdisk@40000000{
+			reg = <0x0 0x40000000 0x0 0x3d000000>, /* system 1G-48M*/
+				<0x0 0x30000000 0x0 0x10000000>, /* userdata 256M*/
+				<0x0 0x28000000 0x0 0x08000000>; /* cache 128M*/
+		};
+
+		fb_reserved: fb@27500000{
+			reg = <0x0 0x27500000 0x0 0xb00000>; /* fb */
+		};
+	};
+
+	sprd_memdisk {
+		compatible = "sprd,memdisk";
+		memory-region = <&memdisk_reserved>;
+	};
+
+	ion {
+		compatible = "sprd,ion";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		heap@0 {
+			reg = <0>;
+			label = "system";
+			type = <0>;
+		};
+
+		heap@3 {
+			reg = <3>;
+			label = "carveout_fb";
+			type = <2>;
+			memory-region = <&fb_reserved>;
+		};
+	};
+
+
+	#include "irq-hirq.dtsi"
+	mobilevisor {
+		compatible = "intel,mobilevisor";
+		interrupt-parent = <&hirq>;
+	};
+};
+
+&bm_perf {
+	sprd,doubleddr = <0>;
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&uart1 {
+	status = "okay";
+};
+
+&uart2 {
+	status = "okay";
+};
+
+&uart3 {
+	status = "okay";
+};
+
+&sdio3 {
+	bus-width = <8>;
+	non-removable;
+	sprd,name = "emmc";
+	status = "okay";
+};

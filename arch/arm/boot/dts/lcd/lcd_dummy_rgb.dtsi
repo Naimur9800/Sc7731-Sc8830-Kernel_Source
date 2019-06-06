@@ -1,0 +1,23 @@
+/ { lcds {
+	lcd_dummy_rgb: lcdffff@0{
+		bpp = <24>;
+		hsync-pol = <0>;
+		vsync-pol = <0>;
+		de-pol = <0>;
+		te-pol = <0>;
+		fps = <60>;
+		panel-name = "lcd_dummy_rgb";
+
+		display-timings {
+			clock-frequency = <1000000>;
+			hactive = <540>;
+			vactive = <960>;
+			hback-porch = <5>;
+			hfront-porch = <120>;
+			vback-porch = <200>;
+			vfront-porch = <160>;
+			hsync-len = <25>;
+			vsync-len = <30>;
+		};
+	};
+};};

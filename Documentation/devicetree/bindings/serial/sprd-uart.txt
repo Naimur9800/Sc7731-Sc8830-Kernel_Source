@@ -1,0 +1,27 @@
+* Spreadtrum serial UART
+
+Required properties:
+- compatible: must be "sprd,sc9836-uart"
+- reg: offset and length of the register set for the device
+- interrupts: exactly one interrupt specifier
+- clocks: phandles to input clocks.
+
+Optional properties:
+- sprd,dma-tx: the hardware number of UART request DMA.
+- dmas: contain the DMA controller node and the DMA channel of the UART
+	requesting.
+- dma-names: contain one identifier string for each DMA specifier in
+	the dmas property.
+
+Examples:
+	uart1: serial@70100000 {
+		compatible = "sprd,sc9836-uart";
+		reg = <0 0x70100000 0 0x100>;
+		interrupts = <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>;
+		clock-names = "enable", "uart", "source";
+		clocks = <&clk_ap_apb_gates 14>;
+		sprd,dma-tx = <20>;
+		dma-names = "tx_chn";
+		dmas = <&ap_dma 20>;
+		status = "disabled";
+	};

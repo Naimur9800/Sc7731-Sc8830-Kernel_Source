@@ -1,0 +1,49 @@
+#
+# zte touchscreen module
+#
+
+config ZTE_TOUCHSCREEN
+    tristate "ZTE touchscreen driver"
+    depends on I2C || SPI_MASTER
+    help
+      Say Y here to use adaptive touchscreen driver.
+
+if ZTE_TOUCHSCREEN
+config TS_FIRMWARE
+	string "config board firmware folder"
+
+source "drivers/input/touchscreen/zte_touchscreen/synaptics_2.7/Kconfig"
+
+config TOUCHSCREEN_FTS_V2_2
+	bool "Focaltech Touchscreen"
+		depends on I2C
+		default n
+		help
+		  Say Y here if you have Focaltech touch panel.
+		  If unsure, say N.
+if TOUCHSCREEN_FTS_V2_2
+source "drivers/input/touchscreen/zte_touchscreen/focaltech_touch_V2_2/Kconfig"
+endif
+config TOUCHSCREEN_TLSC6X
+	bool "Focaltech Touchscreen"
+		depends on I2C
+		default n
+		help
+		  Say Y here if you have tlsc6x touch panel.
+		  If unsure, say N.
+
+config TOUCHSCREEN_HIMAX_CHIPSET_ONCELL
+	bool "Himax touchpanel oncell tp"
+	depends on I2C
+	help
+	  Say Y here if you have a Himax CHIPSET touchscreen.
+	  HIMAX controllers are multi touch controllers which can
+	  report 10 touches at a time.
+	  If unsure, say N.
+
+if TOUCHSCREEN_HIMAX_CHIPSET_ONCELL
+source "drivers/input/touchscreen/zte_touchscreen/hxchipset_oncell/Kconfig"
+endif
+
+endif
+

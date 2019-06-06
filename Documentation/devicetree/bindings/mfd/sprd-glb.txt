@@ -1,0 +1,22 @@
+* Global Configuration Registers of Spreadtrum Soc
+
+The Global Configuration Registers are used to configure Spreadtrum SoC
+internal bus behavior
+
+Required properties:
+- compatible:	Should be one of the following
+		"sprd,sys-ap-ahb", "syscon"
+		"sprd,sys-pmu-apb", "syscon"
+		"sprd,sys-aon-apb", "syscon"
+		"sprd,sys-gpu-ahb", "syscon"
+		"sprd,sys-mm-ahb", "syscon"
+		"sprd,sys-ap-apb", "syscon"
+- reg:	Contains offset/length value of the Global Configuration Registers
+	memory region.
+
+Example:
+
+ap_ahb_controller: syscon@20e00000 {
+	compatible = "sprd,sys-ap-ahb", "syscon";
+	reg = <0 0x20e00000 0 0x40000>;
+};

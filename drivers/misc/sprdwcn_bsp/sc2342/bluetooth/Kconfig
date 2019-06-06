@@ -1,0 +1,18 @@
+#
+# Spreadtrum BT devices
+#
+config BT_SPRD2332
+	tristate "Bluetooth driver"
+	depends on MARLIN2_SOC && (BT || ARCH_SPRD)
+	help
+	  This enables the Bluetooth driver for marlin2 devices.
+
+	  Say Y here to compile support for Broadcomm's BCM43455 driver
+	  into the kernel or say M to compile it as module.
+
+config MARLIN2_BT_SDIO
+        tristate "BT driver sdio support"
+        default n
+        depends on BT_SPRD2332
+        help
+          virtual device by BT

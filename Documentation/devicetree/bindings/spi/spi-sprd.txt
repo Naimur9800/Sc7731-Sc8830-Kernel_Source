@@ -1,0 +1,29 @@
+SPI for Spreadtrum platforms
+
+Required properties:
+- compatible: should be "sprd,spi-r4p0".
+- reg: physical base address of the controller and length of memory mapped region.
+- interrupts: Should contain SPI interrupt
+- clock-names: The clock-names must have "spi", "source" and "enable".
+	       Clock-names is fixed in SPI driver, and the property order
+	       of clocks is according to it. SPI drivers will use clock-names
+	       to match clock input names with clocks specifiers.
+- clocks: The freq of source clk connected to SPI. List of clock input name
+	  strings sorted in the same order as the clocks property.
+- #address-cells: number of cells required to define a chip select
+		  address on the SPI bus.Should be set to 1.
+- #size-cells: Should be set to 0.
+
+
+Example:
+spi0: spi@70a00000{
+	compatible = "sprd,spi-r4p0";
+	reg = <0 0x70a00000 0 0x1000>;
+	interrupts = <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>;
+	clock-names = "spi", "source","enable";
+	clocks = <&clk_spi0>,<&ext_26m>,
+		<&clk_ap_apb_gates 5>;
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "disabled";
+};

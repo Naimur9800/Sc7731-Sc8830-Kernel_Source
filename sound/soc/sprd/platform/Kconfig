@@ -1,0 +1,44 @@
+menu "SPRD Platform"
+
+config SND_SOC_SPRD_COMPRESS
+	tristate "Enable SPRD Compress Playback Driver"
+	depends on SPRD_AUDIO_MEMORY_MANAGER && SPRD_AUDIO_SIPC
+	select SND_SOC_COMPRESS
+	help
+	  Say Y if you want enable SPRD compress(offload) playback driver.
+
+config SND_SOC_SPRD_AUDIO_BUFFER_USE_DDR32
+	depends on SPRD_AUDIO_MEMORY_MANAGER
+	bool "Use reserved ddr32"
+	help
+	  Say Y if you want use reserved ddr32 for audio dma buffer
+
+config SND_SOC_SPRD_AUDIO_BUFFER_USE_IRAM
+	bool "Use IRAM when sound playback"
+	help
+	  Say Y if you want use IRAM replacment RAM when playback.
+	   sometimes, use IRAM maybe reduce power consumption.
+           but, it will cause system more busy, because the buffer smaller.
+
+config SND_SOC_SPRD_IRAM_BACKUP
+	bool "Backup IRAM when sound playback"
+	depends on SND_SOC_SPRD_AUDIO_BUFFER_USE_IRAM
+	help
+	  Say Y if you want backup IRAM when playback. sometimes,
+	   IRAM maybe shared with other modules,
+	   then you need to open this.
+
+config SND_SOC_SPRD_AUDIO_USE_AON_DMA
+	bool "Use AON DMA when sound playback"
+	depends on SND_SOC_SPRD_AUDIO_BUFFER_USE_IRAM
+	help
+	  Say Y if you want to use AON DMA when playback, sometimes,
+	   AON DMA maybe reduce power consumption. But AON DMA can only
+	   access IRAM, so we must depend on IRAM switch.
+
+config SND_SOC_SPRD_AUDIO_TWO_STAGE_DMAENGINE_SURPPORT
+	bool "Use 2 stage dma engine"
+	help
+	  Say Y if you want to use 2stage dma engine, 2 stage dma is
+           designed for low power.
+endmenu

@@ -1,0 +1,51 @@
+Spreadtrum gate clock driver.
+
+Spreadtrum chip often uses one register to control more than one gate clock.
+consumers should use index to get the correct gate clock according to asic
+design documents.
+
+Required properties:
+
+- compatible : should be "sprd,gates-clock"
+
+- #clock-cells: must be set 1.
+
+- sprd,gates-msk: Sprd chip gates clocks are gathering to a few registers.
+		  This property should follow with the asic documents and
+		  it indicates the gate index bit in register.Module user
+		  should follow asic documents to get correct gate index.
+
+- clock-output-names : The output name indicates the gates name.
+
+Example:
+
+	clk_mpll_gates: clk@402b00b0 {
+		compatible = "sprd,gates-clock";
+		#clock-cells = <1>;
+		reg = <0 0x402b00b0 0 0x4>;
+		sprd,gates-msk = <0x40004>;
+		clocks = <&ext_26m>;
+		clock-output-names = "clk_mpll0_gate", "clk_mpll1_gate";
+	};
+
+Here is an example about consumers how to configure the gate clock.
+clk_mpll0 should use index 2 to get the clock and clk_mpll1 use index 18.
+Example:
+
+	clk_mpll0: clk@40400024 {
+		compatible = "sprd,sc9850-adjustable-pll-clock";
+		#clock-cells = <0>;
+		reg = <0 0x40400024 0 0x4>,
+			<0 0x40400028 0 0x4>;
+		clocks = <&clk_mpll_gates 2>;
+		clock-output-names = "clk_mpll0";
+	};
+
+	clk_mpll1: clk@4040002c {
+		compatible = "sprd,sc9850-adjustable-pll-clock";
+		#clock-cells = <0>;
+		reg = <0 0x4040002c 0 0x4>,
+			<0 0x40400030 0 0x4>;
+		clocks = <&clk_mpll_gates 18>;
+		clock-output-names = "clk_mpll1";
+	};

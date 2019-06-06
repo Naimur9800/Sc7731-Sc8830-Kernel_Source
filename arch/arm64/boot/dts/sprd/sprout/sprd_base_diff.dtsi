@@ -1,0 +1,43 @@
+/*
+ * this file is ued to change sprd dtsi which can't be changed by overlay
+ * such as /delete-node/ /delete-property/ and alises
+ */
+
+#include "zte_lcd_ili9881c_mipi_skyworth_hd.dtsi"
+#include "zte_lcd_lead_st7703_cpt_6p26_hd.dtsi"
+&panel_if {
+	panel-drivers = <
+		&lcd_ili9881c_mipi_skyworth_hd_2
+		&lcd_st7703_mipi_lead_hd
+	>;
+};
+
+/{
+	aliases {
+		thm-sensor9 = &pa_temp;
+	};
+
+	thermal-zones {
+		pa_thmzone: pa-thmzone {
+			polling-delay-passive = <0>;
+			polling-delay = <0>;
+			thermal-sensors = <&pa_temp  9>;
+		};
+	};
+
+	pa_temp:pa-tsensor@9 {
+		compatible = "sprd,board-thermal";
+		#thermal-sensor-cells = <1>;
+		io-channels = <&pmic_adc 5>;
+		io-channel-names = "adc_temp";
+		temp-tab-size = <16>;
+		temp-tab-val = <1140 1131 1110 1074 983 838 654 413
+						316 238 178 133 99 75 57 43>;
+		temp-tab-temp = <558 603 702 805 952 1101 1248 1449
+						1549 1649 1749 1849 1949 2049 2149 2249>;
+	};
+};
+
+&pa_temp {
+	status = "okay";
+};

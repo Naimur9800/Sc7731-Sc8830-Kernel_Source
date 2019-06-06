@@ -1,0 +1,25 @@
+config MARLIN2_SOC
+	depends on SDIOM
+	tristate "SPRD Marlin2 platform support"
+	default n
+	help
+	  Enable this module if you want to use marlin2 chip including .
+          This module support marlin2 chip platform for example:download,
+          power ctl,sleep wakeup,at cmd,loopchek,mdbg,dump,marlin2 log .etc
+	  Thanks.
+
+config MARLIN2_FPGA
+	bool "SPRD Marlin2 FPGA test"
+	default n
+        depends on MARLIN2_SOC
+	help
+	  only fpga test in marlin chip
+
+config INTEGRATED_MARLIN2_GE2_SOC
+	tristate "SPRD Integrated Marlin2 and GE2 platform support"
+	default n
+	help
+	  Enable this module if you want to use marlin2 and ge2 chip including .
+          This module support marlin2 and ge2 chip platform for example:download,
+          power ctl,sleep wakeup,at cmd,loopchek,mdbg,dump,marlin2 log .etc
+	  Thanks.

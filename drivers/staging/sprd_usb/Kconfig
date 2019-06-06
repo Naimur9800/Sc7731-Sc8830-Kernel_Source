@@ -1,0 +1,35 @@
+config USB_SPRD_DWC
+	tristate "Spreadtrum USB2.0 Controller"
+	help
+	   Spreadtrum's usb controller is an integrated high speed
+	   USB 2.0 device controller(with dwc core).
+
+	   Say "y" to link the driver statically, or "m" to build a
+	   dynamically linked module called "dwc_otg" and force all
+	   gadget drivers to also be dynamically linked.
+
+if USB_SPRD_DWC
+
+config SPRD_USB_DEVICE_ONLY
+        boolean "Spreadtrum device only controller"
+        depends on USB_SPRD_DWC
+
+        help
+           the chip can only support device mode, do not support otg.
+
+config USB_SPRD_FPGA
+        boolean "Spreadtrum device for fpga"
+        depends on USB_SPRD_DWC
+
+        help
+           the marco is just for fpga board.
+
+config SPRD_INTEL_USB2_PHY
+	tristate "Spreadtrum USB2 PHY(Intel) Driver"
+	select USB_PHY
+	help
+	  Enable this to support the USB PHY(Intel) that is part of SOC. This driver
+	  takes care of all the PHY functionality, normally paired with
+	  DesignWare USB2.0 (DRD) Controller.
+
+endif

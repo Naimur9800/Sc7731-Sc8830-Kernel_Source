@@ -1,0 +1,42 @@
+/*
+ * Spreadtrum sharkle sp9820e KaiOS board DTS file
+ *
+ * Copyright (C) 2017, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#include "sp9820e-1h10-native.dts"
+
+/ {
+	model = "Spreadtrum SP9820E-1H10-K-NATIVE Board";
+
+	reserved-memory {
+		tos_reserved: tos-mem@8e100000{
+			reg = <0x8e100000 0x00500000>;
+		};
+
+		/* 400k for tui before fb_reserved */
+		tui_reserved: tui_mem@8fada000{
+			reg = <0x8fada000 0x00064000>;
+		};
+	};
+};
+
+&i2c2 {
+	status = "okay";
+	clock-frequency = <400000>;
+
+	nfc-pn544@28 {
+		compatible = "nxp,nfc-pn544";
+		reg = <0x28>;
+		clock-names = "nfc_clk","source","enable";
+		clocks = <&clk_aux0>,<&ext_26m>,<&clk_aon_apb_gates1 2>;
+		nxp,irq-gpio = <&ap_gpio 133 0>;
+		nxp,ven-gpio = <&ap_gpio 132 0>;
+		interrupt-names = "nfc_irq";
+		nxp,firm-gpio = <&ap_gpio 7 0>;
+		nxp,clkreq-gpio = <&ap_gpio 130 0>;
+		status = "ok";
+	};
+};

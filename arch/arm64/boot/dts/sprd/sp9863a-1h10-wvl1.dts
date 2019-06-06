@@ -1,0 +1,36 @@
+/*
+ * Spreadtrum sharkl3 board DTS file
+ *
+ * Copyright (C) 2017, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+/dts-v1/;
+
+#include "sc9863a.dtsi"
+#include "sp9863a-common.dtsi"
+#include "sp9863a-1h10-native.dts"
+
+/ {
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		gpu_firmware: gpu-firmware@96100000{
+			reg = <0x0 0x96100000 0x0 0x100000>;
+		};
+
+		fb_reserved: framebuffer@9d000000{
+			reg = <0x0 0x9d000000 0x0 0x2000000>;
+		};
+
+		vsp: vsp@9f000000{
+			reg = <0x0 0x9f000000 0x0 0x7800000>;
+		};
+
+		gpu: gpu@a6800000{
+			reg = <0x0 0xa6800000 0x0 0x1800000>;
+		};
+	};
+};

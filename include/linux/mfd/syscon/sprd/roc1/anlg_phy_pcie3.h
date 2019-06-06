@@ -1,0 +1,92 @@
+/*
+ * Copyright (C) 2018 Spreadtrum Communications Inc.
+ *
+ * This file is dual-licensed: you can use it either under the terms
+ * of the GPL or the X11 license, at your option. Note that this dual
+ * licensing only applies to this file, and not this project as a
+ * whole.
+ *
+ * updated at 2018-06-28 19:05:47
+ *
+ */
+
+
+#ifndef ANLG_PHY_PCIE3_H
+#define ANLG_PHY_PCIE3_H
+
+
+
+#define REG_ANLG_PHY_PCIE3_ANALOG_PCIE3_PHY_COMMON_CTRL        (0x0000)
+#define REG_ANLG_PHY_PCIE3_ANALOG_PCIE3_PHY_APB_MPLL_PMU_CTRL  (0x0004)
+#define REG_ANLG_PHY_PCIE3_ANALOG_PCIE3_PHY_PIPE_SRAM_CTRL     (0x0008)
+#define REG_ANLG_PHY_PCIE3_ANALOG_PCIE3_PHY_PROTOCOL0_CTRL0    (0x000C)
+#define REG_ANLG_PHY_PCIE3_ANALOG_PCIE3_PHY_PROTOCOL0_CTRL1    (0x0010)
+#define REG_ANLG_PHY_PCIE3_ANALOG_PCIE3_PHY_PROTOCOL1_2_CTRL   (0x0014)
+
+/* REG_ANLG_PHY_PCIE3_ANALOG_PCIE3_PHY_COMMON_CTRL */
+
+#define BIT_ANLG_PHY_PCIE3_UPCS_PIPE_CONFIG(x)             (((x) & 0xFFFF) << 13)
+#define BIT_ANLG_PHY_PCIE3_PHY_RTUNE_REQ                   BIT(12)
+#define BIT_ANLG_PHY_PCIE3_PHY_RTUNE_ACK                   BIT(11)
+#define BIT_ANLG_PHY_PCIE3_PHY_RX0_TERM_ACDC               BIT(10)
+#define BIT_ANLG_PHY_PCIE3_PHY_EXT_CTRL_SEL                BIT(9)
+#define BIT_ANLG_PHY_PCIE3_PHY0_TEST_FLYOVER_EN            BIT(8)
+#define BIT_ANLG_PHY_PCIE3_PHY0_TEST_STOP_CLK_EN           BIT(7)
+#define BIT_ANLG_PHY_PCIE3_PHY0_TEST_TX_REF_CLK_EN         BIT(6)
+#define BIT_ANLG_PHY_PCIE3_PHY_TEST_BURNIN                 BIT(5)
+#define BIT_ANLG_PHY_PCIE3_PHY_TEST_POWERDOWN              BIT(4)
+#define BIT_ANLG_PHY_PCIE3_PHY_LANE0_RX2TX_PAR_LB_EN       BIT(3)
+#define BIT_ANLG_PHY_PCIE3_EXT_PCLK_REQ                    BIT(2)
+#define BIT_ANLG_PHY_PCIE3_PHY0_REF_REPEAT_CLK_EN          BIT(1)
+#define BIT_ANLG_PHY_PCIE3_PHY_REF_USE_PAD                 BIT(0)
+
+/* REG_ANLG_PHY_PCIE3_ANALOG_PCIE3_PHY_APB_MPLL_PMU_CTRL */
+
+#define BIT_ANLG_PHY_PCIE3_PHY0_PCS_PWR_EN                 BIT(9)
+#define BIT_ANLG_PHY_PCIE3_PHY_LANE0_POWER_PRESENT         BIT(8)
+#define BIT_ANLG_PHY_PCIE3_UPCS_PWR_EN                     BIT(7)
+#define BIT_ANLG_PHY_PCIE3_PHY0_MPLLB_SSC_EN               BIT(6)
+#define BIT_ANLG_PHY_PCIE3_PHY0_MPLLB_STATE                BIT(5)
+#define BIT_ANLG_PHY_PCIE3_PHY0_MPLLB_FORCE_EN             BIT(4)
+#define BIT_ANLG_PHY_PCIE3_PHY0_MPLLA_SSC_EN               BIT(3)
+#define BIT_ANLG_PHY_PCIE3_PHY0_MPLLA_STATE                BIT(2)
+#define BIT_ANLG_PHY_PCIE3_PHY0_MPLLA_FORCE_EN             BIT(1)
+#define BIT_ANLG_PHY_PCIE3_PHY0_CR_PARA_SEL                BIT(0)
+
+/* REG_ANLG_PHY_PCIE3_ANALOG_PCIE3_PHY_PIPE_SRAM_CTRL */
+
+#define BIT_ANLG_PHY_PCIE3_PHY0_SRAM_INIT_DONE             BIT(18)
+#define BIT_ANLG_PHY_PCIE3_PHY0_SRAM_EXT_LD_DONE           BIT(17)
+#define BIT_ANLG_PHY_PCIE3_PHY0_SRAM_BYPASS                BIT(16)
+#define BIT_ANLG_PHY_PCIE3_PIPE_TX0_ONES_ZEROS             BIT(15)
+#define BIT_ANLG_PHY_PCIE3_PIPE_TX0_PATTERN(x)             (((x) & 0x3) << 13)
+#define BIT_ANLG_PHY_PCIE3_PIPE_RX0_TERMINATION            BIT(12)
+#define BIT_ANLG_PHY_PCIE3_PIPE_RX0_SRIS_MODE_EN           BIT(11)
+#define BIT_ANLG_PHY_PCIE3_PIPE_RX0_EQ_TRAINING            BIT(10)
+#define BIT_ANLG_PHY_PCIE3_PIPE_LANE0_TX2RX_LOOPBK(x)      (((x) & 0x3) << 8)
+#define BIT_ANLG_PHY_PCIE3_PIPE_LANE0_PROTOCOL(x)          (((x) & 0x3) << 6)
+#define BIT_ANLG_PHY_PCIE3_PIPE_LANE0_PHY_SRC_SEL(x)       (((x) & 0x3) << 4)
+#define BIT_ANLG_PHY_PCIE3_PIPE_LANE0_LINK_NUM(x)          (((x) & 0xF))
+
+/* REG_ANLG_PHY_PCIE3_ANALOG_PCIE3_PHY_PROTOCOL0_CTRL0 */
+
+#define BIT_ANLG_PHY_PCIE3_PROTOCOL0_EXT_TX_IBOOST_LVL(x)  (((x) & 0xF) << 23)
+#define BIT_ANLG_PHY_PCIE3_PROTOCOL0_EXT_TX_EQ_MAIN_G1(x)  (((x) & 0x1F) << 18)
+#define BIT_ANLG_PHY_PCIE3_PROTOCOL0_EXT_TX_EQ_MAIN_G2(x)  (((x) & 0x1F) << 13)
+#define BIT_ANLG_PHY_PCIE3_PROTOCOL0_EXT_TX_EQ_MAIN_G3(x)  (((x) & 0x1F) << 8)
+#define BIT_ANLG_PHY_PCIE3_PROTOCOL0_EXT_TX_EQ_POST_G1(x)  (((x) & 0xF) << 4)
+#define BIT_ANLG_PHY_PCIE3_PROTOCOL0_EXT_TX_EQ_POST_G2(x)  (((x) & 0xF))
+
+/* REG_ANLG_PHY_PCIE3_ANALOG_PCIE3_PHY_PROTOCOL0_CTRL1 */
+
+#define BIT_ANLG_PHY_PCIE3_PROTOCOL0_EXT_REG(x)            (((x) & 0xFFFF))
+
+/* REG_ANLG_PHY_PCIE3_ANALOG_PCIE3_PHY_PROTOCOL1_2_CTRL */
+
+#define BIT_ANLG_PHY_PCIE3_PROTOCOL1_EXT_REG(x)            (((x) & 0xFFFF) << 16)
+#define BIT_ANLG_PHY_PCIE3_PROTOCOL2_EXT_REG(x)            (((x) & 0xFFFF))
+
+
+#endif /* ANLG_PHY_PCIE3_H */
+
+

@@ -1,0 +1,38 @@
+Spreadtrum scproc_pubcp bindings
+
+Required properties:
+- compatible:
+	"sprd,scproc" for sp9830/sp9832/sp9838 SoCs
+	"sprd,scproc_pubcp" for sp9850/sp9860 SoCs
+- sprd,name: used to generate the name of the directory in the proc file system.
+- sprd,ctrl-reg: register offset for controlling CP start.
+- sprd,ctrl-mask: corresponding control register mask.
+- sprd,ctrl-type: control register type(AON_APB or PMU_APB).
+- reg: address range of cp runtime region.
+- #address-cells: must be 1.
+- #size-cells: must be 1.
+- ranges: child node relative to the address range of the parent node.
+
+ChildNode required properties:
+- cproc,name: used to generate the name of the file in the proc file system.
+- reg: address range.
+
+Example:
+
+scproc@080000 {
+	compatible = "sprd,scproc_pubcp";
+	sprd,name = "pmic";
+	sprd,syscon-ap-apb = <&aon_apb_controller>;
+	sprd,syscon-ap-pmu = <&pmu_apb_controller>;
+	sprd,ctrl-reg = <0xff 0xff 0xc4 0xff>;
+	sprd,ctrl-mask = <0x400 0x800000 0x200002 0x1>;
+	sprd,ctrl-type = <0x0 0x1 0x1 0x1>;
+	reg = <0 0x80000 0 0x40000>;
+	#address-cells = <1>;
+	#size-cells = <1>;
+	ranges = <0x0 0x0 0x80000 0x40000>;
+	pm_sys@0 {
+		cproc,name = "pm_sys";
+		reg = <0x0 0x40000>; /* <pmsys_addr size> */
+	};
+};

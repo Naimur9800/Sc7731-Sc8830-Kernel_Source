@@ -1,0 +1,22 @@
+Spreadtrum sipx bindings
+
+Required properties:
+- compatible: must be "sprd,sipx".
+- sprd,name: the name of the associated spipe device.
+- sprd,dst: communication with the processor ID.
+- sprd,dl-pool: used to configure the size of dl-pool.
+- sprd,dl-ack-pool: used to configure the size of dl-ack-pool.
+- sprd,ul-pool: used to configure the size of ul-pool.
+- sprd,ul-ack-pool: used to configure the size of ul-ack-pool.
+
+Example:
+
+sipx-lte {
+	compatible = "sprd,sipx";
+	sprd,name = "sipx_lte";
+	sprd,dst = <5>;
+	sprd,dl-pool = <1024>;
+	sprd,dl-ack-pool = <512>;
+	sprd,ul-pool = <1024>;
+	sprd,ul-ack-pool = <1024>;
+};

@@ -1,0 +1,33 @@
+Binding for ncp6335d regulators
+
+Required properties:
+  - compatible: "onnn,ncp6335d-regulator"
+  - reg: I2C address
+  - onnn,vsel: set Default OUT voltage and dcdc mode
+  - onnn,slew-rate-ns: output voltage will decrease in equidistant steps per defined time period
+  - onnn,discharge-enable: this feature can be easily disabled or enabled with DISCHG bit in PGOOD register
+  - onnn,step-size: raised or decrease steps of voltage
+  - onnn,min-slew-ns: smallest time period may set
+  - onnn,max-slew-ns: largest time period may set
+  - regulator-min-microvolt: smallest output voltage may set
+  - regulator-max-microvolt: largest output voltage may set
+  - regulator-always-on: boolean, regulator should never be disabled
+  - onnn,min-setpoint: base output voltage
+
+Example:
+
+	ext_pmic: ncp6335d-regulator@1c {
+		compatible = "onnn,ncp6335d-regulator";
+		reg = <0x1c>;
+		onnn,vsel = <0>;
+		onnn,slew-rate-ns = <2666>;
+		onnn,discharge-enable;
+		onnn,step-size = <6250>;
+		onnn,min-slew-ns = <333>;
+		onnn,max-slew-ns = <2666>;
+		regulator-min-microvolt = <850000>;
+		regulator-max-microvolt = <1350000>;
+		regulator-always-on;
+		onnn,min-setpoint = <600000>;
+	};
+

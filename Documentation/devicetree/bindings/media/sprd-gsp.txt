@@ -1,0 +1,46 @@
+* Spreadtrum Graphic Signal Processor
+
+Required properties:
+- compatible: shall be one of the follows:
+              "sprd,gsp-core", for gsp with only one core,such as sc9830, sc9832;
+              "sprd,gsp-core0", for a core of gsp is the first one,such as spwhale;
+              "sprd,gsp-core1", for a core of gsp is the second one,such as spwhale;
+- reg: physical base address of the controller and length of memory mapped region.
+- core-id: the core number.
+- kcfg-num: indicate how many kcfgs this core possess.
+- real-time: figure out whether core kthread priority is real-time.
+- map-64-bit: indicate whether gsp core must need iommu because of 64-bit environment 
+- interrupts: gsp interrupt specifier.
+- sprd,syscon-ap-ahb: ap-ahb bus node, used to get gsp status
+- sprd,syscon-aon-apb: AON-APB bus node, used to get gsp status
+- clock-names: List of clock input name strings sorted in the same
+		order as the clocks property.  Consumers drivers
+		will use clock-names to match clock input names
+		with clocks specifiers.
+- clocks: The freq of source clk connected to gsp.
+
+
+Optional properties:
+-
+
+Examples:
+			gsp_core0: gsp@20a00000 {
+				compatible = "sprd,gsp-core";
+				reg = <0x20a00000 0x1000>;
+				core-id = <0>;
+				kcfg-num = <8>;
+				real-time;
+				map-to-64bit;
+				interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_HIGH>;
+				iommus = <&iommu_gsp>;
+				sprd,sys-ap-ahb = <&ap_ahb_controller>;
+				sprd,sys-aon-apb = <&aon_apb_controller>;
+				clock-names = "clk_gsp",
+						   "clk_gsp_parent",
+						   "clk_emc_gsp",
+						   "clk_gsp_eb";
+				clocks = <&clk_gsp>,
+						<&clk_twpll_256m>,
+						<&clk_aon_apb_gate1 13>,
+						<&clk_ap_ahb_gates 3>;
+			};

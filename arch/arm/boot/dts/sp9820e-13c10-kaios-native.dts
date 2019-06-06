@@ -1,0 +1,24 @@
+/*
+ * Spreadtrum sharkle sp9820e KaiOS board DTS file
+ *
+ * Copyright (C) 2017, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#include "sp9820e-13c10-native.dts"
+
+/ {
+	model = "Spreadtrum SP9820E-13C10-K-NATIVE Board";
+
+	reserved-memory {
+		tos_reserved: tos-mem@8e100000{
+			reg = <0x8e100000 0x00500000>;
+		};
+
+		/* 400k for tui before fb_reserved */
+		tui_reserved: tui_mem@8fada000{
+			reg = <0x8fada000 0x00064000>;
+		};
+	};
+};

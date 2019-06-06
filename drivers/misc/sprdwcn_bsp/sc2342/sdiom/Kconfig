@@ -1,0 +1,7 @@
+config SDIOM
+	depends on MMC && MARLIN2
+	tristate "Spreadtrum SDIOM Support"
+	help
+		Enable this module for Spreadtrum Marlin2 SDIO Support.
+		Please insmod this module before any other WCN subsystems.
+		Thanks.

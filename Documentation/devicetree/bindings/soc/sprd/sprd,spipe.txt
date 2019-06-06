@@ -1,0 +1,23 @@
+Spreadtrum spipe bindings
+
+Required properties:
+- compatible: must be "sprd,spipe".
+- sprd,name: the name of the associated spipe device.
+- sprd,dst: communication with the processor ID.
+- sprd,channel: the channel of the associated sbuf.
+- sprd,size-rxbuf: the size of the ring buffer for receiving data.
+- sprd,size-txbuf: the size of the ring buffer for sending data.
+- sprd,sipc-name: which SIPC device is used.
+
+Example:
+
+stty-lte {
+	compatible = "sprd,spipe";
+	sprd,name = "stty_lte";
+	sprd,dst = <5>;
+	sprd,channel = <6>;
+	sprd,ringnr = <32>;
+	sprd,size-rxbuf = <0x0800>; /* 2*1024*/
+	sprd,size-txbuf = <0x0800>; /* 2*1024 */
+	sprd,sipc-name = "sipc0";
+};

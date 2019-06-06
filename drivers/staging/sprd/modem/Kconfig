@@ -1,0 +1,13 @@
+
+source "drivers/staging/sprd/modem/mailbox/Kconfig"
+
+source "drivers/staging/sprd/modem/sipc/Kconfig"
+
+source "drivers/staging/sprd/modem/cproc/Kconfig"
+
+source "drivers/staging/sprd/modem/modem_control/Kconfig"
+
+source "drivers/staging/sprd/modem/iq/Kconfig"
+
+source "drivers/staging/sprd/modem/debug_log/Kconfig"
+

@@ -1,0 +1,27 @@
+SPRD memdisk Driver
+
+sprd memdisk driver use a block of DDR memory as a disk. we can load the
+android image to this disk when mmc driver is not ready, for example in
+vdk and FPGA platform.
+
+Required properties:
+- compatible: must be "sprd,memdisk"
+- memory-region: indicates the phandle of reserved memory used as disk
+
+Example for iwhale2 vdk:
+
+reserved-memory {
+	#address-cells = <2>;
+	#size-cells = <2>;
+	ranges;
+
+	memdisk_reserved: memdisk@10000000 {
+			  reg = <0x0 0x10000000 0x0 0x23c34600>, /* system */
+			        <0x0 0x08000000 0x0 0x8000000>; /* userdata */
+	};
+};
+
+sprd_memdisk {
+	compatible = "sprd,memdisk";
+	memory-region = <&memdisk_reserved>;
+};

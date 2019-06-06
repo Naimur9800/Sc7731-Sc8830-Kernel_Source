@@ -1,0 +1,7 @@
+
+config DSI_CTRL_R1P0
+	depends on PHY_MEGACORE_SPRD
+	bool "Enable dsi ctrl r1p0 driver for spreadtrum"
+	help
+	  This driver implements dsi ctrl r1p0 driver to config spreadtrum
+	  dsi ctrl r1p0 support.

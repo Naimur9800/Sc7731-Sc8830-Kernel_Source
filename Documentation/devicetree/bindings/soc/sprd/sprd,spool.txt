@@ -1,0 +1,24 @@
+Spreadtrum spool bindings
+
+Required properties:
+- compatible: must be "sprd,spool".
+- sprd,name: the name of the associated spool device.
+- sprd,dst: communication with the processor ID.
+- sprd,channel: the channel of the associated sblock.
+- sprd,tx-blksize: the size of the tx-block buffer for sending data.
+- sprd,tx-blknum: the number of the tx-block buffers.
+- sprd,rx-blksize: the size of the rx-block buffer for receiving data.
+- sprd,rx-blknum: the size of the rx-block buffers.
+
+Example:
+
+slog_lte {
+	compatible = "sprd,spool";
+	sprd,name = "slog_lte";
+	sprd,dst = <5>;
+	sprd,channel = <5>;
+	sprd,tx-blksize = <0>;
+	sprd,tx-blknum = <0>;
+	sprd,rx-blksize = <0x10000>; /* 64k*/
+	sprd,rx-blknum = <4>;
+};

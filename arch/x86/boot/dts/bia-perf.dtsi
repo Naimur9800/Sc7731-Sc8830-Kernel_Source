@@ -1,0 +1,67 @@
+/* Support for performance management features of the SPRD iSoC */
+
+/ {
+	soc {
+		performance-settings {
+			compatible = "sprd,bia-performance-settings";
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			perf-units {
+				aunit@0 {
+					name = "aunit";
+					port = <0x0>;
+							/*reg	mask	value*/
+					reg-msk-val = <0x18 0x007fffff 0x007fffff
+						0x20 0x000001ff 0x00000001
+						0x21 0x80000100 0x80000100
+						0xc0 0x0000000f 0x00000004>;
+				};
+				tunit@2 {
+					name = "tunit";
+					port = <0x2>;
+					reg-msk-val = </*0x3 0x00010400 0x00000400*/
+						0x4 0x0000001e 0x0000000c
+						0x5 0x1fffffff 0x1fffffff>;
+				};
+				bunit@3 {
+					name = "bunit";
+					port = <0x3>;
+					reg-msk-val = <0x07 0x0000ffff 0x0
+						0x08 0x01ffffff 0x0
+						0x09 0x01ffffff 0x003ffffc
+						0x0a 0x000002ff 0x00000080
+						0x0b 0x3f3f3f3f 0x1f1f1f1f
+						0x0c 0x3f3f3f3f 0x1f1f1f1f
+						0x0d 0x3f3f3f3f 0x1f1f1f1f
+						0x0e 0x3f3f3f3f 0x1f1f1f1f
+						0x28 0x000001c0 0x000001c0
+						0x3d 0x0000180f 0x0000180f>;
+				};
+				punit@4 {
+					name = "punit";
+					port = <0x4>;
+				};
+				cunit@8 {
+					name = "cunit";
+					port = <0x8>;
+					reg-msk-val = <0x43 0x000500ff 0x00050008>;
+				};
+				iosf2ocp@14 {
+					name = "iosf2ocp";
+					port = <0x14>;
+					reg-msk-val = <0x10 0x00000001 0x1>;
+				};
+				/* move to sram. */
+				/*
+				pmi2axi@1b {
+					name = "pmi2axi";
+					port = <0x1b>;
+					reg-msk-val = <0x0 0x00000014 0x00000014
+						0x1 0x00010000 0x00010000>;
+				};
+				*/
+			};
+		};
+	};
+};

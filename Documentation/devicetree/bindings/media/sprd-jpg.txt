@@ -1,0 +1,29 @@
+* Spreadtrum JPEG compress and decompress Processing Engine
+
+Required properties:
+- compatible: Should be "sprd,jpg".
+- reg: physical base address of the controller and length of memory mapped region.
+- interrupts: JPG interrupt specifier.
+- sprd,syscon-aon-apb: AON-APB bus node, used to get JPG status
+- sprd,syscon-mm-ahb: mm-ahb bus node, used to get JPG status
+- clock-names:	List of clock input name strings sorted in the same
+		order as the clocks property.  Consumers drivers
+		will use clock-names to match clock input names
+		with clocks specifiers.
+- clocks: The freq of source clk connected to JPG.
+
+
+Optional properties:
+-
+
+Examples:
+	jpg: jpeg-codec@0x60b00000{
+                compatible = "sprd,jpg";
+                reg = <0 0x60b00000 0 0x8000>;
+                interrupts = <0 42 0x0>;
+		sprd,syscon-aon-apb = <&aon_apb_controller>;
+		sprd,syscon-mm-ahb = <&mm_ahb_controller>;
+                clock-names = "clk_mm_i","clk_jpg";
+                clocks = <&clk_aon_apb_gates0 25>, <&clk_jpg>;
+            };
+

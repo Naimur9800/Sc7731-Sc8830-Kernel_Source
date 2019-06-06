@@ -1,0 +1,211 @@
+/*
+ * Spreadtrum Sharkle Series SoC Clock DTS file
+ *
+ * Copyright (C) 2017, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+&soc {
+	ext_26m: ext-26m {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <26000000>;
+		clock-output-names = "ext_26m";
+	};
+
+	ext_13m: ext-13m {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <13000000>;
+		clock-output-names = "ext_13m";
+	};
+
+	ext_6m5: ext-6m5 {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <6500000>;
+		clock-output-names = "ext_6m5";
+	};
+
+	ext_4m3: ext-4m3 {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <4300000>;
+		clock-output-names = "ext_4m3";
+	};
+
+	ext_4m: ext-4m {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <4000000>;
+		clock-output-names = "ext_4m";
+	};
+
+	ext_250k: ext-250k {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <250000>;
+		clock-output-names = "ext_250k";
+	};
+
+	ext_32k: ext-32k {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <32768>;
+		clock-output-names = "ext_32k";
+	};
+
+	ext_26m_rf1: ext-26m-rf1 {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <26000000>;
+		clock-output-names = "ext_26m_rf1";
+	};
+
+	ext_1m: ext-1m {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <1000000>;
+		clock-output-names = "ext_1m";
+	};
+
+	ext_2m: ext-2m {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <2000000>;
+		clock-output-names = "ext_2m";
+	};
+
+	ext_rc0_4m: ext-rc0-4m {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <4000000>;
+		clock-output-names = "ext_rc0_4m";
+	};
+
+	clk_pad: clk-pad {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <64000000>;
+		clock-output-names = "clk_pad";
+	};
+
+	/* ap ahb gates */
+	clk_ap_ahb_gates0: clk@20e00000 {
+		compatible = "sprd,sc1000-gates-clock";
+		#clock-cells = <1>;
+		reg = <0x0 0x20e00000 0x0 0x3000>;
+		sprd,gates-msk = <0xf8000ff0>;
+		clocks = <&ext_26m>;
+		clock-output-names = "otg_eb", "dma_eb", "ce_eb",
+				     "nandc_eb", "sdio0_eb", "sdio1_eb",
+				     "sdio2_eb", "emmc_eb", "emmc_32k_eb",
+				     "sdio0_32k_eb", "sdio1_32k_eb",
+				     "sdio2_32k_eb", "nandc_26m_eb";
+	};
+
+	/* Aon Apb Gates */
+	clk_aon_apb_gates0: clk@402e0000 {
+		compatible = "sprd,sc1000-gates-clock";
+		#clock-cells = <1>;
+		reg = <0x0 0x402e0000 0x0 0x3000>;
+		sprd,gates-msk = <0xf7ffffff>;
+		clocks = <&ext_26m>;
+		clock-output-names = "adc_eb", "fm_eb", "tpc_eb",
+				     "gpio_eb", "pwm0_eb", "pwm1_eb",
+				     "pwm2_eb", "pwm3_eb", "kpd_eb",
+				     "aon_syst_eb", "ap_syst_eb", "aon_tmr_eb",
+				     "ap_tmr0_eb", "efuse_eb", "eic_eb",
+				     "intc_eb", "adi_eb", "audif_eb",
+				     "aud_eb", "vbc_eb", "pin_eb",
+				     "ipi_eb", "splk_eb", "mspi_eb",
+				     "ap_wdg_eb", "mm_eb", "aon_apb_ckg_eb",
+				     "cs53_ts0_eb", "ca53_ts1_eb", "ca53_dap_eb",
+				     "i2c_eb";
+	};
+
+	clk_aon_apb_gates1: clk@402e0004 {
+		compatible = "sprd,sc1000-gates-clock";
+		#clock-cells = <1>;
+		reg = <0x0 0x402e0004 0x0 0x3000>;
+		sprd,gates-msk = <0xfa7e7fbf>;
+		clocks = <&ext_26m>;
+		clock-output-names = "pmu_eb", "thm_eb", "aux0_eb",
+				     "aux1_eb", "aux2_eb", "probe_eb",
+				     "clk_emc_ref_eb", "ca53_wdg_eb",
+				     "ap_tmr1_eb", "ap_tmr2_eb", "disp_emc_eb",
+				     "zip_emc_eb", "gsp_emc_eb", "mm_vsp_eb",
+				     "mdar_eb", "rtc4m0_cal_eb",
+				     "rtc4m1_cal_eb", "djtag_eb", "mbox_eb",
+				     "aon_dma_eb", "aon_apb_def_eb", "orp_jtag_eb",
+				     "dbg_eb", "dbg_emc_eb", "cross_trig_eb",
+				     "serdes_dphy_eb";
+	};
+
+	clk_aon_apb_rtc_gates: clk@402e0010 {
+		compatible = "sprd,sc1000-gates-clock";
+		#clock-cells = <1>;
+		reg = <0x0 0x402e0010 0x0 0x3000>;
+		sprd,gates-msk = <0x7ffff>;
+		clocks = <&ext_26m>;
+		clock-output-names = "arch_rtc_eb", "kpb_rtc_eb",
+				     "aon_syst_rtc_eb", "ap_syst_rtc_eb",
+				     "aon_tmr_rtc_eb","ap_tmr0_rtc_eb",
+				     "eic_rtc_eb", "eic_rtcdv5_eb",
+				     "ap_wdg_rtc_eb", "ca53_wdg_rtc_eb",
+				     "thm_rtc_eb", "athma_rtc_eb",
+				     "gthma_rtc_eb", "athma_rtc_a_en",
+				     "gthma_rtc_a_en", "ap_trm1_rtc_eb",
+				     "ap_tmr2_rtc_eb", "dxco_lc_rtc_eb",
+				     "bb_cal_rtc_eb";
+	};
+
+	clk_aon_top_gates: clk@402e0050 {
+		compatible = "sprd,sc1000-gates-clock";
+		#clock-cells = <1>;
+		reg = <0x0 0x402e0050 0x0 0x3000>;
+		sprd,gates-msk = <0x1fffd>;
+		clocks = <&ext_26m>;
+		clock-output-names = "gpu_eb", "disp_eb", "mm_emc_eb",
+				     "mm_ahb_eb", "sensor2_eb", "dcam_if_eb",
+				     "isp_eb", "jpg_eb", "cpp_eb",
+				     "power_cpu_eb", "hw_i2c_eb",
+				     "sensor0_eb", "sensor1_eb",
+				     "mm_vsp_emc_eb", "mm_vsp_ahb_eb",
+				     "vsp_eb";
+	};
+
+	clk_aon_apb_gates2: clk@402e00b0 {
+		compatible = "sprd,sc1000-gates-clock";
+		#clock-cells = <1>;
+		reg = <0x0 0x402e00b0 0x0 0x3000>;
+		sprd,gates-msk = <0x1fffefb0>;
+		clocks = <&ext_26m>;
+		clock-output-names = "cssys_eb", "dmc_eb", "rosc_eb",
+				     "s_d_cfg_eb", "s_d_ref_eb",
+				     "b_dma_eb", "anlg_eb", "anlg_apb_eb",
+				     "bsmtmr_eb", "ap_axi_eb", "ap_intc0_eb",
+				     "ap_intc1_eb", "ap_intc2_eb",
+				     "ap_intc3_eb", "ap_intc4_eb",
+				     "ap_intc5_eb", "scc_eb", "dphy_cfg_eb",
+				     "dphy_ref_eb", "cphy_cfg_eb",
+				     "otg_ref_eb", "serdes_eb",
+				     "aon_ap_emc_eb";
+	};
+
+	/* Ap Apb getes */
+	clk_ap_apb_gates: clk@71300000 {
+		compatible = "sprd,sc1000-gates-clock";
+		#clock-cells = <1>;
+		reg = <0x0 0x71300000 0x0 0x3000>;
+		sprd,gates-msk = <0x3fff7f>;
+		clocks = <&ext_26m>;
+		clock-output-names = "sim0_eb", "iis0_eb", "iis1_eb",
+				     "iis2_eb", "spi0_eb", "spi1_eb",
+				     "spi2_eb", "i2c0_eb", "i2c1_eb",
+				     "i2c2_eb", "i2c3_eb", "i2c4_eb",
+				     "uart0_eb", "uart1_eb", "uart2_eb",
+				     "uart3_eb", "uart4_eb", "sim0_32k_eb",
+				     "spi3_eb", "i2c5_eb", "i2c6_eb";
+	};
+};

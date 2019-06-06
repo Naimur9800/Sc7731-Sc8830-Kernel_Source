@@ -1,0 +1,32 @@
+Spreadtrum Sdio Device
+
+Required properties:
+
+- compatible: should be "sprd,marlin"
+- bt-wakeup-ap-gpios: marlin bt wake up baseband chip
+- ap-wakeup-cp-gpios: ap wake up marlin chip
+- wifi-wakeup-ap-gpios: marlin req ap sdio to read data
+- cp-reset-gpios: marlin reset pin
+- vddcon-supply: marlin VDD voltage
+- vddwifipa-supply: marlin wifi pa VDD voltage
+- clock-names:
+		The clock-names must have "clk_aux0".
+		The clk_aux0 for spreadtrum clock-name should contain clk_aux0
+		clock node.
+- clocks: The freq of source clk connected to clk_aux0.
+- sdhci-name: sdio host
+
+Example:
+
+sprd-marlin {
+	compatible = "sprd,marlin";
+	bt-wakeup-ap-gpios = <&ap_gpio 97 0>;
+	ap-wakeup-cp-gpios = <&ap_gpio 132 0>;
+	wifi-wakeup-ap-gpios = <&ap_gpio 133 0>;
+	cp-reset-gpios = <&ap_gpio 122 0>;
+	vddcon-supply = <&vddcon>;
+	vddwifipa-supply = <&vddwifipa>;
+	clk-name = "clk_aux0";
+	clock	= <&ext_32k>;
+	sdhci-name = "sdio_wifi";
+};

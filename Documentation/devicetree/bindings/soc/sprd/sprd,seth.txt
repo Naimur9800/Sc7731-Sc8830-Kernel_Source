@@ -1,0 +1,20 @@
+Spreadtrum seth bindings
+
+Required properties:
+- compatible: must be "sprd,seth".
+- sprd,name: the name of the associated seth device.
+- sprd,dst: communication with the processor ID.
+- sprd,channel: the channel of the associated sbuf.
+- sprd,blknum: the number of the sblock.
+- sprd,poolsize: the size of the block for receiving data.
+
+Example:
+
+seth0-lte {
+	compatible = "sprd,seth";
+	sprd,name = "seth_lte0";
+	sprd,dst = <5>;
+	sprd,channel = <7>;
+	sprd,blknum = <256>;
+	sprd,poolsize = <16>;
+};

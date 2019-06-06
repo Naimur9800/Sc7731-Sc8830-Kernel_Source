@@ -1,0 +1,95 @@
+/*
+ * This file describe the Intel BIA (Basic Intel Architecture) core.
+ * To avoid the repeat from each board descriptions, we abstract this part
+ * to a stand-alone DTS file
+ */
+
+/ {
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		cpu@0 {
+			device_type = "cpu";
+			compatible = "intel,bullhill";
+			reg = <0>;
+			intel,apic-id = <0>;
+		};
+
+		cpu@1 {
+			device_type = "cpu";
+			compatible = "intel,bullhill";
+			reg = <2>;
+			intel,apic-id = <2>;
+		};
+
+		cpu@2 {
+			device_type = "cpu";
+			compatible = "intel,bullhill";
+			reg = <4>;
+			intel,apic-id = <4>;
+		};
+
+		cpu@3 {
+			device_type = "cpu";
+			compatible = "intel,bullhill";
+			reg = <6>;
+			intel,apic-id = <6>;
+		};
+
+		cpu@4 {
+			device_type = "cpu";
+			compatible = "intel,bullhill";
+			reg = <8>;
+			intel,apic-id = <8>;
+		};
+
+		cpu@5 {
+			device_type = "cpu";
+			compatible = "intel,bullhill";
+			reg = <10>;
+			intel,apic-id = <10>;
+		};
+
+		cpu@6 {
+			device_type = "cpu";
+			compatible = "intel,bullhill";
+			reg = <12>;
+			intel,apic-id = <12>;
+		};
+
+		cpu@7 {
+			device_type = "cpu";
+			compatible = "intel,bullhill";
+			reg = <14>;
+			intel,apic-id = <14>;
+		};
+	};
+
+	soc {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		compatible = "simple-bus";
+		ranges;
+
+		pic: interrupt-controller@fec00000 {
+			#interrupt-cells = <2>;
+			compatible = "intel,x86-ioapic";
+			interrupt-controller;
+			reg = <0x0 0xfec00000 0x0 0x1000>;
+			/* actual nr_entries are read from IOAPIC register */
+			nr_entries = <152>;
+		};
+
+		lapic:interrupt-controller@fee00000{
+			compatible = "intel,x86-lapic";
+			reg = <0x0 0xfee00000 0x0 0x1000>;
+		};
+
+		timer@fed00000 {
+			compatible = "intel,x86-hpet";
+			reg = <0x0 0xfed00000 0x0 0x400>;
+		};
+	};
+};
+

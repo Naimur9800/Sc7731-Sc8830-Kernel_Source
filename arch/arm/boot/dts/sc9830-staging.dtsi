@@ -1,0 +1,21 @@
+/*
+ * Spreadtrum SC9830 staging board DTSI file
+ * These dt code has not been reviewed and temporarily used for
+ * working.
+ *
+ * Copyright (C) 2015, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+/ {
+	compatible = "sprd,sp9830a-5h10-ga1-staging", "sprd,sc9830";
+
+	aliases {
+		i2c0 = &i2c0;
+		i2c1 = &i2c1;
+		i2c2 = &i2c2;
+		i2c3 = &i2c3;
+		i2c4 = &i2c4;
+	};
+};

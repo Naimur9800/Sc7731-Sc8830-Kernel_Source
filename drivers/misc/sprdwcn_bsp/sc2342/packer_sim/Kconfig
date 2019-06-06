@@ -1,0 +1,6 @@
+config PACKER_SIMULATE
+        tristate "SDIO packer simulate"
+        default n
+        depends on MARLIN2_SOC
+        help
+          Simulate SDIO packer for test

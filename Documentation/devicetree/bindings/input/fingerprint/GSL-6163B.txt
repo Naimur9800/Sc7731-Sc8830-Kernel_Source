@@ -1,0 +1,25 @@
+*Silead fingerprint controller
+
+Required properties:
+- compatible: must be "silead,GSL-6163B"
+- reg: SPI address of the chip
+- spi-max-frequency: The maximum frequency this chip is able to handle
+- gpios: GPIO specification for RESET and INT pins
+
+Optional properties:
+- label: Descriptive name of the key.
+
+Example:
+spi0: spi@71400000{
+	/* ... */
+	fingerprint@0 {
+		compatible = "silead,GSL-6163B";
+		reg = <0x26>;
+                spi-max-frequency = <10000000>;
+                label = "fingerprint keys";
+		gpios = <&ap_gpio 145 0
+			&ap_gpio 144 0>;
+	};
+	/* ... */
+};
+

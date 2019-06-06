@@ -1,0 +1,37 @@
+Spreadtrum PCIe host bridge DT description
+
+Spreadtrum PCIe host controller is based on Designware PCI core.
+It shares common functions with PCIe Designware core driver and inherits
+common properties defined in
+Documentation/devicetree/bindings/pci/designware-pci.txt.
+
+Additional properties are described here:
+
+Required properties:
+- compatible: Should contain "sprd,pcie".
+- reg: Should contain dbi, config registers location and length.
+- reg-names: Must include the following entries:
+  "dbi": controller configuration registers;
+  "config": PCIe configuration space registers.
+
+Optional properties:
+- status: Either "ok" or "disabled".
+
+Example:
+	pcie0@20c00000 {
+		compatible = "sprd,pcie", "snps,dw-pcie";
+		reg = <0x0 0x20c00000 0x0 0x100000>,
+		      <0x3 0xffffe000 0x0 0x2000>;
+		reg-names = "dbi", "config";
+		#address-cells = <3>;
+		#size-cells = <2>;
+		device_type = "pci";
+		ranges = <0x43000000 0x0 0x00000000 0x2 0x80000000 0x1 0x77f00000>;
+		#interrupt-cells = <3>;
+		interrupts = <GIC_SPI 148 IRQ_TYPE_LEVEL_HIGH>;
+		bus-range = <0  15>;
+		num-lanes = <1>;
+		num-vectors = <256>;
+		num-viewport = <8>;
+		status = "okay";
+	};

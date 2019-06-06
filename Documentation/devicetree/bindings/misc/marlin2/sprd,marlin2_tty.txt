@@ -1,0 +1,13 @@
+Spreadtrum Marlin2 Bluetooth SDIO devices
+
+This node provides properties for controlling the Spreadtrum Bluetooth SDIO device.
+
+Required properties:
+
+ - compatible : Should be "sprd,mtty".
+
+Example:
+sprd-mtty {
+	compatible = "sprd,mtty";
+	sprd,name = "ttyM";
+};

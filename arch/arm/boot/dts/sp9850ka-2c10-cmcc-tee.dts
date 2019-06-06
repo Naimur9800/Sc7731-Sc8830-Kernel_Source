@@ -1,0 +1,72 @@
+/*
+ * Spreadtrum SP9850KA 2H10 CMCC TEE board DTS file
+ *
+ * Copyright (C) 2016-2017, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+#include "sp9850ka-2c10-cmcc.dts"
+
+/ {
+	model = "Spreadtrum SP9850KA-2C10-CMCC-TEE Board";
+
+	reserved-memory {
+		sml_reserved: sml-mem@94000000{
+			reg = <0x94000000 0x00100000>;
+		};
+
+		tos_reserved: tos-mem@94100000{
+			reg = <0x94100000 0x03f00000>;
+		};
+
+		tos_shm_reserved: sh-mem@98000000{
+			reg = <0x98000000 0x00100000>;
+		};
+	};
+
+	psci {
+		compatible = "arm,psci-1.0";
+		method = "smc";
+	};
+};
+
+&arch_timer {
+	interrupts = <GIC_PPI 14
+			(GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
+		     <GIC_PPI 10
+			(GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
+};
+
+&cpu0 {
+	enable-method = "psci";
+};
+
+&cpu1 {
+	enable-method = "psci";
+};
+
+&cpu2 {
+	enable-method = "psci";
+};
+
+&cpu3 {
+	enable-method = "psci";
+};
+
+&deep {
+	sprd,sys-base = <&ap_apb_controller>, <&ap_ahb_controller>,
+		<&pmu_apb_controller>, <&aon_apb_controller>;
+	sprd,sys-intc = <&intc0_controller>, <&intc1_controller>,
+		<&intc2_controller>, <&intc3_controller>,
+		<&aon_intc_controller>;
+	clocks = <&ext_26m>, <&clk_ap_top_axi>, <&clk_ap_ahb>, <&clk_ap_apb>,
+		<&clk_gsp>, <&clk_dispc0>, <&clk_dispc0_dpi>, <&clk_dphy_ref>,
+		<&clk_dphy_cfg>, <&clk_otg_ref>,
+		<&clk_ce_sefuse>, <&clk_ce_pub>, <&clk_ce_sec>,
+		<&clk_uart0>, <&clk_uart1>, <&clk_uart2>,
+		<&clk_uart3>, <&clk_uart4>, <&clk_i2c0>,
+		<&clk_i2c1>, <&clk_i2c2>, <&clk_i2c3>,
+		<&clk_i2c4>, <&clk_spi0>, <&clk_spi2>,
+		<&clk_iis0>, <&clk_iis1>, <&clk_iis2>,
+		<&clk_iis3>;
+};

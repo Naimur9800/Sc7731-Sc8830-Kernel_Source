@@ -1,0 +1,92 @@
+/*
+ * Spreadtrum SP9850KH zebu board DTS file
+ *
+ * Copyright (C) 2016, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+/dts-v1/;
+
+#include "sc9850khsmt.dtsi"
+#include "sp9850kh-common.dtsi"
+
+/ {
+	model = "Spreadtrum SP9850KHsmt zebu Board";
+
+	compatible = "sprd,sc9850khsmt-zebu";
+
+	sprd,sc-id = <9850 1 20000>;
+
+	aliases {
+		serial0 = &uart0;
+		serial1 = &uart1;
+		serial2 = &uart2;
+		serial3 = &uart3;
+	};
+
+	memory{
+		device_type = "memory";
+		reg = <0x0 0x80000000 0x1 0x0>;
+	};
+
+	chosen {
+		stdout-path = &uart0;
+		bootargs = "earlycon=sprd_serial,0x70000000,115200n8 console=ttyS0,115200n8 loglevel=8 androidboot.hardware=j1zebu memblock=debug bootmem_debug=1";
+		linux,initrd-start = <0x0 0x85500000>; /* this val will be changed by uboot  */
+		linux,initrd-end = <0x0 0x855a3212>; /* this val will be changed by uboot  */
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		memdisk_reserved: memdisk@100000000{
+			reg = <0x1 0x0 0x0 0x30000000>, /* system 768M*/
+				<0x1 0x30000000 0x0 0x40000000>, /* userdata 1024M*/
+				<0x1 0x70000000 0x0 0x10000000>; /* cache 256M*/
+		};
+	};
+
+	ion {
+		compatible = "sprd,ion";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		phys-offset = <0x80000000>;
+
+		heap@0 {
+			reg = <0>;
+			label = "system";
+			type = <0>;
+		};
+
+		heap@2 {
+			reg = <2>;
+			label = "carveout_overlay";
+			type = <2>;
+			memory-region = <&overlay_reserved>;
+		};
+
+		heap@3 {
+			reg = <3>;
+			label = "carveout_fb";
+			type = <2>;
+			memory-region = <&fb_reserved>;
+		};
+	};
+
+	sprd_memdisk {
+		compatible = "sprd,memdisk";
+		memory-region = <&memdisk_reserved>;
+	};
+
+};
+
+&dispc0 {
+	status = "okay";
+};
+
+&panel_if {
+	force-id = <0xffff>;
+};

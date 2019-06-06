@@ -1,0 +1,40 @@
+Spreadtrum PERF BUSMONITOR
+
+Required properties:
+- compatible: "sprd,bm-perf-<chip name>".
+	There will be different pub chanel for different Spreadtrum
+	SoC families. So we use chip name to compatible different SoC.
+	e.g. sprd,bm-perf-pike2; sprd,bm-perf-sharkl2
+- reg: Address range of performance busmonitor registers.
+- interrupt: Should contain the bus-monitor interrupt number.
+- reg-names: Reg names is corresponding to reg base address.If there is doulbe DDR,pub1 will be used.
+- sprd,syscon-aon-glb: For global aon apb controller compatible.
+- sprd,bm-dma: Performance busmonitor chanel to request DMA,different chips use different channel number.
+- dma-names: DMA name for performance busmonitor
+- dmas: Choose DMA chanel,this chanel should be available ,not used by others.
+Example:
+
+	pub {
+		compatible = "simple-bus";
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		bm_perf: bm-perf@30040000{
+			compatible = "sprd,bm-perf-pike2";
+			reg = <0x30040000 0x80000>,
+				<0 0>,
+				<0x40270000 0x10000>,
+				<0x300e0000 0x4>,
+				<0 0>;
+			interrupts = <GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>;
+			reg-names = "pub0","pub1","timer",
+					"pub0_glb","pub1_glb";
+			sprd,syscon-aon-glb =  <&aon_apb_controller>;
+			sprd,bm-dma = <11>;
+			dma-names = "bm_chn";
+			dmas = <&aon_dma 9>;
+		};
+	};
+
+

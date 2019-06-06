@@ -1,0 +1,133 @@
+Spreadtrum integrate Marlin and GNSS platform devices.
+
+This node provides properties for controlling
+the Spreadtrum integrate WCN device.
+
+Required properties:
+
+- compatible:
+	"sprd,integrate_marlin" for BT WIFI.
+	"sprd,integrate_gnss" for GNSS.
+	"sprd,wcn_internal_chip" for WCN.
+- sprd,name: used to generate the name of the directory in the proc
+	file system.
+- sprd,syscon-ap-apb: If ctrl-type is 0, the REG addr bases on ap-apb.
+- sprd,syscon-ap-pmu: If ctrl-type is 1, the REG addr bases on  ap-pmu.
+- sprd,syscon-ap-pub-apb: If ctrl-type is 2, the REG addr bases on pub-apb.
+- sprd,syscon-anlg_wrap_wcn: If ctrl-type is 3,
+                             the REG addr bases on anlg-wrap-wcn.
+- sprd,syscon-anlg_phy_g6: If ctrl-type is 3,
+                             the REG addr bases on anlg-phy-g6.
+- sprd,ctrl-probe-num: from ctrl-reg[0] to ctrl-reg[ctrl-probe-num - 1]
+		       need init in the driver probe stage
+- sprd,ctrl-reg: register offset for controlling BT-WIFI or GNSS start.
+- sprd,ctrl-mask: corresponding control register mask.
+- sprd,ctrl-value: the mask bits will be set to which value.
+- sprd,ctrl-rw-offset: Spreadtrum chipset some function REGs
+	read and write use different ADDR.
+- sprd,ctrl-us-delay: Spreadtrum chipset some function REGs setting
+	should be wait few time to do next operation.
+- sprd,ctrl-type: control register type
+                  (ap-apb or ap-pmu or pub-apb or anlg_wrap_wcn).
+- sprd,ctrl-shutdown-reg: Another group which used to shut down.
+- sprd,ctrl-shutdown-mask: corresponding control register mask.
+- sprd,ctrl-shutdown-value: the mask bits will be set to which value.
+- sprd,ctrl-shutdown-rw-offset: Spreadtrum chipset some function REGs
+- sprd,ctrl-shutdown-us-delay: Spreadtrum chipset some function REGs setting
+	should be wait few time to do next operation.
+sprd,ctrl-shutdown-type: control register type(ap-apb or ap-pmu or pub-apb).
+- reg: address range of BT-WIFI or GNSS runtime region.
+- sprd,file-name: The firmware file path.
+- sprd,file-name-ext: The firmware file path used by GNSS.
+- sprd,file-length: The firmware file size.
+
+Example:
+wcn_btwf: cpwcn@88000000 {
+	compatible = "sprd,integrate_marlin";
+	sprd,name = "wcn_btwf";
+	sprd,syscon-ap-apb = <&aon_apb_controller>;
+	sprd,syscon-ap-pmu = <&pmu_apb_controller>;
+	sprd,syscon-ap-pub-apb = <&pub_apb_controller>;
+	sprd,syscon-anlg-wrap-wcn = <&anlg_wrap_wcn_controller>;
+	sprd,syscon-anlg-phy-g6 = <&anlg_phy_g6_controller>;
+	sprd,ctrl-probe-num = <2>;
+	sprd,ctrl-reg = <0x1578 0x30a0 0x2100 0x157c 0x20b0 0x20cc>;
+	sprd,ctrl-mask = <0x03000000 0xffff 0x03000000
+						0x80 0x600 0x00080000>;
+	sprd,ctrl-value = <0x00000000 0x0808 0x03000000
+						0x80 0x600 0x00080000>;
+	sprd,ctrl-rw-offset = <0x1000 0x0 0x2000 0x1000 0x2000 0x2000>;
+	sprd,ctrl-us-delay = <10 10 10 10 10 10>;
+	sprd,ctrl-type = <0x0 0x2 0x1 0x0 0x1 0x1>;
+	sprd,ctrl-shutdown-reg = <0x257c>;
+	sprd,ctrl-shutdown-mask = <0x80>;
+	sprd,ctrl-shutdown-value = <0x80>;
+	sprd,ctrl-shutdown-rw-offset = <0x2000>;
+	sprd,ctrl-shutdown-us-delay = <10>;
+	sprd,ctrl-shutdown-type = <0x0>;
+	reg = <0x0 0x88000000 0x0 0x180000>;
+	sprd,file-name = "/dev/block/platform/soc/soc:ap-ahb/20600000.sdio/by-name/wcnmodem";
+	sprd,file-length=<0x180000>;
+};
+
+wcn_gnss: cpwcn@88300000 {
+	compatible = "sprd,integrate_gnss";
+	sprd,name = "wcn_gnss";
+	sprd,syscon-ap-apb = <&aon_apb_controller>;
+	sprd,syscon-ap-pmu = <&pmu_apb_controller>;
+	sprd,syscon-ap-pub-apb = <&pub_apb_controller>;
+	sprd,syscon-anlg-wrap-wcn = <&anlg_wrap_wcn_controller>;
+	sprd,syscon-anlg-phy-g6 = <&anlg_phy_g6_controller>;
+	sprd,ctrl-probe-num = <2>;
+	sprd,ctrl-reg = <0x1578 0x30a0 0x2100 0x157c 0x20b0 0x20cc>;
+	sprd,ctrl-mask = <0x03300000 0xffff 0x03000000
+			  0x40 0x800 0x00080000>;
+	sprd,ctrl-value = <0x00300000 0x0808 0x03000000
+			   0x40 0x800 0x00080000>;
+	sprd,ctrl-rw-offset = <0x1000 0x0 0x2000 0x1000 0x2000 0x2000>;
+	sprd,ctrl-us-delay = <10 10 10 10 10 10>;
+	sprd,ctrl-type = <0x0 0x2 0x1 0x0 0x1 0x1>;
+	sprd,ctrl-shutdown-reg = <0x257c>;
+	sprd,ctrl-shutdown-mask = <0x40>;
+	sprd,ctrl-shutdown-value = <0x40>;
+	sprd,ctrl-shutdown-rw-offset = <0x2000>;
+	sprd,ctrl-shutdown-us-delay = <10>;
+	sprd,ctrl-shutdown-type = <0x0>;
+	reg = <0x0 0x88300000 0x0 0x100000>;
+	sprd,file-name = "/dev/block/platform/soc/soc:ap-ahb/20600000.sdio/by-name/gpsgl";
+	sprd,file-name-ext = "/dev/block/platform/soc/soc:ap-ahb/20600000.sdio/by-name/gpsbd";
+	sprd,file-length=<0x100000>;
+}`;
+
+wcn_bt {
+	compatible = "sprd,bt-sharkle";
+	sprd,name = "ttyBT";
+	sprd,dst = <3>;
+	sprd,channel = <4>;
+	sprd,tx_bufid = <11>;
+	sprd,rx_bufid = <10>;
+};
+
+wcn_fm {
+	compatible = "sprd,fm-sharkle";
+	sprd,name = "fm";
+	sprd,dst = <3>;
+	sprd,tx_channel = <4>;
+	sprd,rx_channel = <4>;
+	sprd,tx_bufid = <14>;
+	sprd,rx_bufid = <13>;
+};
+
+gnss_common_ctl {
+	compatible = "sprd,gnss_common_ctl";
+	sprd,name = "gnss_common_ctl";
+};
+
+stty4gnss {
+	compatible = "sprd,stty4gnss";
+	sprd,name = "sttygnss";
+	sprd,dst = <4>;
+	sprd,channel = <4>;
+	sprd,bufid = <0>;
+};
+

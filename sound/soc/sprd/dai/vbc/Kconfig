@@ -1,0 +1,5 @@
+menu "SPRD VBC Dai Version"
+source "sound/soc/sprd/dai/vbc/r1p0v3/Kconfig"
+source "sound/soc/sprd/dai/vbc/r3p0/Kconfig"
+
+endmenu

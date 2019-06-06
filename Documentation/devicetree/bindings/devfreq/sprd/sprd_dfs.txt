@@ -1,0 +1,27 @@
+* Spreadtrum DDR DFS device
+
+The Spreadtrum DDR DFS device provides an interface to DFS core(cm4 or ARM&). 
+This file documents the properties used by the Spreadtrum DDR DFS devic
+
+Required properties:
+- compatible:
+ should be "sprd,dfs" for sharkl2/isharkl2/iwhale2/sharklj1/sharkle
+ "sprd,dfs_auto" for sharkl3 and later chips.
+- freq-num: frequency number can set by kernel.
+- sprd-scene: scene name which set by userspace.
+- sprd-freq: frequency for every sprd-scene.
+
+
+Optional properties:
+- overflow: the bandwith when frequency up to next level
+- underflow: the bandwith when frequency down to previous level
+
+Example:
+
+         scene-frequency {
+                 compatible = "sprd,dfs_auto";
+                 freq-num = <8>;
+                sprd-scene = "boost", "lcdon", "lcdoff", "camlow",
+                        "camhigh";
+                sprd-freq = <933 311 233 533 933>;
+

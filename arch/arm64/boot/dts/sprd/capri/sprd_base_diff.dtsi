@@ -1,0 +1,14 @@
+/*
+ * this file is ued to change sprd dtsi which can't be changed by overlay
+ * such as /delete-node/ /delete-property/ and alises
+ */
+
+#include "zte_lcd_ili9881c_mipi_skyworth_hd.dtsi"
+#include "zte_lcd_lead_st7703_cpt_6p26_hd.dtsi"
+&panel_if {
+	panel-drivers = <
+		&lcd_ili9881c_mipi_skyworth_hd_2
+		&lcd_st7703_mipi_lead_hd
+	>;
+};
+

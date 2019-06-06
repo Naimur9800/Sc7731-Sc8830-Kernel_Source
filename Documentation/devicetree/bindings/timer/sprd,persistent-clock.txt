@@ -1,0 +1,17 @@
+Spreadtrum persistent clock bindings
+
+Required properties:
+- compatible : this property should be set to :
+	"sprd,persistent-clock"
+
+- reg : Contains timer register address range (base address and length).
+
+- clock-frequency : The frequency of the general purpose timer in Hz.
+
+Example:
+
+aon_timer1: timer@40050020 {
+	compatible = "sprd,persistent-clock";
+	reg = <0x40050020 0x14>;
+	clock-frequency = <32768>;
+};

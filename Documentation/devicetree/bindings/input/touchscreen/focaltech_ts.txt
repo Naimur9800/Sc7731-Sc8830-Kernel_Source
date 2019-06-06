@@ -1,0 +1,40 @@
+* Focaltech ft5x0x touchscreen controller
+
+Required properties:
+- compatible: must be "focaltech,ft5x0x"
+- reg: I2C address of the chip
+- interrupt-parent: a phandle pointing to the interrupt controller
+                     serving the interrupt for this chip
+- interrupts:       interrupt specification for the touchdetect
+                     interrupt
+- reset-gpios: GPIO specification for the RESET input
+- touchscreen-size-x: horizontal resolution of touchscreen (in pixels)
+- touchscreen-size-y: vertical resolution of touchscreen (in pixels)
+- virtualkeys: the coordinate of the touchscreen's keys.
+		<X Y W H>, X: the x coordinate of the center of key region
+			   Y: the y coordinate of the center of key region
+			   W: the width of key region
+			   H: the height of key region
+
+Optional properties:
+- avdd-supply: Phandle to a regulator supply
+
+
+Example:
+i2c3: i2c@70800000 {
+	/* ... */
+	touchscreen-ft@38{
+		compatible = "focaltech,ft5x0x";
+		reg = <0x38>;
+		interrupt-parent = <&ap_gpio>;
+		interrupts = <144 IRQ_TYPE_EDGE_FALLING>;
+		reset-gpios = <&ap_gpio 145 0>;
+		avdd-supply = <&vdd28>;
+		virtualkeys = <580 1350 60 45>,
+				<360 1350 60 45>,
+				<160 1350 60 45>;
+		touchscreen-size-x = <720>;
+		touchscreen-size-y = <1280>;
+	};
+	/* ... */
+};

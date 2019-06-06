@@ -1,0 +1,121 @@
+/*
+ * Spreadtrum sharkle HAPS board DTS file
+ *
+ * Copyright (C) 2016-2017, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+/dts-v1/;
+
+#include "sc9835.dtsi"
+#include "sp9835-common.dtsi"
+
+/ {
+	model = "Spreadtrum SC9835 HAPS Board";
+
+	compatible = "sprd,sp9835-HAPS", "sprd,sc9835";
+
+	sprd,sc-id = <9000 1 0x20000>;
+
+	aliases {
+		serial1 = &uart1;
+	};
+
+	memory: memory@80000000 {
+		device_type = "memory";
+		reg = <0x0 0x80000000 0x1 0x00000000>;
+	};
+
+	chosen {
+		stdout-path = &uart1;
+		bootargs = "earlycon=sprd_serial,0x70100000,115200n8 console=ttyS1,115200n8 loglevel=8 init=/init root=/dev/ram0 rw androidboot.hardware=sp9835_haps";
+	};
+
+	ipi: interrupt-controller {
+		compatible = "android,CustomIPI";
+		#interrupt-cells = <1>;
+		interrupt-controller;
+	};
+
+	trusty {
+		compatible = "android,trusty-smc-v1";
+
+		irq {
+			compatible = "android,trusty-irq-v1";
+			interrupt-templates = <&ipi 0>,
+						<&gic 1 GIC_PPI 0>,
+						<&gic 1 GIC_SPI 0>;
+			interrupt-ranges = < 0  15 0>,
+						<16  31 1>,
+						<32 223 2>;
+		};
+
+		virtio {
+			compatible = "android,trusty-virtio-v1";
+		};
+
+		log {
+			compatible = "android,trusty-log-v1";
+		};
+	};
+
+	sprd-iq {
+		compatible = "sprd,iq";
+		sprd,region = <&iq_reserved>;
+		sprd,mapping-offs = <0x0>;
+	};
+};
+
+&sdio3 {
+	bus-width = <8>;
+	non-removable;
+	sprd,name = "sdio_emmc";
+	status = "okay";
+};
+
+&sprd_audio_codec_ana {
+	status = "okay";
+};
+
+&sound_vbc_r1p0v3_sprd_codec {
+	status = "okay";
+};
+
+&sound_sprd_ap_alliis {
+	status = "okay";
+};
+
+&pin_controller {
+	/* for sys iis0/wcn iis */
+	vbc_iis1_0: reg2-iis0-0 {};
+	ap_iis0_0: reg2-iis0-1 {};
+	tgdsp_iis0_0: reg3-iis0-2 {};
+	tgdsp_iis1_0: reg2-iis0-3 {};
+	pubcp_iis0_0: reg2-iis0-4 {};
+
+	/* for sys iis1 */
+	ap_iis0_1: reg3-iis1-0 {};
+	tgdsp_iis0_1: reg3-iis1-1 {};
+	tgdsp_iis1_1: reg3-iis1-2 {};
+	pubcp_iis0_1: reg3-iis1-3 {};
+	vbc_iis2_1: reg3-iis1-4 {};
+	vbc_iis3_1: reg3-iis1-5 {};
+};
+
+&i2c3 {
+	status = "okay";
+	adaptive-touchscreen@38 {
+		compatible = "adaptive-touchscreen";
+		reg = <0x38>;
+		gpios = <&ap_gpio 145 0
+			&ap_gpio 144 0>;
+		controller = "focaltech,FT5436";
+		virtualkeys = <580 60 1320 60 45
+				172 360 1320 60 45
+				158 600 1320 60 45>;
+		private-data {
+			a8 = /bits/ 8 <0x5A>;
+		};
+	};
+};
+

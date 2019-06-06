@@ -1,0 +1,29 @@
+Spreadtrum camera bindings
+
+Required properties:
+- compatible: should be one of:
+	"sprd,dcam-r3p0"
+	"sprd,cpp"
+	"sprd,csi-controller"
+	"sprd,mipi-csi-phy"
+	"sprd,sprd_scale"
+	"sprd,sprd_rotation"
+- reg: address range of dcam-r3p0 device.
+- interrupters: interrupt number used for dcam r3p0.
+- clocks: dcam r3p0 related clocks.
+- clock-names: dcam r3p0 related clock names.
+- sprd,isp: isp is a attribute of dcam r3p0.
+- sprd,dcam-count: dcam r3p0 device contains channel number.
+
+Example:
+
+dcam: dcam@60800000 {
+        compatible = "sprd,dcam-r3p0";
+        reg = <0x60800000 0x1000>;
+        interrupters = <GIC_SPI 45 IRQ_TYPE_LEVEL_HIGH>;
+        clocks = <&clk_ahb_mm_gates 0>, <&clk_aon_apb_gates0 25>;
+        clock-names = "dcam_eb", "clk_mm_eb";
+        sprd,isp = <&isp>;
+        sprd,dcam-count = <1>;
+        status = "disable";
+    };

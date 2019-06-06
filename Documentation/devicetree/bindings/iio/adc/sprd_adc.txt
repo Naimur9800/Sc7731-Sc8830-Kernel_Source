@@ -1,0 +1,17 @@
+
+Spreadtrum PMIC Analog to Digital Converter (ADC)
+
+Required properties:
+  - compatible: Should be one of
+		"sprd,sc2723t-adc":when using sprd sc2723 pmic device
+		"sprd,sc2731-adc": when using sprd sc2731 pmic device
+  - reg: Registers address
+  - #io-channel-cells: Should be 1, see ../iio-bindings.txt
+
+Example:
+pmic_adc: adc@300{
+			compatible = "sprd,sc2723-adc";
+			reg = <0x300>;
+			#io-channel-cells = <1>;
+		 };
+

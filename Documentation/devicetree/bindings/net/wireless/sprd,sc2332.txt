@@ -1,0 +1,22 @@
+Spreadtrum Marlin2 Fullmac wireless SDIO devices
+
+This node provides properties for controlling the Spreadtrum wireless device. The
+node is expected to be specified as a child node to the SDIO controller that
+connects the device to the system.
+
+Required properties:
+
+ - compatible : Should be "sprd,sc2332".
+
+Example:
+&sdio1 {
+    sprd,delay = <0x03 0x03 0x03>;
+    voltage-ranges = <2900 3200>;
+    bus-width = <4>;
+    sprd,name = "sdio_wifi";
+    status = "okay";
+
+    sprd-wlan {
+	compatible = "sprd,sc2332";
+    };
+};

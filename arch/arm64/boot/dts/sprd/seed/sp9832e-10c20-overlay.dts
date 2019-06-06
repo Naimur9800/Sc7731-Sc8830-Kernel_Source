@@ -1,0 +1,204 @@
+/*
+ * Spreadtrum sharkle sp9832e board DTS file
+ *
+ * Copyright (C) 2018, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+/dts-v1/;
+/plugin/;
+
+/ {
+	fragment {
+		target-path = "/";
+		__overlay__ {
+			gpio-keys {
+				compatible = "gpio-keys";
+				input-name = "sprd-gpio-keys";
+				status = "ok";
+
+				key-volumndown {
+					label = "Volume Down Key";
+					linux,code = <114>;
+					gpios = <&ap_eic 2 1>;
+					debounce-interval = <2>;
+					gpio-key,wakeup;
+					gpio-key,level-trigger;
+				};
+
+				key-volumeup {
+					label = "Volume Up Key";
+					linux,code = <115>;
+					gpios = <&pmic_eic 10 0>;
+					debounce-interval = <2>;
+					gpio-key,wakeup;
+					gpio-key,level-trigger;
+				};
+
+				key-power {
+					label = "Power Key";
+					linux,code = <116>;
+					gpios = <&pmic_eic 1 1>;
+					gpio-key,wakeup;
+					gpio-key,level-trigger;
+				};
+			};
+
+			sprd-wlan {
+				compatible = "sprd,sp9832e";
+			};
+
+			sunwave-fp {
+				compatible = "sunwave,fingerprint";
+				sunwave,reset-gpio = <&ap_gpio 131 0 >;
+				sunwave,irq-gpio = <&ap_eic_async 13 0 >;
+			};
+
+			ramoops {
+				compatible = "ramoops";
+				memory-region = <&pstore>;
+				record-size	= <0x0 0x00008000>;
+				console-size	= <0x0 0x00008000>;
+				pmsg-size	= <0x0 0x00008000>;
+			};
+
+			flash_lcd: flash-lcd {
+				compatible = "sprd,lcd-flash";
+				sprd,dispc = <&dispc0>;
+				sprd,backlight = <&pwm_backlight>;
+				status = "okay";
+			};
+		};
+	};
+ };
+
+/*
+ * Sample code. Google strongly recommends you do not use fragment@x and
+ * syntax __overlay__, and instead use the reference syntax
+*/
+&memory {
+	compatible = "sprd,memory-dtbo";
+};
+
+&pmic_vibrator {
+	compatible = "sprd,sc2721-vibrator";
+	reg = <0xeb4>;
+	status = "okay";
+};
+
+&pmic_bltc_rgb {
+	compatible = "sprd,sc2721-bltc-rgb";
+	reg = <0x180>;
+	status = "okay";
+};
+
+&i2c3 {
+	status = "okay";
+	clock-frequency = <400000>;
+	synaptics_dsx@22 {
+		compatible = "synaptics,dsx-i2c";
+		reg = <0x22>;
+		interrupt-parent = <&ap_gpio>;
+		interrupts = <144 0x2008>;
+		synaptics,irq-gpio = <&ap_gpio 144 0x2008>; /* IRQF_ONESHOT | IRQF_TRIGGER_LOW */
+		synaptics,reset-gpio = <&ap_gpio 145 0>;
+		synaptics,irq-on-state = <0>;
+		synaptics,power-delay-ms = <200>;
+		synaptics,reset-delay-ms = <200>;
+		synaptics,reset-on-state = <0>;
+		synaptics,reset-active-ms = <20>;
+	};
+
+};
+
+&i2c4 {
+
+	flash_ic: flash-ic@63 {
+		compatible = "sprd,flash-aw3648";
+		reg = <0x63>;
+		sprd,flash-ic = <3648>;
+		sprd,torch = <1>;
+		sprd,preflash = <1>;
+		sprd,highlight = <1>;
+		sprd,torch-level = <128>;
+		sprd,preflash-level = <128>;
+		sprd,highlight-level = <128>;
+		sprd,lvfm-enable = <1>;
+		flash-chip-en-gpios = <&ap_gpio 89 0>;
+		flash-en-gpios = <&ap_gpio 76 0>;
+	};
+
+	fan54015_chg: charger@6a {
+		compatible = "fairchild,fan54015_chg";
+		reg = <0x6a>;
+		chg-fault-gpios = <&ap_gpio 8 0>;
+		vbus-det-gpios = <&pmic_eic 0 0>;
+	};
+};
+
+&i2c0 {
+	sensor_main: sensor-main@20 {
+		compatible = "sprd,sensor-main";
+		reg = <0x20>;
+		clock-names = "clk_src","sensor_eb",
+			"clk_96m","clk_76m8",
+			"clk_48m","clk_26m";
+		clocks = <&clk_sensor0>, <&clk_mm_ckg_gates 1>,
+			<&clk_twpll_96m>,<&clk_twpll_76m8>,
+			<&clk_twpll_48m>,<&ext_26m>;
+		vddio-supply = <&vddcamio>;
+		avdd-gpios = <&ap_gpio 134 0>;
+		vddcamd-supply = <&vddcamd>;
+		vddcammot-supply = <&vddcammot>;
+		reset-gpios = <&ap_gpio 44 0>;
+		power-down-gpios = <&ap_gpio 46 0>;
+		host = "dcam1";
+		port {
+			sensor_main_0: endpoint {
+				remote-endpoint = <&phy0_out>;
+			};
+		};
+	};
+};
+
+&i2c1 {
+	sensor_sub: sensor-sub@20 {
+		compatible = "sprd,sensor-sub";
+		reg = <0x20>;
+		clock-names = "clk_src","sensor_eb",
+			"clk_96m","clk_76m8",
+			"clk_48m","clk_26m";
+		clocks = <&clk_sensor1>, <&clk_mm_ckg_gates 2>,
+			<&clk_twpll_96m>,<&clk_twpll_76m8>,
+			<&clk_twpll_48m>,<&ext_26m>;
+		vddio-supply = <&vddcamio>;
+		vddcama-supply = <&vddcama>;
+		vddcamd-supply = <&vddcamd>;
+		reset-gpios = <&ap_gpio 45 0>;
+		power-down-gpios = <&ap_gpio 47 0>;
+		host = "dcam0";
+		port {
+			sensor_sub_0: endpoint {
+				remote-endpoint = <&phy1_out>;
+			};
+		};
+	};
+
+	sensor_main2: sensor-main2@6C {
+		port {
+			sensor_main_2: endpoint {
+			};
+		};
+	};
+};
+
+&ddr_dfs {
+	sprd-scene = "lcdon", "lcdoff", "camlow", "camhigh";
+	sprd-freq = <256 256 384 667>;
+};
+
+&reserved_memory {
+		pstore: pstore@8845b000 {
+			reg = <0x0 0x8845b000 0x0 0x00040000>;
+		};
+};

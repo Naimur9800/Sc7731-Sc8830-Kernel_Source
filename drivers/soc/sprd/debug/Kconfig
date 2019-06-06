@@ -1,0 +1,36 @@
+source "drivers/soc/sprd/debug/busmonitor/Kconfig"
+source "drivers/soc/sprd/debug/iodebug/Kconfig"
+source "drivers/soc/sprd/debug/djtag/Kconfig"
+source "drivers/soc/sprd/debug/irq/Kconfig"
+
+config LOOK_AT
+	bool "sprd look at"
+	depends on SPRD_DEBUG
+	default n
+	help
+	  this macro is for lookat driver, lookat is a debug tool that is used to
+	  view the content of arm/arm64 of the address space through usb port,
+	  such as the register of each module, DDR address space, etc.
+	  When in doubt, say n
+
+config SPRD_LAST_REGS
+	bool "SPRD last regs access"
+	depends on SPRD_DEBUG
+	default y
+	help
+	  SPRD last regs access for Debug.
+source "drivers/soc/sprd/debug/dmc_mpu/Kconfig"
+
+config SPRD_CPU_USAGE
+	bool "open sprd cpu rate compute"
+	depends on DEBUG_FS && SPRD_DEBUG
+	default y
+	help
+	  CPU usage statistics
+
+config SPRD_PERFORMANCE_CHECKER
+	bool "performance checker tool"
+	depends on SPRD_DEBUG
+	default n
+	help
+	  dump registers about performance

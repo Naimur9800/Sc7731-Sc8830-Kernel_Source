@@ -1,0 +1,445 @@
+/*
+ * Spreadtrum SP98x0 board common DTS file
+ *
+ * Copyright (C) 2017, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#include "sc2721.dtsi"
+#include "sc9832e-modem.dtsi"
+#include "sc9832e-wcn.dtsi"
+#include "sprd-battery.dtsi"
+#include "sprd-sound.dtsi"
+#include "lcd/lcd_ili9881c_mipi_hd.dtsi"
+#include "lcd/lcd_jd9161_hlt_mipi_wvga.dtsi"
+#include "lcd/lcd_gc9503_jl_mipi_wvga.dtsi"
+#include "lcd/lcd_st7701_zgd_mipi_wvga.dtsi"
+#include "lcd/lcd_dummy_mipi.dtsi"
+#include <dt-bindings/thermal/thermal.h>
+
+/ {
+	aliases {
+		thm-sensor8 = &chg_temp;
+		thm-sensor9 = &pa_temp;
+		thm-sensor10 = &board_temp;
+		thm-sensor11 = &cpu_thmzone;
+		cooling-device0 = &cluster0_cooling;
+		gpu-cooling0 = &gpu_cooling0;
+	};
+
+	thermal-zones {
+		cpu_thmzone: cpu-thmzone {
+			polling-delay-passive = <100>;
+			polling-delay = <1000>;
+			sustainable-power = <2000>;
+			thermal-sensors = <&cpu_thm  1>;
+			trips {
+				cpu_threshold: trip-point@0 {
+					temperature = <70000>;
+					hysteresis = <1000>;
+					type = "passive";
+				};
+				cpu_target: trip-point@1 {
+					temperature = <85000>;
+					hysteresis = <1000>;
+					type = "passive";
+				};
+				cpu_crit: cpu_crit {
+					temperature = <110000>;
+					hysteresis = <2000>;
+					type = "critical";
+				};
+			};
+
+			cooling-maps {
+				map0 {
+					trip = <&cpu_target>;
+					contribution = <1024>;
+					cooling-device =
+					<&cluster0_cooling
+						THERMAL_NO_LIMIT
+						THERMAL_NO_LIMIT>;
+				};
+			};
+		};
+
+		gpu_thmzone: gpu-thmzone {
+			polling-delay-passive = <100>;
+			polling-delay = <1000>;
+			sustainable-power = <2000>;
+			thermal-sensors = <&gpu_thm  0>;
+			trips {
+				gpu_threshold: trip-point@0 {
+					temperature = <70000>;
+					hysteresis = <1000>;
+					type = "passive";
+				};
+				gpu_target: trip-point@1 {
+					temperature = <85000>;
+					hysteresis = <1000>;
+					type = "passive";
+				};
+				gpu_crit: gpu_crit {
+					temperature = <110000>;
+					hysteresis = <2000>;
+					type = "critical";
+				};
+			};
+
+			cooling-maps {
+				map0 {
+					trip = <&gpu_target>;
+					contribution = <1024>;
+					cooling-device =
+					<&gpu_cooling0
+						THERMAL_NO_LIMIT
+						THERMAL_NO_LIMIT>;
+				};
+			};
+		};
+
+		chg_thmzone: chg-thmzone {
+			polling-delay-passive = <0>;
+			polling-delay = <0>;
+			thermal-sensors = <&chg_temp  8>;
+		};
+
+		pa_thmzone: pa-thmzone {
+			polling-delay-passive = <0>;
+			polling-delay = <0>;
+			thermal-sensors = <&pa_temp  9>;
+		};
+
+		bd_thmzone: board-thmzone {
+			polling-delay-passive = <0>;
+			polling-delay = <0>;
+			thermal-sensors = <&board_temp  10>;
+		};
+	};
+
+	cooling-devices {
+		cluster0_cooling: cluster0-cooling {
+			compatible = "sprd,cluster-cooling";
+			#cooling-cells = <2>; /* min followed by max */
+			sprd,efuse-block7 = <7>;
+			sprd,efuse-block15 = <15>;
+			/* core_leak =                             */
+			/*(LIT_LEAK[4:0]+1) x 2mA x 0.85V x 18.69% */
+			sprd,leak-core = <2 85 1869>;
+			/* cluster_leak =                           */
+			/* (LIT_LEAK[4:0]+1) x 2mA x 0.85V x 25.24% */
+			sprd,leak-cluster = <2 85 2524>;
+			/*core Tscale = aT^3 + bT^2 + cT +di   */
+			sprd,core-temp-scale =
+			/* a*10^7   b*10^7      c*10^7     d*10^7 */
+			<  34       (-3000)     147000     (-1367000)>;
+			/*core Vscale = eV^3 + fV^2 + gV + h */
+			sprd,core-voltage-scale =
+			/* e*10^2   f*10^2     g*10^2  h*10^2*/
+			<  2863     (-7860)    7541    (-2408)>;
+			/*cluster Tscale = aT^3 + bT^2 + cT +di   */
+			sprd,cluster-temp-scale =
+			/* a*10^7   b*10^7      c*10^7     d*10^7 */
+			<  26       (-2000)     115000     (-1000000)>;
+			/*cluster Vscale = eV^3 + fV^2 + gV + h */
+			sprd,cluster-voltage-scale =
+			/* e*10^2   f*10^2     g*10^2  h*10^2*/
+			<  1582     (-4201)    4063    (-1307)>;
+			sprd,efuse-switch = <0>;
+			sprd,hotplug-period = <0>;
+			sprd,min-cpufreq = <768000>;
+			sprd,min-cpunum = <4>;
+			sprd,core-base = <267>;
+			sprd,cluster-base = <294>;
+			sprd,dynamic-core =
+			/*Pdynperghz    Freq     Vbase  */
+			< 850          768       900>;
+			sprd,dynamic-cluster =
+			/*Pdynperghz    Freq     Vbase  */
+			< 980           768      900>;
+		};
+	};
+
+	gpu-cooling-devices {
+		gpu_cooling0: gpu-cooling0 {
+			compatible = "sprd,mali-power-model";
+			#cooling-cells = <2>;
+			sprd,efuse-block7 = <7>;
+			sprd,efuse-block15 = <15>;
+			/* core_leak =                             */
+			/*(LIT_LEAK[4:0]+1) x 2mA x 0.85V x 18.69% */
+			sprd,leak-core = <2 85 1869>;
+			/* cluster_leak =                           */
+			/* (LIT_LEAK[4:0]+1) x 2mA x 0.85V x 25.24% */
+			sprd,leak-cluster = <2 85 2524>;
+			/*Tscale = aT^3 + bT^2 + cT +di   */
+			sprd,temp-scale =
+			/* a*10^7   b*10^7      c*10^7     d*10^7 */
+			<  400      100        100000    6940000>;
+			/*Vscale = eV^3 + fV^2 + gV + h */
+			sprd,voltage-scale =
+			/* e*10^2   f*10^2     g*10^2  h*10^2*/
+			<  195      (-358)     343     91>;
+			sprd,hotplug-period = <0>;
+			sprd,core-base = <716>;
+			sprd,cluster-base = <0>;
+			sprd,dynamic-core =
+			/*Pdynperghz    Freq     Vbase  */
+			< 9230           768     1050>;
+			sprd,dynamic-cluster =
+			/*Pdynperghz    Freq     Vbase  */
+			< 0              0       0>;
+		};
+	};
+
+	chg_temp:chg-tsensor@8 {
+		compatible = "sprd,board-thermal";
+		#thermal-sensor-cells = <1>;
+		io-channels = <&pmic_adc 9>;
+		io-channel-names = "adc_temp";
+		temp-tab-size = <15>;
+		temp-tab-val = <1131 1110 1074 983 838 654 413
+				316 238 178 133 100 75 57 43>;
+		temp-tab-temp = <603 702 805 952 1101 1248 1449
+				1549 1649 1749 1849 1949 2049 2149 2249>;
+	};
+
+	pa_temp:pa-tsensor@9 {
+		compatible = "sprd,board-thermal";
+		#thermal-sensor-cells = <1>;
+		io-channels = <&pmic_adc 5>;
+		io-channel-names = "adc_temp";
+		temp-tab-size = <15>;
+		temp-tab-val = <1131 1110 1074 983 838 654 413
+				316 238 178 133 100 75 57 43>;
+		temp-tab-temp = <603 702 805 952 1101 1248 1449
+				1549 1649 1749 1849 1949 2049 2149 2249>;
+	};
+
+	board_temp:bd-tsensor@10 {
+		compatible = "sprd,board-thermal";
+		#thermal-sensor-cells = <1>;
+		io-channels = <&pmic_adc 3>;
+		io-channel-names = "adc_temp";
+		temp-tab-size = <15>;
+		temp-tab-val = <1131 1110 1074 983 838 654 413
+				316 238 178 133 100 75 57 43>;
+		temp-tab-temp = <603 702 805 952 1101 1248 1449
+				1549 1649 1749 1849 1949 2049 2149 2249>;
+	};
+
+	/* smartphone board only */
+	reserved_memory: reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		pub0_mpu_reserved: mpu0-dump@877ff000 {
+			reg = <0x877ff000 0x1000>;
+		};
+
+		smem_reserved: sipc-mem@87800000 {
+			reg = <0x87800000 0x3d0000>;
+		};
+
+		/* must be 32M aligned */
+		wcn_reserved: wcn-mem@88000000{
+			reg = <0x88000000 0x00300000>;
+		};
+
+		gnss_reserved: gnss-mem@88300000{
+			reg = <0x88300000 0x0015b000>;
+		};
+
+		pstore: pstore@895c0000 {
+			reg = <0x895c0000 0x00040000>;
+		};
+
+		/* cp_reserved = cp region + debug region */
+		/* debug region: not reserved in normal mode, it */
+		/* will be proccessed in u-boot */
+		cp_reserved: cp-modem@89600000 {
+			reg = <0x89600000 0x03c80000>;
+			/* This prop specifies the size of debug region */
+			/* in the cp tail */
+			sprd,cpdbg-size = <0x280000>;
+		};
+
+		/* must be 64M aligned */
+		sml_reserved: sml-mem@94000000{
+			reg = <0x94000000 0x00020000>;
+		};
+
+		tos_reserved: tos-mem@94020000{
+			reg = <0x94020000 0x002e0000>;
+		};
+
+		/* Only used for iq, will be removed in normal mode by uboot */
+		iq_reserved: iq-mem@98100000{
+			compatible = "sprd,iq-mem";
+			reg = <0x98100000 0x4000000>;
+		};
+	};
+
+	ramoops {
+		compatible = "ramoops";
+		memory-region = <&pstore>;
+		record-size	= <0x0 0x00008000>;
+		console-size	= <0x0 0x00008000>;
+		pmsg-size	= <0x0 0x00008000>;
+	};
+
+	firmware {
+		android {
+			compatible = "android,firmware";
+
+			vbmeta {
+				compatible = "android,vbmeta";
+				parts = "vbmeta,boot,recovery,system,vendor,product";
+			};
+
+			fstab {
+				compatible = "android,fstab";
+				fs_vendor: vendor {
+					compatible = "android,vendor";
+					dev = "/dev/block/platform/soc/soc:ap-ahb/20600000.sdio/by-name/vendor";
+					type = "ext4";
+					mnt_flags = "ro,barrier=1";
+					fsmgr_flags = "wait";
+				};
+				product {
+					compatible = "android,product";
+					dev = "/dev/block/platform/soc/soc:ap-ahb/20600000.sdio/by-name/product";
+					type = "ext4";
+					mnt_flags = "ro,barrier=1";
+					fsmgr_flags = "wait";
+				};
+			};
+		};
+	};
+
+	ion: ion {
+		compatible = "sprd,ion";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		heap@0 {
+			reg = <0>;
+			label = "system";
+			type = <0>;
+		};
+
+	};
+
+	panel_if: sprd-panel-if {
+		compatible = "sprd-panel-if";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		panel-drivers = <
+			&lcd_ili9881c_mipi_hd
+			&lcd_jd9161_hlt_mipi_wvga
+			&lcd_gc9503_jl_mipi_wvga
+			&lcd_st7701_zgd_mipi_wvga
+			&lcd_dummy_mipi_hd
+		>;
+
+		/* input port */
+		port@1 {
+			/* WARNING: the reg property must be 1 ! */
+			reg = <1>;
+			panel_in: endpoint@0 {
+				remote-endpoint = <&dphy0_out>;
+			};
+		};
+	};
+
+	adf: sprd-adf {
+		compatible = "sprd-adf";
+		status = "okay";
+		sprd,display-mode = <3>;
+		sprd,dispc = <&dispc0>;
+	};
+
+	ddr_dfs: scene-frequency {
+		compatible = "sprd,dfs";
+	};
+};
+
+&uart1 {
+	status = "okay";
+};
+
+&battery {
+	charger-det-gpios = <&pmic_eic 0 0>;
+	battery-det-gpios = <&pmic_eic 9 0>;
+	io-channels = <&pmic_adc 1>,<&pmic_adc 10>,
+		<&pmic_adc 36>,<&pmic_adc 16>;
+	io-channel-names = "adc_temp","adc_vbat",
+		"adc_vchg","adc_isense";
+	status = "okay";
+};
+
+&dispc0 {
+	status = "okay";
+};
+
+&dsi0 {
+	status = "okay";
+};
+
+&dphy0 {
+	status = "okay";
+};
+
+&pwms {
+	status = "okay";
+
+};
+
+&pmic_typec {
+	status = "okay";
+};
+
+&chg_temp {
+	status = "disabled";
+};
+
+&pa_temp {
+	status = "disabled";
+};
+
+&sdio0 {
+	sprd,sdr104-dly = <0x7f 0x94 0xa7 0xa7>;
+	sprd,sdr50-dly = <0x7f 0x4a 0x4a 0x4a>;
+	vmmc-supply = <&vddsdcore>;
+	vqmmc-supply = <&vddsdio>;
+	voltage-ranges = <3000 3000>;
+	bus-width = <4>;
+	cd-gpios = <&ap_gpio 78 1>;
+	sd-uhs-sdr50;
+	sprd,name = "sdio_sd";
+	no-sdio;
+	no-mmc;
+	status = "okay";
+};
+
+&sdio3 {
+	sprd,hs400es-dly = <0x5a 0x7f 0x30 0x30>;
+	sprd,hs400-dly = <0x5a 0x8c 0x30 0x30>;
+	sprd,hs200-dly = <0x7f 0x8c 0x8e 0x8e>;
+	sprd,ddr52-dly = <0x9f 0xb3 0x1e 0x1e>;
+	vmmc-supply = <&vddemmccore>;
+	voltage-ranges = <3000 3000>;
+	bus-width = <8>;
+	non-removable;
+	cap-mmc-hw-reset;
+	mmc-hs400-enhanced-strobe;
+	mmc-hs400-1_8v;
+	mmc-hs200-1_8v;
+	mmc-ddr-1_8v;
+	sprd,name = "sdio_emmc";
+	no-sdio;
+	no-sd;
+	status = "okay";
+};

@@ -1,0 +1,3 @@
+
+source "drivers/staging/sprd/modem/Kconfig"
+

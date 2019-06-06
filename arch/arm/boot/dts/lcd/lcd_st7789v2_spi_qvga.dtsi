@@ -1,0 +1,57 @@
+/ { lcds {
+	lcd_st7789v2_spi_qvga: lcd7789@7789 {
+
+		panel-name = "lcd_st7789v2_spi_qvga";
+		if-type = <4>;
+		spi_bus_num = <1>;
+		spi_cs = <0>;
+		bpp = <16>;
+		fps = <33>;
+		spi_mode = <3>; /* SPI_CPHA 0x01 SPI_CPOL 0x02 */
+		spi_cd_gpio = <138>;
+		spi_te_gpio = <51>;
+		spi_pol_mode = <0>;
+		spi_endian = <0>;
+		spi_freq = <48000000>;
+		hactive = <240>;
+		vactive = <320>;
+
+		power-on-sequence = <
+					50  1  5
+					50  0  5
+					50  1  20
+					>;
+		power-off-sequence = <
+					50  0  20
+					>;
+
+		init-data = [
+			ff  78  00  01  11
+			ff  00  00  02  36  00
+			ff  00  00  02  3a  05
+			ff  00  00  06  b2  0c  0c  00  33  33
+			ff  00  00  02  b7  35
+			ff  00  00  02  bb  35
+			ff  00  00  02  c0  2c
+			ff  00  00  02  c2  01
+			ff  00  00  02  c3  11
+			ff  00  00  02  c4  20
+			ff  00  00  02  c6  0f
+			ff  00  00  03  d0  a4  a1
+			ff  00  00  0f  e0  d0  00  05  0e  15  0d  37  43  47  09  15  12  16  19
+			ff  00  00  0f  e1  d0  00  05  0d  0c  06  2d  44  40  0e  1c  18  16  19
+			ff  00  00  02  35  00
+			ff  78  00  01  29
+			ff  10  00  01  2c
+			];
+		sleep-in = [
+			ff 78 00 01 28
+			ff 78 00 01 10
+			];
+		sleep-out = [
+			ff 78 00 01 11
+			ff 64 00 01 29
+			];
+	};
+};};
+

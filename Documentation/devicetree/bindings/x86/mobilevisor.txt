@@ -1,0 +1,4 @@
+X86 Mobilevisor Device Tree Bindings
+
+compatible = "intel,mv_irq_wake"
+compatible = "intel,mobilevisor"

@@ -1,0 +1,10 @@
+menuconfig INPUT_FINGERPRINT
+	bool "Fingerprint"
+	help
+	  Say Y here, and a list of supported fingerprint(s) will be displayed.
+	  This option doesn't affect the kernel.
+
+source "drivers/input/fingerprint/fpsensor/Kconfig"
+source "drivers/input/fingerprint/et310_tee/Kconfig"
+source "drivers/input/fingerprint/gdspi/Kconfig"
+source "drivers/input/fingerprint/silead/Kconfig"

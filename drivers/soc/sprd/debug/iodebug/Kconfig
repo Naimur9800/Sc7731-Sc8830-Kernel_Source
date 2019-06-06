@@ -1,0 +1,45 @@
+config IODEBUG
+	bool "IO debug function."
+	depends on SPRD_DEBUG && DEBUG_FS
+	help
+	  Support for IO debug feature. If you say Y here,
+	  it will provide a methd to acquire FS-IO operation
+	  information. Also, linux can monitor process with
+	  D-state. It will make a directory named iodebug in
+	  /sys/kernel/debug.
+
+	  If don't need, say N.
+
+config IODEBUG_HOTPOINT
+	bool "hotpoint debug function."
+	depends on IODEBUG
+	help
+	  For IO debug, support for IO hotpoint monitor.
+	  If you say Y here, it will provide APIs to get usage time
+	  of any stage of a FS-IO operation.
+
+	  If don't need, say N.
+
+config IODEBUG_VFS
+	bool "iodebug vfs function."
+	depends on IODEBUG
+	default y
+	help
+	  For IO debug in VFS. It can monitor vfs_read and vfs_write
+	  usage time. It provides a node vfs_iodebug in
+	  /sys/kernel/debug/iodebug, userspace programe can use this node to
+	  get VFS operation information.
+
+	  If don't need, say N.
+
+config IODEBUG_BDI
+	bool "iodebug bdi function."
+	depends on IODEBUG
+	default y
+	help
+	  For IO debug in BDI. For backing dev information.
+	  It provides a node bdi_iodebug in /sys/kernel/debug/iodebug,
+	  userspace programe can use this node to get backing dev
+	  information.
+
+	  if don't need, say N.

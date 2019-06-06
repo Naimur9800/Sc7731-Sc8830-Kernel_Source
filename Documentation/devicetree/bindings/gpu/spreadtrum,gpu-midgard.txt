@@ -1,0 +1,44 @@
+* ARM Mali-T720 GPU
+* It has common properties with mali-utgard, as described in spreadtrum,gpu.txt.
+
+Required properties:
+    - compatible : "sprd,mali-midgard" for mali T720 IP present in SC9838 etc. SoC
+
+    - operating-points : It's the DVFS optional frequence range of GPU which depends on Linux Kernel. example:
+        153600 means the clock source frequence is 153600 kHz,
+        0  is current voltage.
+
+Example:
+	gpu@60000000 {
+		compatible = "arm,mali-midgard";
+		...
+
+		operating-points = <
+			/* kHz   uV */
+			512000   0
+			384000   0
+			256000   0
+			153600   0
+			>;
+
+		...
+	};
+
+
+* ARM Mali-T820 GPU
+* It has common properties with mali-utgard, as described in spreadtrum,gpu.txt.
+
+Required properties:
+    - compatible : "sprd,mali-midgard" for mali T820 IP present in sc9850j etc. SoC
+
+    - system-coherency : Selecting the coherency mode of the platform is done through device tree. The following modes are supported for cci400:
+	0  : ACE-Lite
+	31 : no coherency
+
+Example:
+	gpu@60000000 {
+		compatible = "arm64,mali-midgard";
+		...
+
+		system-coherency = <31>;
+	};

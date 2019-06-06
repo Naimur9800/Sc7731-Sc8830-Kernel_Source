@@ -1,0 +1,24 @@
+config SPRD_BUS_MONITOR
+	bool "Spreadtrum BM Support"
+	depends on SPRD_DEBUG
+	help
+	  Say Y here to support debug busmonitor
+
+config SPRD_BM_DJTAG
+	bool "Spreadtrum DJTAG&BM Support"
+	depends on SPRD_DEBUG && SPRD_SIPC
+	help
+	  Say Y here to support djtag&busmonitor.
+	  For whale,whale2,iwhale2.
+
+config SPRD_AON_BUSMON
+	bool "Spreadtrum Aon Busmon Support"
+	depends on SPRD_DEBUG
+	help
+	  Say Y here to support aon busmon.
+
+config SPRD_BUSMONITOR
+	bool "Spreadtrum BUS Monitor Support"
+	depends on SPRD_DEBUG
+	help
+	  Say Y here to support BUS monitor.

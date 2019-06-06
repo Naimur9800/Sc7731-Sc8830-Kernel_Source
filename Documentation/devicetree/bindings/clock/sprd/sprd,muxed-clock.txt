@@ -1,0 +1,21 @@
+Spreadtrum multiplexed clock driver.
+
+Required properties:
+
+- compatible : should be "sprd,muxed-clock"
+
+- sprd,mux-msk : Mux clock has more than one parent clock. It uses a
+		 register's some bits to index parent clock. This property
+		 is the mask of these bits.
+
+Example:
+
+	clk_adi: clk@402d0028 {
+		compatible = "sprd,muxed-clock";
+		#clock-cells = <0>;
+		reg = <0 0x402d0028 0 0x4>;     /* select reg */
+		sprd,mux-msk = <0x3>;
+		clocks = <&ext_26m>, <&ext_4m>, <&clk_twpll_38m4_def>,
+			 <&clk_twpll_51m2_def>;
+		clock-output-names = "clk_adi";
+	};

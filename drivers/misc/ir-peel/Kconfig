@@ -1,0 +1,8 @@
+config SPI_PEEL_INFRARED
+	tristate "peer SPI device driver support"
+	default n
+	depends on SPI_MASTER
+	help
+	  This supports peer SPI protocol drivers.
+	  Note that this application programming interface is EXPERIMENTAL
+	  and hence SUBJECT TO CHANGE WITHOUT NOTICE while it stabilizes.

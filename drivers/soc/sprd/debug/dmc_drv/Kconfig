@@ -1,0 +1,5 @@
+config SPRD_DMC_DRV
+	bool "Spreadtrum DMC DRV Support"
+	default y
+	help
+	  Say Y here to support dmc drv.

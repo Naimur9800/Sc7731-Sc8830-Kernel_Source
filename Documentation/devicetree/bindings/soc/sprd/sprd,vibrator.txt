@@ -1,0 +1,24 @@
+Spreadtrum Vibrator Bindings
+
+The vibrator depends on different controllers, such as sc2723 or sc2731.
+
+Required properties:
+- compatible: must be one of
+  sprd,sc2723t-vibrator
+  sprd,sc2731-vibrator
+
+- reg: the chipselect index
+
+Example 1:
+
+vibrator@8f8 {
+	compatible = "sprd,sc2723t-vibrator";
+	reg = <0x8f8>;
+};
+
+Example 2:
+
+vibrator@ec8 {
+	compatible = "sprd,sc2731-vibrator";
+	reg = <0xec8>;
+};

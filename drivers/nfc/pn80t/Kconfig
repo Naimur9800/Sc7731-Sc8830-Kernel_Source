@@ -1,0 +1,17 @@
+#
+# Nfc drivers configuration
+#
+
+
+config NFC_PN80T
+	tristate "Nxp pn80t NCI protocol driver (I2C) devices"
+	depends on I2C
+	default n
+	---help---
+	  You'll have to say Y if your computer contains an I2C device that
+	  you want to use under Linux.
+
+	  You can say N here if you don't have any I2C connected to your computer.
+
+
+

@@ -1,0 +1,24 @@
+eccelerometer lis3dh devicetree bindings
+
+Required properties for the I2C bindings:
+- compatible:		should be set to "st,lis3dh_acc"
+- reg:			i2c slave address
+- gpios:		iterrupt gpio
+- polling_interval:	polling time delay ms
+
+
+Example for a I2C device node:
+	lis3dh_acc@18{
+		compatible = "st,lis3dh_acc";
+		reg = <0x18>;
+		gpios = <&ap_gpio 139 1>;
+		poll_interval = <10>;
+		min_interval = <1>;
+		g_range = <0>;
+		axis_map_x = <0>;
+		axis_map_y = <1>;
+		axis_map_z = <2>;
+		negate_x = <1>;
+		negate_y = <1>;
+		negate_z = <0>;
+	};

@@ -1,0 +1,42 @@
+Spreadtrum ADI controller based on SPI framework device bindings
+
+ADI bus is defined for communication between A-Die chip and D-Die chip,
+And it follows the SPI framework for its hardware implementation is alike
+to SPI bus and its timing is compatile to SPI timing.
+
+ADI-SPI bus supports up to 26M, and supports up to 2 chips.
+
+Required properties:
+- compatible: Should be"sprd,sc9838-adi", it's similar to that on sc9838 SoC family.
+- reg: Offset and length of ADI-SPI controller register space.
+- #address-cells: number of cells required to define a chip select
+	address on the ADI-SPI bus. Should be set to 1.
+- #size-cells: size of cells required to define a chip select address size on
+	the ADI-SPI bus, should be set to 0.
+- sprd,hw-channels: the hw channel is used to wr/rd datas, one is the hw channel number
+	should be enabled, the other is the value should be configed.
+
+SPI slave nodes must be children of the SPI master node and can contain
+properties described in Documentation/devicetree/bindings/spi/spi-bus.txt.
+
+Example:
+	adi_bus: spi@40030000 {  /* adi-controller */
+		compatible = "sprd,sc9838-adi";
+		reg = <0 0x40030000 0 0x10000>;
+		#address-cells = <1>;
+		#size-cells = <1>;
+		sprd,hw-channels = <0 0>;
+
+		a-die0: a-die@0 {
+			compatible = "sprd,sc2723";
+			reg = <0>; /* chip select 0 */
+			spi-max-frequency = <26000000>;
+
+			adi_rtc {
+				compatible = "sprd,adi-rtc";
+				reg = <0x80 0x80>;
+				interrupt-parent = <&adie-intc>;
+				interrupts = <2 0x0>;
+			};
+		};
+	};

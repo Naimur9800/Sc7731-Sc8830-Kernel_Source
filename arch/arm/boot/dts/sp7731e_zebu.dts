@@ -1,0 +1,78 @@
+/*
+ * Spreadtrum Pike2 ZEBU board DTS file
+ *
+ * Copyright (C) 2015-2016, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#include "sc7731e.dtsi"
+#include "sp7731e-common.dtsi"
+
+/ {
+	model = "Spreadtrum Pike2 ZEBU Board";
+
+	compatible = "sprd,sp7731e-zebu", "sprd,sc7731e";
+
+	sprd,sc-id = <7731 1 0x20000>;
+
+	memory: memory@80000000 {
+		device_type = "memory";
+		reg = <0x80000000 0x7fe00000>;
+	};
+
+	chosen {
+		bootargs = "earlycon=sprd_serial,0x70100000,115200n8 maxcpus=1 loglevel=8 console=ttyS1,115200n8 init=/init root=/dev/ram0 rw androidboot.hardware=sp7731e_zebu vmalloc=900M";
+		linux,initrd-start = <0x85500000>;
+		linux,initrd-end = <0x855a3212>;
+	};
+
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		fb_reserved: framebuffer@9f574000{
+			reg = <0x9f574000 0xa8c000>;
+		};
+
+		memdisk_reserved: memdisk@C0100000{
+			reg = <0xc0100000 0x19000000>,
+			      <0xd9100000 0x12c00000>;
+		};
+	};
+
+	ion {
+		compatible = "sprd,ion";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		heap@0 {
+			reg = <0>;
+			label = "system";
+			type = <0>;
+		};
+
+		heap@1 {
+			reg = <3>;
+			label = "carveout_fb";
+			type = <2>;
+			memory-region = <&fb_reserved>;
+		};
+	};
+
+	sprd-memdisk {
+		compatible = "sprd,memdisk";
+		memory-region = <&memdisk_reserved>;
+	};
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&uart1 {
+	status = "okay";
+};
+
+

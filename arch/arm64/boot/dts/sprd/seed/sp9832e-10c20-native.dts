@@ -1,0 +1,6 @@
+/*****************************************
+Do not modify dts file, please modify according dtsi file
+******************************************/
+
+#include "../sp9832e-10c20-native.dts"
+#include "sprd_base_diff.dtsi"

@@ -1,0 +1,5 @@
+# to add sprd vpp configs in the future
+config SPRD_VPP
+	bool "SPRD VPP driver"
+	help
+	"enable vpp device driver"

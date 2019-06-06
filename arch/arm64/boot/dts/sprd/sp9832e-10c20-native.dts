@@ -1,0 +1,433 @@
+/*
+ * Spreadtrum sharkle sp9832e board DTS file
+ *
+ * Copyright (C) 2017, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+/dts-v1/;
+
+#include "sp9832e-common.dtsi"
+
+/ {
+	model = "Spreadtrum SC9832e 10C20 Board";
+
+	compatible = "sprd,sp9832e-10c20", "sprd,sc9832e";
+
+	sprd,sc-id = <9832 1 0x20000>;
+
+	aliases {
+		serial1 = &uart1;
+		spi0 = &spi0;
+		spi1 = &spi1;
+		spi2 = &spi2;
+	};
+
+	memory: memory@80000000 {
+		device_type = "memory";
+		reg = <0x0 0x80000000 0x0 0x80000000>;
+	};
+
+	chosen {
+		stdout-path = &uart1;
+		bootargs = "earlycon=sprd_serial,0x70100000,115200n8 console=ttyS1,115200n8 loglevel=1 init=/init root=/dev/mmcblk0p30 rootfstype=ext4 ro rootwait androidboot.hardware=sp9832e_10c20 androidboot.dtbo_idx=0";
+	};
+
+	ipi: interrupt-controller {
+		compatible = "android,CustomIPI";
+		#interrupt-cells = <1>;
+		interrupt-controller;
+	};
+
+	/* reserved memory for spec board */
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		tos_shm_reserved: sh-mem@96000000{
+			reg = <0x0 0x96000000 0x0 0x00100000>;
+		};
+	};
+
+	trusty {
+		compatible = "android,trusty-smc-v1";
+
+		irq {
+			compatible = "android,trusty-irq-v1";
+			interrupt-templates = <&ipi 0>,
+						<&gic 1 GIC_PPI 0>,
+						<&gic 1 GIC_SPI 0>;
+			interrupt-ranges = < 0  15 0>,
+						<16  31 1>,
+						<32 223 2>;
+		};
+
+		virtio {
+			compatible = "android,trusty-virtio-v1";
+		};
+
+		log {
+			compatible = "android,trusty-log-v1";
+		};
+	};
+
+	sprd-iq {
+		compatible = "sprd,iq";
+		sprd,region = <&iq_reserved>;
+		sprd,mapping-offs = <0x0>;
+	};
+
+	sprd-sysdump {
+		memory-region = <&memory>;
+		memory-region-re = <&cp_reserved>, <&wcn_reserved>,
+				   <&smem_reserved>, <&gnss_reserved>;
+	};
+
+	sprd_map_user {
+		compatible = "sprd,sprd_map_user";
+		phys-offset = <0x80000000>;
+	};
+
+	ddr_dfs: scene-frequency {
+		compatible = "sprd,dfs";
+	};
+};
+
+&fb_reserved {
+	reg = <0x0 0xbe464000 0x0 0x00fd4000>;
+};
+
+&overlay_reserved {
+	reg = <0x0 0xbf438000 0x0 0x00bdf000>;
+};
+
+&dispc0 {
+
+	clock-src = <384000000 153600000>;
+	clock-names =   "clk_dispc_core_parent",
+			"clk_dispc_dpi_parent",
+			"clk_dispc_core",
+			"clk_dispc_dpi",
+			"clk_dispc_ahb_eb";
+
+	clocks = <&clk_twpll_384m>,
+		<&clk_twpll_153m6>,
+		<&clk_dispc0>,
+		<&clk_dispc0_dpi>,
+		<&clk_ap_ahb_gates 1>;
+
+};
+
+&sdio0 {
+	sprd,sdr104-dly = <0x7F 0x94 0xa7 0xa7>;
+	sprd,sdr50-dly = <0x7F 0x4A 0x4A 0x4A>;
+	vmmc-supply = <&vddsdcore>;
+	vqmmc-supply = <&vddsdio>;
+	voltage-ranges = <3000 3000>;
+	bus-width = <4>;
+	cd-gpios = <&ap_gpio 78 1>;
+	sd-uhs-sdr50;
+	sprd,name = "sdio_sd";
+	sprd,sdio-adma;
+	no-sdio;
+	no-mmc;
+	status = "okay";
+};
+
+&sdio3 {
+	sprd,hs400es-dly = <0x5A 0x7F 0x30 0x30>;
+	sprd,hs400-dly = <0x5A 0x8C 0x30 0x30>;
+	sprd,hs200-dly = <0x7F 0x8C 0x8E 0x8E>;
+	sprd,ddr52-dly = <0x9F 0xB3 0x1E 0x1E>;
+	vmmc-supply = <&vddemmccore>;
+	voltage-ranges = <3000 3000>;
+	bus-width = <8>;
+	non-removable;
+	cap-mmc-hw-reset;
+	mmc-hs400-enhanced-strobe;
+	mmc-hs400-1_8v;
+	mmc-hs200-1_8v;
+	mmc-ddr-1_8v;
+	sprd,name = "sdio_emmc";
+	sprd,sdio-adma;
+	no-sdio;
+	no-sd;
+	status = "okay";
+};
+
+&battery {
+	battery-adapt-support = <0>;
+	battery-adapt-fun = <0>;
+	adp-cdp-cur = <1150>;
+	adp-dcp-cur = <1150>;
+	adp-sdp-cur = <550>;
+	adp-unknown-cur = <550>;
+	chg-end-vol = <4350>;
+	chg-end-vol-check = <4330>;
+	chg-bat-safety-vol = <4430>;
+	rechg-vol = <4270>;
+	rsense-real = <200>;
+	rint = <320>;
+	cnom = <2780>;
+	chg-polling-time = <10>;
+	ocv-tab-vol = <4360 4249 4189 4133 4081 4034 3991
+			3953 3910 3866 3836 3813 3795 3782
+			3774 3765 3750 3726 3687 3658 3400>;
+	ocv-tab-cap = <100  95   90   85   80   75   70
+			65   60   55   50   45   40   35
+			30   25   20   15   10   5   0>;
+};
+
+
+
+&pmic_fgu {
+	ocv-type = <1>;
+};
+
+&sprd_audio_codec_ana {
+	status = "okay";
+	digital-codec = <&sprd_audio_codec_dig>;
+};
+
+&sound_vbc_r1p0v3_sprd_codec {
+	status = "okay";
+	sprd-audio-card,widgets =
+		"Headphone", "inter HP PA",
+		"Speaker", "inter Ear PA";
+	sprd-audio-card,routing =
+		"HPMIC", "HP Mic Jack",
+		"MIC", "Mic Jack",
+		"AUXMIC", "Aux Mic Jack",
+		"inter HP PA", "HP PA",
+		"Ext Spk", "Spk PA",
+		"inter Ear PA", "EAR",
+		"DMIC", "DMic Jack",
+		"DMIC1", "DMic1 Jack",
+
+		/* For vbc loopback */
+		"Aud input", "AD Clk",
+		"Aud input1", "AD Clk",
+		"Aud input", "Digital ADCL Switch",
+		"Aud input", "Digital ADCR Switch",
+		"Aud input1", "Digital ADC1L Switch",
+		"Aud input1", "Digital ADC1R Switch";
+	sprd,spk-ext-pa-info = <0 0 5 0>;
+	sprd,spk-ext-pa-gpio = <&ap_gpio 63 0>;
+	sprd,spk-ext-pa-names = "ext_spk_r";
+};
+
+&sound_sprd_ap_alliis {
+	status = "okay";
+};
+
+&sprd_headset {
+	status = "okay";
+};
+
+&i2c2 {
+	status = "okay";
+	clock-frequency = <400000>;
+	acc_gyro_bmi160@69{
+		compatible = "bosch-sensortec,bmi160";
+		reg = <0x69>;
+		gpios = <&ap_gpio 55 0>;
+	};
+
+	ltr_558als@23{
+		compatible = "LITEON,ltr_558als";
+		reg = <0x23>;
+		gpios = <&ap_gpio 52 0>;
+		sensitive = <1000 40 35
+					1200 1000 48>;
+		luxcorrection = <2330>;
+	};
+};
+
+&i2c4 {
+	status = "okay";
+	clock-frequency = <400000>;
+	flash_ic: flash-ic@63 {
+		compatible = "sprd,flash-aw3648";
+		reg = <0x63>;
+		sprd,flash-ic = <3648>;
+		sprd,torch = <1>;
+		sprd,preflash = <1>;
+		sprd,highlight = <1>;
+		sprd,torch-level = <128>;
+		sprd,preflash-level = <128>;
+		sprd,highlight-level = <128>;
+		sprd,lvfm-enable = <1>;
+		flash-chip-en-gpios = <&ap_gpio 89 0>;
+		flash-en-gpios = <&ap_gpio 76 0>;
+	};
+
+};
+
+&spi0 {
+	/*used for fingerprint sensor*/
+	status = "okay";
+	clocks = <&clk_ap_apb_gates 5>, <&clk_spi0>, <&clk_twpll_192m>;
+};
+
+&spi1 {
+	clocks = <&clk_aon_eb0_gates 9>, <&clk_hs_spi>, <&clk_twpll_192m>;
+};
+
+&spi2 {
+	clocks = <&clk_ap_apb_gates 7>, <&clk_spi2>, <&clk_twpll_192m>;
+};
+
+&hsphy {
+	vdd-supply = <&vddusb33>;
+};
+
+&usb {
+	sprd,cable-detection-method = "gpios";
+	sprd,vbus-gpios = <&pmic_eic 0 0>;
+	sprd,usb-id-gpios = <&ap_eic 4 0>;
+};
+
+&iommu_dispc {
+	status = "okay";
+};
+
+&iommu_gsp {
+	status = "okay";
+};
+
+&iommu_vsp {
+	status = "okay";
+};
+
+&dcam {
+	status = "okay";
+};
+
+&iommu_dcam {
+	status = "okay";
+};
+
+&isp {
+	status = "okay";
+};
+
+&iommu_isp {
+	status = "okay";
+};
+
+&csi0 {
+	status = "okay";
+};
+
+&cpp {
+	status = "okay";
+};
+
+&iommu_cpp {
+	status = "okay";
+};
+
+&csi1 {
+	status = "okay";
+};
+
+&iommu_jpg {
+	 status = "okay";
+};
+
+
+&i2c0 {
+	status = "okay";
+	clock-frequency = <400000>;
+
+	sensor_main: sensor-main@20 {
+		compatible = "sprd,sensor-main";
+		reg = <0x20>;
+		clock-names = "clk_src","sensor_eb",
+			"clk_96m","clk_76m8",
+			"clk_48m","clk_26m";
+		clocks = <&clk_sensor0>, <&clk_mm_ckg_gates 1>,
+			<&clk_twpll_96m>,<&clk_twpll_76m8>,
+			<&clk_twpll_48m>,<&ext_26m>;
+		vddio-supply = <&vddcamio>;
+		avdd-gpios = <&ap_gpio 134 0>;
+		vddcamd-supply = <&vddcamd>;
+		vddcammot-supply = <&vddcammot>;
+		reset-gpios = <&ap_gpio 44 0>;
+		power-down-gpios = <&ap_gpio 46 0>;
+		host = "dcam1";
+		port {
+			sensor_main_0: endpoint {
+				remote-endpoint = <&phy0_out>;
+			};
+		};
+	};
+};
+
+&i2c1 {
+	status = "okay";
+	clock-frequency = <400000>;
+
+	sensor_sub: sensor-sub@20 {
+		compatible = "sprd,sensor-sub";
+		reg = <0x20>;
+		clock-names = "clk_src","sensor_eb",
+			"clk_96m","clk_76m8",
+			"clk_48m","clk_26m";
+		clocks = <&clk_sensor1>, <&clk_mm_ckg_gates 2>,
+			<&clk_twpll_96m>,<&clk_twpll_76m8>,
+			<&clk_twpll_48m>,<&ext_26m>;
+		vddio-supply = <&vddcamio>;
+		vddcama-supply = <&vddcama>;
+		vddcamd-supply = <&vddcamd>;
+		reset-gpios = <&ap_gpio 45 0>;
+		power-down-gpios = <&ap_gpio 47 0>;
+		host = "dcam0";
+		port {
+			sensor_sub_0: endpoint {
+				remote-endpoint = <&phy1_out>;
+			};
+		};
+	};
+
+	sensor_main2: sensor-main2@6C {
+		port {
+			sensor_main_2: endpoint {
+			};
+		};
+	};
+};
+
+&mipi_csi_phy1 {
+	status = "okay";
+	sprd,phyid = <1>;
+	sprd,csi = <&csi0>;
+	port {
+	phy1_out: endpoint {
+		remote-enpoint = <&sensor_sub_0>;
+		};
+	};
+};
+
+&mipi_csi_phy0 {
+	status = "okay";
+	sprd,phyid = <0>;
+	sprd,csi = <&csi1>;
+	port {
+		phy0_out: endpoint {
+			remote-enpoint = <&sensor_main_0>;
+		};
+	};
+};
+
+&mipi_csi_phy0_s {
+	status = "okay";
+	sprd,phyid = <3>;
+	sprd,csi = <&csi1>;
+	port {
+	phy0_s_out: endpoint {
+		remote-enpoint = <&sensor_main_2>;
+		};
+	};
+};

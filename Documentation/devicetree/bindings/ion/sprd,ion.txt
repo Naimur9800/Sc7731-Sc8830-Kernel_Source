@@ -1,0 +1,76 @@
+Device-Tree bindings for SPREADTRUM ION
+
+SPRD ION
+=========
+
+The SPRD ION device tree node contains up to four heap nodes
+describing each of the ION heaps.
+
+Required properties:
+ - compatible: Should be "sprd,ion"
+ - #address-cells: should be <1>
+ - #size-cells: should be <0>
+
+ION heap
+=========
+Required properties:
+ - reg: Should be <0> to <31>
+         This describes ION heap id.
+ - label: heap name
+ - type: Should be <0> to <5>
+          This is matched with enum ion_heap_type in ion.h.
+
+Optional properties:
+ - memory-region: ION heap's memory region.
+   Usually, this is used when ION heap need reserved memory.
+
+Examples:
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		mm_reserved: multimediabuffer@9872d000{
+			reg = <0x9872d000 0x7100000>;
+		};
+
+		overlay_reserved: overlaybuffer@9f82d000{
+			reg = <0x9f82d000 0x322000>;
+		};
+
+		fb_reserved: framebuffer@9fb4f000{
+			reg = <0x9fb4f000 0x4b1000>;
+		};
+	};
+
+	ion {
+		compatible = "sprd,ion";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		heap@0 {
+			reg = <0>;
+			label = "system";
+			type = <0>;
+		};
+
+		heap@1 {
+			reg = <1>;
+			label = "carveout_mm";
+			type = <2>;
+			memory-region = <&mm_reserved>;
+		};
+
+		heap@2 {
+			reg = <2>;
+			label = "carveout_overlay";
+			type = <2>;
+			memory-region = <&overlay_reserved>;
+		};
+
+		heap@3 {
+			reg = <3>;
+			label = "carveout_fb";
+			type = <2>;
+			memory-region = <&fb_reserved>;
+		};
+	};

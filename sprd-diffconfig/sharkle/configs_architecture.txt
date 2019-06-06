@@ -1,0 +1,69 @@
+sharkle configs file architecture
+
+32bit smart phone   :    sharkle go
+32bit feature phone :    kaios/mocor5
+64bit smart phone   :    sharkle
+
+||
+||if (32bit)
+||{
+||        if (smart phone)
+||        {
+||                kernel/arch/arm/config/sprd_sharkle_defconfig
+||        }
+||        =======>||boardfile
+||                ||{
+||                ||        kernel/sprd-diffconfig/sharkle/arm/$(TARGET_BOARD)_diff_config
+||                ||}
+||                =======>||if (TARGET_BUILD_VARIANT == user)
+||                        ||{
+||                        ||        kernel/sprd-diffconfig/sharkle/arm/aarch32_user_diff_config
+||                        ||}
+||                        =======>||if (BOARD_TEE_CONFIG == trusty)
+||                                ||{
+||                                ||        kernel/sprd-diffconfig/sharkle/arm/trusty_aarch32_diff_config
+||                                ||}
+||
+||        if (feature phone)
+||        {
+||                kernel/arch/arm/config/sprd_sharkle_fp_defconfig
+||        }
+||        =======>||boardfile
+||                ||{
+||                ||        if (mocor5)
+||                ||        {
+||                ||                 kernel/sprd-diffconfig/sharkle/arm/mocor5_diff_config
+||                ||                 kernel/sprd-diffconfig/sharkle/arm/$(TARGET_BOARD)_mocor5_diff_config
+||                ||        }
+||                ||        else if (kaios)
+||                ||        {
+||                ||                 kernel/sprd-diffconfig/sharkle/arm/kaios_diff_config
+||                ||                 kernel/sprd-diffconfig/sharkle/arm/$(TARGET_BOARD)_kaios_diff_config
+||                ||        }
+||                ||}
+||                =======>||if (TARGET_BUILD_VARIANT == user)
+||                        ||{
+||                        ||        kernel/sprd-diffconfig/sharkle/arm/aarch32_user_diff_config
+||                        ||}
+||                        =======>||if (BOARD_TEE_CONFIG == trusty)
+||                                ||{
+||                                ||        kernel/sprd-diffconfig/sharkle/arm/trusty_aarch32_diff_config
+||                                ||}
+||}
+||else if (64bit)
+||{
+||        kernel/arch/arm64/config/sprd_sharkle_defconfig
+||
+||=======>||boardfile
+||        ||{
+||        ||        kernel/sprd-diffconfig/sharkle/arm64/$(TARGET_BOARD)_diff_config
+||        ||}
+||        =======>||if (TARGET_BUILD_VARIANT == user)
+||                ||{
+||                ||        kernel/sprd-diffconfig/sharkle/arm64/aarch64_user_diff_config
+||                ||}
+||                =======>||if (BOARD_TEE_CONFIG == trusty)
+||                        ||{
+||                        ||        kernel/sprd-diffconfig/sharkle/arm64/trusty_aarch64_diff_config
+||                        ||}
+||}

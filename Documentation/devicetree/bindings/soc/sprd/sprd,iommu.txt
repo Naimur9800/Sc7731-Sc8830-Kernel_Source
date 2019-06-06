@@ -1,0 +1,98 @@
+Spreadtrum Iommu Device
+
+The Iommu device used to Device for virtual address translate to physical address,
+In Spreadtrum Soc, there are multible Iommu devices built-in Multimedia devices,
+and for something special, there exists one type called Iommupf which used quite
+different with traditional Iommu, it works based on channel concepts.
+
+Required properties:
+
+- compatible: should be
+	a) "sprd,iommu-gsp" , for gsp module in sharkl/tshark soc;
+	b) "sprd,iommu-mm" , for multimedia module in sharkl/tshark soc;
+	c) "sprd,iommu-vsp" , for vsp/vpp module in whale/whale2 soc;
+	d) "sprd,iommu-dispc" , for dispc module in whale soc;
+	e) "sprd,iommu-dcam" , for dcam module in whale soc;
+	f) "sprd,iommu-vpp" , for vpp module in whale soc;
+	g) "sprd,iommu-gsp0" , for gsp0 module in whale/whale2 soc;
+	h) "sprd,iommu-gsp1" , for gsp1 module in whale/whale2 soc;
+	i) "sprd,iommu-cpp-jpg" , for cpp/jpg module in whale2 soc;
+	j) "sprd,iommupf-r1-dcam" , for dcam/isp module in whale2 soc;
+	k) "sprd,iommupf-r2-dispc" , for dispc module whale2 soc;
+	l) "sprd,iommuexle-jpg", for jpeg module in sharkle soc;
+	m) "sprd,iommuexle-dcam", for dcam module in sharkle soc;
+	n) "sprd,iommuexle-isp", for isp module in sharkle soc;
+	o) "sprd,iommuexle-cpp", for cpp module in sharkle soc;
+
+- reg: physical base address for Iommu page ram/control register and length
+	of memory mapped region. Also indicated iova pf pool virtual address range.
+	for iommupf support fullmode, also need to indicate fullmode pool virtual
+	address range.
+- reg_names: indicated resources usage.
+- clock-names: List of clock input name strings sorted in the same
+		order as the clocks property.  Consumers drivers
+		will use clock-names to match clock input names
+		with clocks specifiers.
+- clocks: The freq of source clk needed for Iommu.
+- status: default disable in soc level.
+- #iommu-cells: indicate each master own how many iommu slaves, always zero.
+
+Optional properties: for Iommupf extra attributes. It must be careful and
+		caution, for channel parameters alway decided by Soc Level,
+		shouldn't random config by software.
+- fullmode-en: support fullmode or not, 1: yes, 0:not;
+- total-ch-num: total prefetch channel number;
+- pf-ch-write-start: prefetch write channel start number, must less or equal
+		than write end;
+- pf-ch-write-end: prefetch write channel end number, if zero, means no write
+		channel exist;
+- pf-ch-read-start: =prefetch read channel start number, must less or equal
+		than write end;
+- pf-ch-read-end: = prefetch read channel end number, if zero, means no read
+		channel exist;
+- fullmode-ch-write: = fullmode read channel number, if fullmode-en equals zero,
+	this attribute would not take effect;
+- fullmode-ch-read: = fullmode read channel number, if fullmode-en equals zero,
+	this attribute would not take effect;
+
+Example:
+
+iommu_vsp: iommu@61300000 {
+	compatible  = "sprd,iommu-vsp";
+	reg = <0 0x61300000 0 0x20000>,
+		<0 0x61320000 0 0x2000>,
+		<0 0x10000000 0 0x8000000>;
+	reg_name = "pgt","ctrl_reg","iova pool";
+	clock-names = "clk_vsp_ahb_mmu_eb","clk_vsp_apb_gate";
+	clocks = <&clk_ahb_vsp_gate 2>,
+		<&clk_aon_apb_gate1 25>;
+	status = "disable";
+	#iommu-cells = <0>;
+};
+
+iommupf_dcam: iommu@62c00000 {
+	compatible = "sprd,iommupf-r1-dcam";
+	reg = <0 0x62c00000 0 0x2000>,
+		<0 0x62c02000 0 0x2000>,
+		<0 0x90000000 0 0x2000000>,
+		<0 0xa0000000 0 0x40000000>;
+	reg_name = "pgt",
+		"ctrl_reg",
+		"iova fullmode pool",
+		"iova pf pool";
+	clock-names = "clk_cam_mmupf_ahb_eb",
+		"clk_cam_apb_eb";
+	clocks = <&clk_ahb_cam_gate 11>,
+		<&clk_aon_apb_gate1 29>;
+	fullmode-en = <1>;
+	total-ch-num = <24>;
+	pf-ch-write-start = <0>;
+	pf-ch-write-end = <20>;
+	pf-ch-read-start = <21>;
+	pf-ch-read-end = <23>;
+	fullmode-ch-write = <0>;
+	fullmode-ch-read = <21>;
+	status = "disable";
+	#iommu-cells = <0>;
+};
+

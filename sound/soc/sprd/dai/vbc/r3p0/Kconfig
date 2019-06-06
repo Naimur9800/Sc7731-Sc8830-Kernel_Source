@@ -1,0 +1,6 @@
+config SND_SOC_SPRD_VBC_R3P0
+	tristate #"VBC R3P0"
+	depends on SPRD_MCDT && SPRD_AUDIO_SIPC
+	help
+	  If the chip is the series of whale(sp9850/sp9860),
+	  set Y or M, else N.

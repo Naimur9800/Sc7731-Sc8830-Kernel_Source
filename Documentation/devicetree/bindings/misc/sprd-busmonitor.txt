@@ -1,0 +1,19 @@
+Spreadtrum bus monitor
+
+Required properties:
+- compatible: "sprd,sc9838-busmon".
+- reg: Address range of the bus-monitor registers.
+- interrupt: Should contain the bus-monitor interrupt number.
+
+Example:
+	busmonitor: busmonitor@30040000 {
+		compatible = "sprd,sc9838-busmon";
+		reg = <0 30020000 0 0x100>,
+		      <0 30040000 0 0xa0000>,
+		      <0 20f00000 0 0x300000>;
+		interrupts = <GIC_PPI 86 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_PPI 61 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_PPI 62 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_PPI 63 IRQ_TYPE_LEVEL_HIGH>;
+	};
+

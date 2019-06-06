@@ -1,0 +1,215 @@
+/*****************************************
+Do not modify dts file, please modify according dtsi file
+******************************************/
+#include "../sp7731e-1h20-native.dts"
+#include "sprd_base_diff.dtsi"
+
+&i2c2 {
+	clock-frequency = <400000>;
+	status = "okay";
+
+	/delete-node/ adaptive-touchscreen@38;
+
+	focaltech@38 {
+		compatible = "focaltech,fts";
+		reg = <0x38>;
+		focaltech,reset-gpio = <&ap_gpio 63 0>;
+		focaltech,irq-gpio = <&ap_gpio 64 0x2002>;
+		focaltech,display-coords = <0 0 479 799>;
+		focaltech,max-touch-number = <10>;
+
+		focaltech,have-key;
+		focaltech,key-number = <3>;
+		focaltech,keys = <158 172 580>;
+		focaltech,key-y-coord = <900>;
+		focaltech,key-x-coords = <80 400 240>;
+		focaltech,comb-key-x-coords = <800 158 580>;
+	};
+	tlsc6x_ts@2e {
+		compatible = "tlsc6x,tlsc6x_ts";
+		reg = <0x2e>;
+		gpios = <&ap_gpio 63 0
+			&ap_gpio 64 0>;
+		vdd_name = "vdd28";
+		virtualkeys = <400 900 30 30
+				240 900 30 30
+				80 900 30 30>;
+		TP_MAX_X = <479>;
+		TP_MAX_Y = <799>;
+	};
+};
+
+&i2c1{
+	clock-frequency = <400000>;
+	status = "okay";
+
+	mc3xxx@4c{
+		compatible = "mcube,mc3xxx";
+		reg = <0x4c>;
+		gpios = <&ap_gpio 54 0>;
+		poll_interval = <10>;
+		min_interval = <1>;
+		g_range = <0>;
+		axis_maps_x = <0>;
+		axis_maps_y = <1>;
+		axis_maps_z = <2>;
+		negate_x = <1>;
+		negate_y = <1>;
+		negate_z = <0>;
+	};
+
+	kionix_acc@0E{
+		compatible = "Kionix,accel";
+		reg = <0x0E>;
+		poll_interval = <10>;
+		min_interval = <10>;
+		g_range = <0>;
+		accel_res = <0>;
+		accel_irq_use_drdy = <1>;
+		accel_direction = <3>;
+		gpios = <&ap_gpio 54 0>;
+	};
+
+	stk8baxx_acc@18{
+		compatible = "stk,stk8baxx";
+		reg = <0x18>;
+		stk,direction = <1>;
+	};
+};
+
+/*****************************************
+cam setting
+******************************************/
+&i2c0 {
+	/delete-node/ sensor-main@3c;
+	/delete-node/ sensor-sub@21;
+};
+
+&i2c0 {
+	sensor_main: sensor-main@3c {
+		compatible = "sprd,sensor-main";
+		reg = <0x3c>;
+		clock-names = "clk_src", "sensor_eb",
+			"clk_96m", "clk_76m8",
+			"clk_48m", "clk_26m";
+		clocks  = <&clk_sensor0>,
+			<&clk_mm_ckg_gates 1>,
+			<&clk_twpll_96m>,
+			<&clk_twpll_76m8>,
+			<&clk_twpll_48m>,
+			<&ext_26m>;
+		vddio-supply = <&vddcamio>;
+		vddcama-supply = <&vddcama>;
+		vddcamd-supply = <&vddcamd>;
+		vddcammot-supply = <&vddcammot>;
+		reset-gpios = <&ap_gpio 37 0>;
+		power-down-gpios = <&ap_gpio 38 0>;
+		host = "dcam0";
+		port {
+			sensor_main_0: endpoint {
+				remote-endpoint = <&phy0_out_main>;
+			};
+		};
+	};
+
+	sensor_sub: sensor-sub@21 {
+		compatible = "sprd,sensor-sub";
+		reg = <0x21>;
+		clock-names = "clk_src","sensor_eb",
+			"clk_96m", "clk_76m8",
+			"clk_48m", "clk_26m";
+		clocks = <&clk_sensor0>,
+			<&clk_mm_ckg_gates 1>,
+			<&clk_twpll_96m>,
+			<&clk_twpll_76m8>,
+			<&clk_twpll_48m>,
+			<&ext_26m>;
+		vddio-supply = <&vddcamio>;
+		vddcama-supply = <&vddcama>;
+		vddcamd-supply = <&vddcamd>;
+		vddcammot-supply = <&vddcammot>;
+		reset-gpios = <&ap_gpio 46 0>;
+		power-down-gpios = <&ap_gpio 39 0>;
+		host = "dcam0";
+		port {
+			sensor_sub_0: endpoint {
+				remote-endpoint = <&phy0_out_sub>;
+			};
+		};
+	};
+};
+
+&pmic_flash{
+	compatible = "sprd,sc2720-flash";
+	reg=<0x1f4>;
+};
+
+/ {
+	zte_misc: zte_misc {
+		status = "okay";
+		compatible = "zte-misc";
+	};
+
+	charger_policy_service {
+		compatible = "zte,charger-policy-service";
+		status="okay";
+		policy,enable = <1>;
+		policy,expired-mode-enable = <1>;
+		policy,retry-times = <10>;
+		policy,timeout-seconds = <64800>;/* 18 hours */
+		policy,max-capacity = <70>;
+		policy,min-capacity = <50>;
+		policy,bms-phy-name = "battery";
+		policy,battery-phy-name = "battery";
+	};
+};
+
+&battery {
+	io-channels = <&pmic_adc 0>,<&pmic_adc 4>,<&pmic_adc 5>,
+			<&pmic_adc 14>;
+	io-channel-names = "adc_batt_id","adc_temp","adc_vbat",
+			"adc_vchg";
+	temp-support = <1>;
+	adp-cdp-cur = <550>;
+	adp-dcp-cur = <550>;
+	adp-sdp-cur = <500>;
+	chg-end-vol = <4350>;
+	chg-end-vol-check = <4330>;
+	chg-bat-safety-vol = <4430>;
+	rechg-vol = <4270>;
+	chg-polling-time = <15>;
+	rsense-real = <100>;
+	bat-id-list = <270 390 0>; /* weike:270K tianmao:390K weike2: 0K*/
+	rint = <389>;
+	cnom = <1664>;
+	ocv-tab-vol = <4311 4248 4193 4141 4091 4052 3988
+			3962 3924 3869 3840 3819 3802 3788
+			3776 3762 3745 3721 3692 3679 3400>;
+	rint-1 = <389>;
+	cnom-1 = <1400>;
+	ocv-tab-vol-1 =  <4311 4248 4193 4141 4091 4052 3988
+			3962 3924 3869 3840 3819 3802 3788
+			3776 3762 3745 3721 3692 3679 3400>;
+	rint-2 = <293>;
+	cnom-2 = <1452>;
+	ocv-tab-vol-2 =  <4309 4230 4169 4112 4065 4012 3972
+			3933 3894 3849 3814 3792 3778 3774
+			3771 3764 3738 3665 3577 3518 3400>;
+	ocv-tab-cap = <100  95   90   85   80   75   70
+			65   60   55   50   45   40   35
+			30   25   20   15   10   5    0>;
+	/*30mohm,if temp-table-mode = <1>, use it*/
+	temp-comp-res = <30>;
+	temp-tab-val = <1124 1104 1079 1047 1010 967
+			917 861 801 738 672 607
+			543 482 425 372 325 282 243>;
+	/* temperature + 1000,750 = 1000 + (-250)*/
+	temp-tab-temp = <750 800 850 900 950 1000
+			1050 1100 1150 1200 1250 1300
+			1350 1400 1450 1500 1550 1600 1650>;
+	jeita-temp-tab = <1000 1050 1100 1450 1550>;
+	jeita-temp-recovery-tab = <1030 1080 1130 1420 1520>;
+	jeita-cur-tab = <0 420 420 0x7fff 500 0>;
+	jeita-cccv-tab = <4350 4350 4350 4350 4100 4100>;
+	batt_full_design_capacity = <1400>;
+};

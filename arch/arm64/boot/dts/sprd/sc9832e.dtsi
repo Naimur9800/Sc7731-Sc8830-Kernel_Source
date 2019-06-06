@@ -1,0 +1,386 @@
+/*
+ * Spreadtrum SC9832e SoC DTS file
+ *
+ * Copyright (C) 2017, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#include "sharkle.dtsi"
+#include "sharkle-core.dtsi"
+#include "sc9832e-clocks.dtsi"
+#include <dt-bindings/pinctrl/sc9832e_pinctrl.h>
+
+/ {
+	cpuinfo_hardware = "Unisoc SC9832e";
+
+	gsp: sprd-gsp {
+		compatible = "sprd,gsp-lite_r2p0-sharkle";
+		name = "sprd-gsp";
+		core-cnt = <1>;
+		io-cnt = <7>;
+		cores = <&gsp_core0>;
+	};
+
+	deep: deep-sleep {
+			compatible = "sprd,deep-sleep";
+
+			sprd,sys-ap-ahb = <&ap_ahb_controller>;
+			sprd,sys-ap-apb = <&ap_apb_controller>;
+			sprd,sys-pmu-apb = <&pmu_apb_controller>;
+			sprd,sys-aon-apb = <&aon_apb_controller>;
+
+			sprd,sys-ap-intc0 = <&intc0_controller>;
+			sprd,sys-ap-intc1 = <&intc1_controller>;
+			sprd,sys-ap-intc2 = <&intc2_controller>;
+			sprd,sys-ap-intc3 = <&intc3_controller>;
+			sprd,sys-aon-intc = <&aon_intc_controller>;
+
+			sprd,deep-ap-clk0 = <&clk_ap_apb &clk_nandc_ecc
+				&clk_uart1 &clk_i2c0 &clk_i2c1 &clk_i2c2
+				&clk_i2c3 &clk_i2c4 &clk_spi0 &clk_spi2
+				&clk_hs_spi &clk_ce &clk_nandc_2x
+				&clk_sdio0_2x &clk_sdio1_2x &clk_emmc_2x>;
+
+			sprd,deep-ap-clk1 = <&clk_otg_ref &clk_gsp
+				&clk_dispc0>;
+			sprd,deep-ap-clk2 = <&clk_iis0>;
+			sprd,deep-ap-clk3 = <&clk_vsp>;
+			sprd,deep-ap-clkp = <&ext_26m &clk_twpll_12m
+				&clk_twpll_153m6 &clk_twpll_76m8>;
+
+			clocks = <&clk_ap_apb>, <&clk_nandc_ecc>, <&clk_uart1>,
+				   <&clk_i2c0>, <&clk_i2c1>, <&clk_i2c2>,
+				   <&clk_i2c3>, <&clk_i2c4>, <&clk_spi0>,
+				   <&clk_spi2>, <&clk_hs_spi>, <&clk_ce>,
+				   <&clk_nandc_2x>, <&clk_sdio0_2x>,
+				   <&clk_sdio1_2x>, <&clk_emmc_2x>,
+				   <&clk_otg_ref>, <&clk_gsp>,
+				   <&clk_dispc0>, <&clk_iis0>, <&clk_vsp>,
+				   <&ext_26m>, <&clk_twpll_12m>,
+				   <&clk_twpll_153m6>, <&clk_twpll_76m8>;
+			};
+
+	sprd-hotplug {
+		enable-dynamic-hotplug;
+	};
+
+};
+
+&pin_controller {
+	pinctrl-names = "pins-shutdown";
+	pinctrl-0 = <&power_off>;
+	power_off: poc {
+		pins = <SC9832_RFSEN0 0x30>,
+		       <SC9832_RFSCK0 0x30>,
+		       <SC9832_RFSDA0 0x30>;
+	};
+	/* for sys iis0/wcn iis */
+	vbc_iis1_0: reg2-iis0-0 {
+		pins = <WCN_IIS_SYS_SEL 0x0>;
+	};
+	ap_iis0_0: reg2-iis0-1 {
+		pins = <WCN_IIS_SYS_SEL 0x1>;
+	};
+	tgdsp_iis0_0: reg3-iis0-2 {
+		pins = <WCN_IIS_SYS_SEL 0x2>;
+	};
+	tgdsp_iis1_0: reg2-iis0-3 {
+		pins = <WCN_IIS_SYS_SEL 0x3>;
+	};
+	pubcp_iis0_0: reg2-iis0-4 {
+		pins = <WCN_IIS_SYS_SEL 0x4>;
+	};
+
+	/* for sys iis1 */
+	ap_iis0_1: reg3-iis1-0 {
+		pins = <IIS1_SYS_SEL 0x0>;
+	};
+	tgdsp_iis0_1: reg3-iis1-1 {
+		pins = <IIS1_SYS_SEL 0x2>;
+	};
+	tgdsp_iis1_1: reg3-iis1-2 {
+		pins = <IIS1_SYS_SEL 0x3>;
+	};
+	pubcp_iis0_1: reg3-iis1-3 {
+		pins = <IIS1_SYS_SEL 0x1>;
+	};
+	vbc_iis2_1: reg3-iis1-4 {
+		pins = <IIS1_SYS_SEL 0x4>;
+	};
+	vbc_iis3_1: reg3-iis1-5 {
+		pins = <IIS1_SYS_SEL 0x5>;
+	};
+};
+
+&soc{
+
+	ap-ahb {
+
+		dispc0: dispc@20800000 {
+			compatible = "sprd,display-controller";
+			reg = <0x0 0x20800000 0x0 0x1000>;
+			dev-id = <0>;
+			sprd,dpi_clk_div = <1>;
+			interrupts = <GIC_SPI 46 IRQ_TYPE_LEVEL_HIGH>;
+			clock-src = <384000000 128000000>;
+			clock-names =   "clk_dispc_core_parent",
+					"clk_dispc_dpi_parent",
+					"clk_dispc_core",
+					"clk_dispc_dpi",
+					"clk_dispc_ahb_eb";
+
+			clocks = <&clk_twpll_384m>,
+				<&clk_twpll_128m>,
+				<&clk_dispc0>,
+				<&clk_dispc0_dpi>,
+				<&clk_ap_ahb_gates 1>;
+			iommus = <&iommu_dispc>;
+			status = "disabled";
+
+			sprd,ip = "dpu-lite-r1p0";
+			sprd,soc = "sharkle";
+
+				/* output port */
+			port {
+				dispc0_out: endpoint@0 {
+
+					remote-endpoint = <&dsi0_in>;
+				};
+			};
+		};
+
+		dsi0: dsi@21800000 {
+			compatible = "sprd,dsi-controller";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			dev-id = <0>;
+			reg = <0x0 0x21800000 0x0 0x1000>;
+			interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 49 IRQ_TYPE_LEVEL_HIGH>;
+			clock-names =   "clk_dsi0_ahb_eb";
+			clocks = <&clk_ap_ahb_gates 0>;
+			status = "disabled";
+
+			sprd,ip = "sprd,dsi-ctrl-r1p0";
+			sprd,soc = "sharkle";
+
+			/* output port */
+			port@0 {
+				reg = <0>;
+				dsi0_out: endpoint {
+					remote-endpoint = <&dphy0_in>;
+				};
+			};
+
+				/* input port */
+			port@1 {
+				reg = <1>;
+				dsi0_in: endpoint {
+					remote-endpoint = <&dispc0_out>;
+				};
+			};
+		};
+
+		dphy0: dphy@0 {
+			compatible = "sprd,mipi-dsi-phy";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0x0 0x21800000 0x0 0x1000>;
+			status = "disabled";
+
+			sprd,ip = "sprd,megacores-sharkle";
+			sprd,soc = "sharkle";
+
+			/* output port */
+			port@0 {
+				reg = <0>;
+				dphy0_out: endpoint {
+					remote-endpoint = <&panel_in>;
+				};
+			};
+
+			/* input port*/
+			port@1 {
+				reg = <1>;
+				dphy0_in: endpoint {
+					remote-endpoint = <&dsi0_out>;
+				};
+			};
+		};
+	};
+
+	mm {
+		dcam: dcam@60800000 {
+			compatible = "sprd,dcam";
+			reg = <0 0x60800000 0 0x1000>,
+				<0 0x60801000 0 0x1000>,
+				<0 0x60802000 0 0x1000>,
+				<0 0x60803000 0 0x1000>,
+				<0 0x60804000 0 0x4000>,
+				<0 0x60808000 0 0x4000>;
+			interrupts = <GIC_SPI 45 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 66 IRQ_TYPE_LEVEL_HIGH>;
+			sprd,cam-ahb-syscon = <&mm_ahb_controller>;
+			sprd,aon-apb-syscon = <&aon_apb_controller>;
+			sprd,syscon-pmu-apb = <&pmu_apb_controller>;
+			sprd,isp = <&isp>;
+			sprd,dcam-count = <2>;
+			iommus = <&iommu_dcam>;
+			status = "disable";
+		};
+
+		iommu_dcam: iommu@60800000 {
+			compatible = "sprd,iommuexle-dcam";
+			reg = <0 0x60800000 0 0x2100>,
+				<0 0x60802100 0 0x60>,
+				<0 0x40000000 0 0x10000000>;
+			reg_name = "mmu_interrupt_reg","mmu_reg",
+				"iova pool";
+			status = "disabled";
+			#iommu-cells = <0>;
+		};
+
+		isp: isp@60a00000 {
+			compatible = "sprd,isp";
+			reg = <0 0x60a00000 0 0x100000>;
+			interrupts = <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 125 IRQ_TYPE_LEVEL_HIGH>;
+			sprd,cam-ahb-syscon = <&mm_ahb_controller>;
+			sprd,aon-apb-syscon = <&aon_apb_controller>;
+			sprd,isp-count = <1>;
+			iommus = <&iommu_isp>;
+			status = "disable";
+		};
+
+		iommu_isp: iommu@60a00000 {
+			compatible = "sprd,iommuexle-isp";
+			/* sharkle isp need pagetable size */
+			reg = <0 0x60a00000 0 0x800>,
+				<0 0x60a00800 0 0x400>,
+				<0 0x50000000 0 0x10000000>;
+			reg_name = "mmu_interrupt_reg","mmu_reg",
+				"iova pool";
+			status = "disabled";
+			#iommu-cells = <0>;
+		};
+	};
+};
+
+&pwms {
+	clock-names = "sprd_pwm_clk_parent", "clk_pwm";
+	clocks = <&ext_26m>, <&clk_pwm1>;
+};
+
+&vsp {
+	clock-names = "clk_ahb_gate_vsp_eb",
+			"clk_vsp";
+	clocks = <&clk_ap_ahb_gates 2>,
+			<&clk_vsp>;
+};
+
+&jpg {
+	clock-names = "clk_mm_eb",
+			"clk_axi_gate_jpg",
+			"clk_ahb_gate_jpg_eb",
+			"clk_jpg";
+	clocks = <&clk_aon_apb_gates0 25>,
+			<&clk_mm_ahb_gates 6>,
+			<&clk_mm_ahb_gates 5>,
+			<&clk_jpg>;
+};
+
+
+
+&sdio3 {
+	clock-names = "sdio_clk","sdio_clk_source","sdio_ahb_enable";
+	clocks = <&clk_emmc_2x>,<&clk_rpll_390m>,<&clk_ap_ahb_gates 11>;
+};
+&sdio0 {
+	clock-names = "sdio_clk","sdio_clk_source","sdio_ahb_enable";
+	clocks = <&clk_sdio0_2x>,<&clk_rpll_390m>,<&clk_ap_ahb_gates 8>;
+};
+
+&sprd_wdt {
+	sprd,wdt-phandle = <&pmic_wdt>;
+	clocks = <&clk_aon_apb_gates1 8>, <&clk_aon_apb_rtc_gates 9>;
+};
+
+&dcam {
+	clock-names = "dcam_eb",
+				"clk_gate_eb",
+				"clk_cphy_cfg_gate_eb",
+				"clk_mm_eb",
+				"clk_mm_ahb",
+				"clk_mm_ahb_parent",
+				"dcam_clk",
+				"dcam_clk_76m8",
+				"dcam_clk_153m6",
+				"dcam_clk_256m",
+				"dcam_clk_307m2",
+				"dcam_clk_parent";
+	clocks = <&clk_mm_ahb_gates 0>,
+				<&clk_mm_ahb_gates 6>,
+				<&clk_mm_ckg_gates 0>,
+				<&clk_aon_apb_gates0 25>,
+				<&clk_mm_ahb>,
+				<&clk_twpll_153m6>,
+				<&clk_dcam_if>,
+				<&clk_twpll_76m8>,
+				<&clk_twpll_153m6>,
+				<&clk_twpll_256m>,
+				<&clk_twpll_307m2>,
+				<&clk_twpll_307m2>;
+};
+
+&isp {
+	clock-names = "isp_eb", "isp_axi_eb",
+				"isp_clk",
+				"isp_clk_128m",
+				"isp_clk_256m",
+				"isp_clk_307m2",
+				"isp_clk_384m",
+				"isp_clk_468m",
+				"isp_clk_parent";
+	clocks = <&clk_mm_ahb_gates 1>,
+				<&clk_mm_ckg_gates 3>,
+				<&clk_mm_isp>,
+				<&clk_twpll_128m>,
+				<&clk_twpll_256m>,
+				<&clk_twpll_307m2>,
+				<&clk_twpll_384m>,
+				<&clk_isppll_468m>,
+				<&clk_isppll_468m>;
+};
+
+&csi0 {
+	clock-names = "clk_mipi_csi_gate_eb",
+				"clk_csi_eb",
+				"clk_csi_from";
+	clocks = <&clk_mm_ckg_gates 4>,
+				<&clk_mm_ahb_gates 3>,
+				<&clk_mipi_csi 16>;
+};
+
+&cpp {
+	clock-names = "cpp_eb",
+				"cpp_axi_eb";
+	clocks = <&clk_mm_ahb_gates 2>,
+				<&clk_aon_apb_gates1 14>;
+	/* hw: cpp, isp use the same clk */
+	ref-node = <&isp>;
+};
+
+&csi1 {
+	clock-names = "clk_mipi_csi_gate_eb",
+				"clk_csi_eb",
+				"clk_csi_from";
+	clocks = <&clk_mm_ckg_gates 5>,
+				<&clk_mm_ahb_gates 4>,
+				<&clk_mcsi_s 16>;
+};
+
+&vaudio {
+	clocks = <&clk_audio_gate 8>;
+	clock-names = "tuned_26m";
+};

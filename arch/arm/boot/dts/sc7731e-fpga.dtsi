@@ -1,0 +1,203 @@
+/*
+ * Spreadtrum SC7731e SoC DTS file
+ *
+ * Copyright (C) 2016, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+/dts-v1/;
+
+#include "pike2.dtsi"
+#include "sc7731e-clocks.dtsi"
+#include "sc7731e-modem.dtsi"
+#include <dt-bindings/pinctrl/sc9833_pinctrl.h>
+
+/ {
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		cpu0: cpu@0 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a7";
+			enable-method = "sprd,sc9830-smp";
+			reg = <0x0>;
+			sprd,sys-ap-ahb = <&ap_ahb_controller>;
+			sprd,sys-aon-apb = <&aon_apb_controller>;
+			sprd,sys-pmu-apb = <&pmu_apb_controller>;
+		};
+
+		cpu1: cpu@1 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a7";
+			enable-method = "sprd,sc9830-smp";
+			reg = <0x1>;
+			sprd,sys-ap-ahb = <&ap_ahb_controller>;
+			sprd,sys-aon-apb = <&aon_apb_controller>;
+			sprd,sys-pmu-apb = <&pmu_apb_controller>;
+		};
+
+		cpu2: cpu@2 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a7";
+			enable-method = "sprd,sc9830-smp";
+			reg = <0x2>;
+			sprd,sys-ap-ahb = <&ap_ahb_controller>;
+			sprd,sys-aon-apb = <&aon_apb_controller>;
+			sprd,sys-pmu-apb = <&pmu_apb_controller>;
+		};
+
+		cpu3: cpu@3 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a7";
+			enable-method = "sprd,sc9830-smp";
+			reg = <0x3>;
+			sprd,sys-ap-ahb = <&ap_ahb_controller>;
+			sprd,sys-aon-apb = <&aon_apb_controller>;
+			sprd,sys-pmu-apb = <&pmu_apb_controller>;
+		};
+	};
+
+	soc: soc {
+		ap-ahb {
+			dispc0: dispc@20800000 {
+				compatible = "sprd,display-controller";
+				reg = <0x20800000 0x1000>;
+				dev-id = <0>;
+				sprd,dpi_clk_div = <1>;
+				interrupts = <GIC_SPI 46 IRQ_TYPE_LEVEL_HIGH>;
+				clock-src = <384000000 128000000>;
+				clock-names =   "clk_dispc_core_parent",
+						"clk_dispc_dpi_parent",
+						"clk_dispc_core",
+						"clk_dispc_dpi",
+						"clk_dispc_ahb_eb";
+
+				clocks = <&clk_twpll_384m>,
+					<&clk_twpll_128m>,
+					<&clk_dispc0>,
+					<&clk_dispc0_dpi>,
+					<&clk_ap_ahb_gates 1>;
+
+				status = "disabled";
+
+				sprd,ip = "dpu-lite-r1p0";
+				sprd,soc = "pike2";
+
+				/* output port */
+				port {
+					dispc0_out: endpoint@0 {
+						remote-endpoint = <&dsi0_in>;
+					};
+				};
+			};
+
+			dsi0: dsi@21800000 {
+				compatible = "sprd,dsi-controller";
+				#address-cells = <1>;
+				#size-cells = <0>;
+				dev-id = <0>;
+				reg = <0x21800000 0x1000>;
+				interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>,
+					<GIC_SPI 49 IRQ_TYPE_LEVEL_HIGH>;
+				clock-names =   "clk_dsi0_ahb_eb";
+				clocks = <&clk_ap_ahb_gates 0>;
+				status = "disabled";
+
+				sprd,ip = "sprd,dsi-ctrl-r1p0";
+				sprd,soc = "pike2";
+
+				/* output port */
+				port@0 {
+					reg = <0>;
+					dsi0_out: endpoint {
+						remote-endpoint = <&dphy0_in>;
+					};
+				};
+
+				/* input port */
+				port@1 {
+					reg = <1>;
+					dsi0_in: endpoint {
+						remote-endpoint = <&dispc0_out>;
+					};
+				};
+			};
+
+			dphy0: dphy@0 {
+				compatible = "sprd,mipi-dsi-phy";
+				#address-cells = <1>;
+				#size-cells = <0>;
+				reg = <0x21800000 0x1000>;
+				status = "disabled";
+
+				sprd,ip = "sprd,megacores-sharkle";
+				sprd,soc = "pike2";
+
+				/* output port */
+				port@0 {
+					reg = <0>;
+					dphy0_out: endpoint {
+						/* remote-endpoint = <&panel_in>;*/
+					};
+				};
+
+				/* input port*/
+				port@1 {
+					reg = <1>;
+					dphy0_in: endpoint {
+						remote-endpoint = <&dsi0_out>;
+					};
+				};
+			};
+		};
+	};
+
+	gic: interrupt-controller@12001000 {
+		compatible = "arm,cortex-a15-gic", "arm,cortex-a9-gic";
+		#interrupt-cells = <3>;
+		#address-cells = <0>;
+		interrupt-controller;
+		reg = <0x12001000 0x1000>,
+			<0x12002000 0x1000>;
+	};
+
+	arch_timer: timer {
+		compatible = "arm,armv7-timer";
+		interrupts = <GIC_PPI 14
+				(GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
+			     <GIC_PPI 10
+				(GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
+		clock-frequency = <26000000>;
+	};
+};
+
+&pin_controller {
+	/* sys iis 0 */
+	ap_iis0_0: reg3-iis0-0 {
+		pins = <IIS0_SYS_SEL 0x0>;
+	};
+	tgdsp_iis0_0: reg3-iis0-1 {
+		pins = <IIS0_SYS_SEL 0x1>;
+	};
+	pubcp_iis0_0: reg3-iis0-2 {
+		pins = <IIS0_SYS_SEL 0x2>;
+	};
+	vbc_iis2_0: reg3-iis0-3 {
+		pins = <IIS0_SYS_SEL 0x3>;
+	};
+	/* sys iis 1 */
+	ap_iis0_1: reg3-iis1-0 {
+		pins = <IIS1_SYS_SEL 0x0>;
+	};
+	tgdsp_iis0_1: reg3-iis1-1 {
+		pins = <IIS1_SYS_SEL 0x1>;
+	};
+	pubcp_iis0_1: reg3-iis1-2 {
+		pins = <IIS1_SYS_SEL 0x2>;
+	};
+	vbc_iis1_1: reg3-iis1-3 {
+		pins = <IIS1_SYS_SEL 0x3>;
+	};
+};

@@ -1,0 +1,22 @@
+Spreadtrum mailbox bindings
+
+Required properties:
+- compatible: must be "sprd,mailbox".
+- reg: address range of mailbox registers.
+- sprd,syscon-ap-apb: must be <&aon_apb_controller>.
+- interrupts: interrupt number used for mailbox.
+- sprd,core-cnt: number of processor cores using mailbox communications.
+- sprd,version: driver version used.
+
+Example:
+
+mailbox@400a0000 {
+	compatible = "sprd,mailbox";
+	reg = <0 0x400a0000 0 0x8000>,
+	      <0 0x400a8000 0 0x8000>;
+	sprd,syscon-ap-apb = <&aon_apb_controller>;
+	interrupts = <GIC_SPI 28 0>,
+		     <GIC_SPI 29 0>;
+	sprd,core-cnt = <6>;
+	sprd,version = <2>;
+};

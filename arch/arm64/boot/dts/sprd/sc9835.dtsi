@@ -1,0 +1,209 @@
+/*
+ * Spreadtrum SC9835 SoC DTS file
+ *
+ * Copyright (C) 2016, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#include "sharkle.dtsi"
+#include "sc9835-clocks.dtsi"
+
+/ {
+	cpus {
+		#address-cells = <2>;
+		#size-cells = <0>;
+
+		cpu-map {
+			cluster0 {
+				core0 {
+					cpu = <&CPU0>;
+				};
+				core1 {
+					cpu = <&CPU1>;
+				};
+				core2 {
+					cpu = <&CPU2>;
+				};
+				core3 {
+					cpu = <&CPU3>;
+				};
+			};
+		};
+
+		CPU0: cpu@000000 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53", "arm,armv8";
+			reg = <0x0 0x000000>;
+			enable-method = "psci";
+			cpu-idle-states = <&CORE_PD &CLUSTER_PD>;
+		};
+		CPU1: cpu@000001 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53", "arm,armv8";
+			reg = <0x0 0x000001>;
+			enable-method = "psci";
+			cpu-idle-states = <&CORE_PD &CLUSTER_PD>;
+		};
+		CPU2: cpu@000002 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53", "arm,armv8";
+			reg = <0x0 0x000002>;
+			enable-method = "psci";
+			cpu-idle-states = <&CORE_PD &CLUSTER_PD>;
+		};
+		CPU3: cpu@000003 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53", "arm,armv8";
+			reg = <0x0 0x000003>;
+			enable-method = "psci";
+			cpu-idle-states = <&CORE_PD &CLUSTER_PD>;
+		};
+	};
+
+	idle-states{
+		entry-method = "arm,psci";
+		CORE_PD: core_pd {
+			compatible = "arm,idle-state";
+			entry-latency-us = <0xffffffff>;
+			exit-latency-us = <0xffffffff>;
+			min-residency-us = <0xffffffff>;
+			local-timer-stop;
+			arm,psci-suspend-param = <0x00010000>;
+		};
+		CLUSTER_PD: cluster_pd {
+			compatible = "arm,idle-state";
+			entry-latency-us = <0xffffffff>;
+			exit-latency-us = <0xffffffff>;
+			min-residency-us = <0xffffffff>;
+			local-timer-stop;
+			arm,psci-suspend-param = <0x01010000>;
+		};
+	};
+
+	psci {
+		compatible = "arm,psci-1.0";
+		method = "smc";
+	};
+
+	gic: interrupt-controller@12001000 {
+		compatible = "arm,gic-400";
+		reg = <0 0x12001000 0 0x1000>,
+			<0 0x12002000 0 0x2000>,
+			<0 0x12004000 0 0x2000>,
+			<0 0x12006000 0 0x2000>;
+		#interrupt-cells = <3>;
+		interrupt-controller;
+		interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
+	};
+
+
+	arch_timer: timer {
+		compatible = "arm,armv8-timer";
+		interrupts = <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
+			<GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
+		clock-frequency = <26000000>;
+	};
+
+};
+
+&soc{
+	ap-ahb {
+
+		dispc0: dispc@20800000 {
+			compatible = "sprd,display-controller";
+			reg = <0x0 0x20800000 0x0 0x1000>;
+			dev-id = <0>;
+			sprd,dpi_clk_div = <1>;
+			interrupts = <GIC_SPI 46 IRQ_TYPE_LEVEL_HIGH>;
+			clock-src = <384000000 128000000>;
+			clock-names =   "clk_dispc_core_parent",
+					"clk_dispc_dpi_parent",
+					"clk_dispc_core",
+					"clk_dispc_dpi",
+					"clk_dispc_ahb_eb";
+
+			clocks = <&clk_twpll_384m>,
+				<&clk_twpll_128m>,
+				<&clk_dispc0>,
+				<&clk_dispc0_dpi>,
+				<&clk_ap_ahb_gates 1>;
+			status = "disabled";
+
+			sprd,ip = "dpu-lite-r1p0";
+			sprd,soc = "sharkle";
+
+				/* output port */
+			port {
+				dispc0_out: endpoint@0 {
+
+					remote-endpoint = <&dsi0_in>;
+				};
+			};
+		};
+
+		dsi0: dsi@21800000 {
+			compatible = "sprd,dsi-controller";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			dev-id = <0>;
+			reg = <0x0 0x21800000 0x0 0x1000>;
+			interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 49 IRQ_TYPE_LEVEL_HIGH>;
+			clock-names =   "clk_dsi0_ahb_eb";
+			clocks = <&clk_ap_ahb_gates 0>;
+			status = "disabled";
+
+			sprd,ip = "sprd,dsi-ctrl-r1p0";
+			sprd,soc = "sharkle";
+
+			/* output port */
+			port@0 {
+				reg = <0>;
+				dsi0_out: endpoint {
+					remote-endpoint = <&dphy0_in>;
+				};
+			};
+
+				/* input port */
+			port@1 {
+				reg = <1>;
+				dsi0_in: endpoint {
+					remote-endpoint = <&dispc0_out>;
+				};
+			};
+		};
+
+		dphy0: dphy@0 {
+			compatible = "sprd,mipi-dsi-phy";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0x0 0x21800000 0x0 0x1000>;
+			status = "disabled";
+
+			sprd,ip = "sprd,megacores-sharkl2";
+			sprd,soc = "sharkle";
+
+			/* output port */
+			port@0 {
+				reg = <0>;
+				dphy0_out: endpoint {
+					remote-endpoint = <&panel_in>;
+				};
+			};
+
+			/* input port*/
+			port@1 {
+				reg = <1>;
+				dphy0_in: endpoint {
+					remote-endpoint = <&dsi0_out>;
+				};
+			};
+		};
+	};
+};
+
+&pwms {
+	clock-names = "sprd_pwm_clk_parent", "clk_pwm";
+	clocks = <&ext_26m>, <&clk_pwm0>;
+};

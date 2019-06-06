@@ -1,0 +1,16 @@
+Binding for sprd 2723 charger
+
+Required properties:
+compatible          must be "sprd,sc2723-charger"
+reg                 charge ctl offset base on adi
+chg-cv-gpios        gpio of eic,trigger when vbat is higher then cccv
+chg-ovi-gpios       gpio of eic,trigger when charge voltage is higher
+                    then the set value
+
+Examples:
+  pmic_charge: charge@904{
+	compatible = "sprd,sc2723-charger";
+	reg = <0x904>;
+	chg-cv-gpios = <&pmic_eic 4 0>;
+	chg-ovi-gpios = <&pmic_eic 6 0>;
+};

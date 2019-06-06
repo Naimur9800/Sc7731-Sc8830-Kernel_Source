@@ -1,0 +1,37 @@
+/*
+ * this file is ued to change sprd dtsi which can't be changed by overlay
+ * such as /delete-node/ /delete-property/ and alises
+ */
+
+
+#include "zte_lcd_lianchuang_jd9366d_panda_5p45_hd.dtsi"
+#include "zte_lcd_skyworth_st7703_hsd_5p45_hd.dtsi"
+#include "zte_lcd_skyworth_st7703_hsd_5p45_hd_2.dtsi"
+#include "zte_lcd_lianchuang_jd9366d_panda_5p45_hd_2.dtsi"
+&panel_if {
+	panel-drivers = <
+		&lcd_jd9366d_mipi_lianchuang_hd
+		&lcd_st7703_mipi_skyworth_hd
+		&lcd_jd9366d_mipi_lianchuang_hd_2
+		&lcd_st7703_mipi_skyworth_hd_2
+	>;
+};
+&dispc0 {
+	sprd,dpi-clk-src = <153600000>;
+	clock-names = "clk_src_128m",
+			"clk_src_153m6",
+			"clk_src_192m",
+			"clk_src_256m",
+			"clk_src_384m",
+			"clk_dpu_core",
+			"clk_dpu_dpi",
+			"clk_aon_apb_disp_eb";
+	clocks = <&clk_twpll_128m>,
+		<&clk_twpll_153m6>,
+		<&clk_twpll_192m>,
+		<&clk_twpll_256m>,
+		<&clk_twpll_384m>,
+		<&clk_dpu>,
+		<&clk_dpu_dpi>,
+		<&clk_aon_top_gates 2>;
+};

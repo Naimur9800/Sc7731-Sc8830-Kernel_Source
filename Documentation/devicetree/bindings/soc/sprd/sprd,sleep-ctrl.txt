@@ -1,0 +1,14 @@
+Spreadtrum DDR force light sleep feature
+
+Required properties:
+- compatible: should be "sprd,sleep-ctrl".
+- sprd,sys-aon-apb: aon apb.
+- sprd,aon_reg: aon register
+
+Example:
+
+	sleep-ctrl {
+		compatible = "sprd,sleep-ctrl";
+		sprd,sys-aon-apb = <&aon_apb_controller>;
+		sprd,aon_reg = <0x0530>;
+	};

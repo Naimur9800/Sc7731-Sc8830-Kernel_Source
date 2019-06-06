@@ -1,0 +1,17 @@
+ifdef BUILD_FROM_KERNEL
+include sprd-board-config/sharkl3/sp9863a_10c10/sp9863a_10c10_base
+else
+include  $(KERNEL_PATH)/sprd-board-config/sharkl3/sp9863a_10c10/sp9863a_10c10_base
+endif
+
+
+BOARD_TEE_CONFIG := trusty
+BOARD_WCN_CONFIG := built-in
+BOARD_EXT_PMIC_CONFIG := NCP6335D
+
+#DEFCONFIG
+KERNEL_DEFCONFIG := sprd_sharkl3_defconfig
+
+#DTS
+TARGET_DTB := sp9863a-10c10-native
+TARGET_DTBO := sp9863a-10c10-overlay

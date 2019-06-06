@@ -1,0 +1,29 @@
+/*
+ * Spreadtrum sp9853i-2h10-vmm board DTS file
+ *
+ * Copyright (C) 2015, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#define CONFIG_MOBILEVISOR
+#include "sp9853i-2h10.dts"
+#include "sp9853i-memory-vmm.dtsi"
+
+/* VMM add-on */
+
+/ {
+	model = "Spreadtrum sp9853i-vmm SoC (x86 based)";
+
+	compatible = "sprd,sp9853i_2h10-vmm";
+
+	chosen {
+		bootargs = "earlycon mobilevisor irq_affinity=0xf console=ttyS1,115200n8 androidboot.hardware=sp9853i_2h10 loglevel=11 code_bytes=128";
+	};
+
+	#include "irq-hirq.dtsi"
+	mobilevisor {
+		compatible = "intel,mobilevisor";
+		interrupt-parent = <&hirq>;
+	};
+};

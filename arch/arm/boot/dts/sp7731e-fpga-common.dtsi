@@ -1,0 +1,143 @@
+/*
+ * Spreadtrum SP7731e board common DTS file
+ *
+ * Copyright (C) 2017, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#include "lcd/lcd_nt35597_mipi_2k.dtsi"
+#include "lcd/lcd_dummy_mipi.dtsi"
+#include "sc2720.dtsi"
+
+/ {
+	/* smartphone board only */
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		smem_reserved: sipc-mem@87800000 {
+			reg = <0x87800000 0x00500000>;
+		};
+
+		/*start address must be 32M aligned */
+		wcn_reserved: wcn-mem@88000000{
+			reg = <0x88000000 0x00300000>;
+		};
+
+		gnss_reserved: gnss-mem@88300000{
+			reg = <0x88300000 0x0015a800>;
+		};
+
+		cp_reserved: cp-modem@89600000 {
+			reg = <0x89600000 0x02D80000>;
+		};
+
+		/*Only used for iq, will be removed in normal mode by uboot */
+		iq_reserved: iq-mem@93100000{
+			compatible = "sprd,iq-mem";
+			reg = <0x93100000 0x8000000>;
+		};
+
+		/*start address must be 64M aligned */
+		sml_reserved: sml-mem@94000000{
+			reg = <0x94000000 0x00020000>;
+		};
+
+		tos_reserved: tos-mem@94020000{
+			reg = <0x94020000 0x01FE0000>;
+		};
+
+		tos_shm_reserved: tos-shm@96000000{
+			reg = <0x96000000 0x00100000>;
+		};
+
+		fb_reserved: fb@bf309000{
+			reg = <0xBF309000 0x00644000>;
+		};
+
+		overlay_reserved: overlaybuffer@bf94d000{
+			reg = <0xBF94D000 0x004B3000>;
+		};
+	};
+
+	ion {
+		compatible = "sprd,ion";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		phys-offset = <0x80000000>;
+
+		heap@0 {
+			reg = <0>;
+			label = "system";
+			type = <0>;
+		};
+
+		heap@2 {
+			reg = <2>;
+			label = "carveout_overlay";
+			type = <2>;
+			memory-region = <&overlay_reserved>;
+		};
+
+		heap@3 {
+			reg = <3>;
+			label = "carveout_fb";
+			type = <2>;
+			memory-region = <&fb_reserved>;
+		};
+	};
+
+	sprd-iq {
+		compatible = "sprd,iq";
+		sprd,region = <&iq_reserved>;
+		sprd,mapping-offs = <0x0>;
+	};
+
+	panel_if: sprd-panel-if {
+		compatible = "sprd,sc9833-panel-if";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		intf-nums = <1>;
+		panel-if0@0 {
+			type = <2>;
+			sprd,dsi = <&dsi0>;
+			panel-if-type = <0>;
+		};
+	};
+
+	adf: sprd-adf {
+		compatible = "sprd,sc9833-adf";
+		status = "okay";
+		sprd,display-mode = <3>;
+		sprd,dispc = <&dispc0>;
+	};
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&uart1 {
+	status = "okay";
+};
+
+&sdio0 {
+	sprd,delay = <0x03 0x03 0x03>;
+	voltage-ranges = <3000 3000>;
+	bus-width = <4>;
+	non-removable;
+	sprd,name = "sdio_sd";
+	status = "disabled";
+};
+
+&sdio3 {
+	sprd,delay = <0x3e 0xa 0xa>;
+	voltage-ranges = <3000 3000>;
+	bus-width = <8>;
+	non-removable;
+	sprd,name = "sdio_emmc";
+	status = "okay";
+};
+

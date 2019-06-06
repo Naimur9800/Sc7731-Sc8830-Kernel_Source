@@ -1,0 +1,35 @@
+#
+#  Copyright (C) 2014 Intel Mobile Communications
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License Version 2
+#  as published by the Free Software Foundation.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+#  You should have received a copy of the GNU General Public License Version 2
+#  along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+
+#
+# Mobilevisor vdriver configuration
+#
+
+if MOBILEVISOR
+
+menu "Mobilevisor virtual driver support"
+
+config MOBILEVISOR_VDRIVER_DUMP
+	tristate "VDUMP Driver"
+	default y
+	help
+	  To support coredump
+	  via VMM when Linux panic
+	  To compile this driver as a module, choose M here: the
+	  module will be called vdump.
+
+endmenu
+
+endif

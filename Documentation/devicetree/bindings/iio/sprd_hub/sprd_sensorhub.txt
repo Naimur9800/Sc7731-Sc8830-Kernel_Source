@@ -1,0 +1,12 @@
+Device-Tree bindings for SPREADTRUM Sensor Hub driver
+
+Required properties:
+	- compatible: must be "sprd,sensorhub"
+
+Optional properties:
+	- null ,may add some properties for compatible no-sensorhub or other funtions later.
+
+Example:
+	sprd_sensorhub {
+		compatible = "sprd,sensorhub";
+	};

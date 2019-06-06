@@ -1,0 +1,431 @@
+/*
+ * SS whale2 J7 board DTS file
+ *
+ * Copyright (C) 2016, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+/dts-v1/;
+
+#include "sc9850s.dtsi"
+#include "sc2731.dtsi"
+#include "sprd-battery.dtsi"
+#include "sp98x0-common.dtsi"
+#include "sprd-sound.dtsi"
+
+/ {
+	model = "SS Whale2 J7 Board";
+
+	compatible = "sprd,sc9850s-2h10-native";
+
+	sprd,sc-id = <9850 1 0x20000>;
+
+	aliases {
+		serial0 = &uart0;
+		serial1 = &uart1;
+		serial2 = &uart2;
+		serial3 = &uart3;
+		i2c0 = &i2c0;
+		i2c1 = &i2c1;
+		i2c5 = &i2c5;
+		spi0 = &spi0;
+		i2c_gpio0 = &i2c_gpio0;
+		i2c_gpio1 = &i2c_gpio1;
+		hwspinlock1 = &hwslock1;
+		thm-sensor7 = &pmic_thermal;
+		thm-sensor8 = &chg_temp;
+		thm-sensor9 = &pa_temp;
+	};
+
+
+	memory@80000000 {
+		device_type = "memory";
+		reg = <0 0x80000000 0 0x80000000>;
+	};
+
+	chosen {
+		bootargs = "loglevel=1 androidboot.hardware=sc9850s";
+	};
+
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		audio_reserved: audio-mem@87500000 {
+			reg = <0x0 0x87500000 0x0 0x300000>;
+		};
+
+		smem_reserved: sipc-mem@87800000 {
+			reg = <0x0 0x87800000 0x0 0x500000>;
+		};
+
+		cp_reserved: cp-modem@87d00000 {
+			reg = <0x0 0x87d00000 0x0 0x7900000>;
+		};
+
+		tos_reserved: tos-mem@96000000 {
+			reg = <0x0 0x96000000 0x0 0x2000000>;
+		};
+
+		mm_reserved: multimediabuffer@c0000000{
+			reg = <0x0 0xc0000000 0x0 0x10000000>;
+		};
+
+		fb_reserved: framebuffer@b1ead000{
+			reg = <0x0 0xb1ead000 0x0 0x17bb000>;
+		};
+
+		overlay_reserved: overlaybuffer@b3668000{
+			reg = <0x0 0xb3668000 0x0 0x3f48000>;
+		};
+
+		camera_reserved: camera-mem@bd4f0000{
+			reg = <0x0 0xbd4f0000 0x0 0x2b10000>;
+		};
+	};
+
+	ion {
+		compatible = "sprd,ion";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		heap@0 {
+			reg = <0>;
+			label = "system";
+			type = <0>;
+		};
+
+		heap@1 {
+			reg = <1>;
+			label = "carveout_mm";
+			type = <2>;
+			memory-region = <&mm_reserved>;
+		};
+
+		heap@2 {
+			reg = <2>;
+			label = "carveout_overlay";
+			type = <2>;
+			memory-region = <&overlay_reserved>;
+		};
+
+		heap@3 {
+			reg = <3>;
+			label = "carveout_fb";
+			type = <2>;
+			memory-region = <&fb_reserved>;
+		};
+	};
+
+	sprd-sysdump {
+		memory-region = <&{/memory@80000000}>,<&mm_reserved>,
+		 <&overlay_reserved>;
+	};
+
+	i2c_gpio0: i2c-gpio@0 {
+				compatible = "i2c-gpio";
+				#address-cells = <1>;
+				#size-cells = <0>;
+				gpios = <&ap_gpio 38 0
+					&ap_gpio 39 0 >; /* scl */
+				i2c-gpio,delay-us = <10>;
+				i2c-gpio,timeout-ms = <0>;
+
+				sm5504@14 {
+					compatible = "SiliconMitus,sm5504";
+					reg = <0x14>;
+					sm5504-irq-gpios = <&ap_gpio 34 0>;
+			   };
+		   };
+
+	i2c_gpio1: i2c-gpio@1 {
+				compatible = "i2c-gpio";
+				#address-cells = <1>;
+				#size-cells = <0>;
+				gpios = <&ap_gpio 181 0
+					&ap_gpio 182 0 >; /* scl */
+				i2c-gpio,delay-us = <10>;
+				i2c-gpio,timeout-ms = <0>;
+
+				coreriver@20 {
+					compatible = "coreriver,coreriver-tkey";
+					reg = <0x20>;
+					irq-gpios = <&ap_gpio 137 0>;
+					sda-gpios = <&ap_gpio 181 0>;
+					scl-gpios = <&ap_gpio 182 0>;
+					touchkey-supply = <&vddkpled>;
+					coreriver,fw-name = "coreriver/ss_whale2_j7.fw";
+					coreriver,ext-fw-name = "/sdcard/ss_whale2_j7.bin";
+					coreriver,tkey-vdd-ldo-type = <1>;
+					coreriver,firm-up;
+			   };
+		   };
+
+	gpio-keys {
+		compatible = "gpio-keys";
+		input-name = "sprd-gpio-keys";
+		status = "okay";
+
+		key-volumedown {
+			label = "Volume Down Key";
+			linux,code = <114>;
+			gpios = <&pmic_eic 10 0>;
+			debounce-interval = <2>;
+			gpio-key,wakeup;
+			gpio-key,level-trigger;
+		};
+
+		key-volumeup {
+			label = "Volume Up Key";
+			linux,code = <115>;
+			gpios = <&ap_eic 2 1>;
+			debounce-interval = <2>;
+			gpio-key,wakeup;
+			gpio-key,level-trigger;
+		};
+
+		key-power {
+			label = "Power Key";
+			linux,code = <116>;
+			gpios = <&pmic_eic 1 0>;
+			gpio-key,wakeup;
+			gpio-key,level-trigger;
+		};
+
+		key-home {
+			label = "Home Key";
+			linux,code = <172>;
+			gpios = <&ap_eic 4 1>;
+			debounce-interval = <2>;
+			gpio-key,wakeup;
+			gpio-key,level-trigger;
+		};
+	};
+
+	sprd-marlin2 {
+		compatible = "sprd,marlin2";
+		m2-to-ap-coexist-gpios = <&ap_gpio 119 0>;
+		m2-wakeup-ap-gpios = <&ap_gpio 83 0>;
+		permit-ap-send-gpios = <&ap_gpio 84 0>;
+		rstn-gpios = <&ap_gpio 111 0>;
+		chip-en-gpios = <&ap_gpio 112 0>;
+		m2-to-ap-irq-gpios = <&ap_gpio 113 0>;
+		vddwcn = "dcdcrf";
+		clk-name = "clk_aux0";
+		sdhci-name = <&sdio1>;
+	};
+
+	sprd-mtty {
+		compatible = "sprd,mtty";
+		sprd,name = "ttyM";
+	};
+
+	sprd-fm {
+		compatible  = "sprd,marlin2-fm";
+	};
+
+	chg_temp: chg-tsensor {
+		compatible = "sprd,board-thermal";
+		#thermal-sensor-cells = <1>;
+		io-channels = <&pmic_adc 3>;
+		io-channel-names = "adc_temp";
+		temp-tab-size = <16>;
+		temp-tab-val = <1140 1132 1109 1074 983 838 654 413
+				316 238 178 133 99 75 57 43>;
+		temp-tab-temp = <558 596 704 806 953 1101 1248 1450
+				1549 1649 1749 1849 1951 2049 2148 2252>;
+	};
+
+	pa_temp: pa-tsensor {
+		compatible = "sprd,board-thermal";
+		#thermal-sensor-cells = <1>;
+		io-channels = <&pmic_adc 5>;
+		io-channel-names = "adc_temp";
+		temp-tab-size = <16>;
+		temp-tab-val = <1140 1132 1109 1074 983 838 654 413
+				316 238 178 133 99 75 57 43>;
+		temp-tab-temp = <558 596 704 806 953 1101 1248 1450
+				1549 1649 1749 1849 1951 2049 2148 2252>;
+	};
+};
+
+&usb3 {
+	dwc3@20500000 {
+		maximum-speed = "high-speed";
+	};
+};
+
+&ssphy {
+	sprd,phy-tune1 = <0x919f9dec>;
+	sprd,phy-tune2 = <0x0f0560fe>;
+};
+
+&battery {
+	adp-cdp-cur = <700>;
+	adp-dcp-cur = <1150>;
+	adp-sdp-cur = <450>;
+	chg-end-vol = <4400>;
+	chg-end-vol-check = <4380>;
+	chg-bat-safety-vol = <4480>;
+	rechg-vol = <4330>;
+	rint = <200>;
+	rsense-real = <96>;
+	cnom = <3300>;
+	ocv-tab-vol = <4377 4299 4238 4182 4129 4078 4029
+			3985 3949 3903 3861 3832 3811 3795
+			3782 3772 3759 3740 3711 3686 3400>;
+	ocv-tab-cap = <100  95   90   85   80   75   70
+			65   60   55   50   45   40   35
+			30   25   20   15   10   5    0>;
+};
+
+
+&pmic_fgu {
+	ocv-type = <1>;
+};
+
+&sprd_audio_codec_ana {
+	status = "okay";
+	hp-use-inter-pa = <1>;
+	fixed-sample-rate = <48000 48000 48000>; /* DA, AD, AD1 */
+};
+
+&sprd_headset {
+	status = "okay";
+};
+
+&sound_vbc_r3p0_sprd_codec {
+	status = "okay";
+};
+
+&i2c0 {
+	status = "okay";
+	clock-frequency = <400000>;
+
+	sensor_sub: sensor-sub@21 {
+		compatible = "sprd,sensor-sub";
+		reg = <0x21>;
+		clock-names = "clk_src","sensor_eb";
+		clocks = <&clk_sensor1>,<&clk_cam_axi_gates 7>;
+		vddio-supply = <&vddcamio>;
+		vddcama-supply = <&vddcama0>;
+		vddcamd-supply = <&vddcamd1>;
+		vddcammot-supply = <&vddcammot>;
+		reset-gpios = <&ap_gpio 157 0>;
+		power-down-gpios = <&ap_gpio 124 0>;
+		host = "dcam1";
+		port {
+			sensor_sub_0: endpoint {
+				remote-endpoint = <&phy1_out>;
+			};
+		};
+	};
+
+	sensor_main2: sensor-main@3c {
+		compatible = "sprd,sensor-main2";
+		reg = <0x3c>;
+		clock-names = "clk_src","sensor_eb";
+		clocks  = <&clk_sensor1>,<&clk_cam_axi_gates 7>;
+	/*	vddio-supply = <&vddcamio>;
+		vddcama-supply = <&vddcama0>;
+		vddcamd-supply = <&vddcamd0>;
+		vddcammot-supply = <&vddcammot>;
+		reset-gpios = <&ap_gpio 0 0>;
+		power-down-gpios = <&ap_gpio 0 0>;*/
+		host = "dcam1";
+		port {
+			sensor_main_2: endpoint {
+				remote-endpoint = <&phy2_out>;
+			};
+		};
+	};
+};
+&i2c5 {
+	status = "okay";
+	clock-frequency = <400000>;
+
+	sensor_main: sensor-main@3c {
+		compatible = "sprd,sensor-main";
+		reg = <0x3c>;
+		clock-names = "clk_src","sensor_eb";
+		clocks = <&clk_sensor0>,<&clk_cam_axi_gates 6>;
+		vddio-supply = <&vddcamio>;
+		vddcama-supply = <&vddcama0>;
+		vddcamd-supply = <&vddcamd0>;
+		vddcammot-supply = <&vddcama1>;
+		reset-gpios = <&ap_gpio 123 0>;
+		power-down-gpios = <&ap_gpio 125 0>;
+		host = "dcam0";
+		port {
+			sensor_main_0: endpoint {
+				remote-endpoint = <&phy0_out>;
+			};
+		};
+	};
+};
+
+&mipi_csi_phy0 {
+	status = "okay";
+
+	sprd,phycfg = <0x00>;
+	sprd,csi = <&csi0>;
+	port {
+		phy0_out: endpoint {
+			remote-endpoint = <&sensor_main_0>;
+		};
+	};
+};
+
+&mipi_csi_phy1 {
+	status = "okay";
+
+	sprd,phycfg = <0x1>;
+	sprd,csi = <&csi1>;
+	port {
+		phy1_out: endpoint {
+			remote-endpoint = <&sensor_sub_0>;
+		};
+	};
+};
+
+&mipi_csi_phy2 {
+	status = "okay";
+
+	sprd,phycfg = <0x2>;
+	sprd,csi = <&csi1>;
+	port {
+		phy2_out: endpoint {
+			remote-endpoint = <&sensor_main_2>;
+		};
+	};
+};
+
+&i2c1 {
+	status = "okay";
+	melfas-mip4@48 {
+		compatible = "melfas,mip4_ts";
+		reg = <0x48>;
+		interrupt-parent = <&ap_gpio>;
+		interrupts = <136 0x2>;
+
+
+		/* tsp_vd33-supply = <&vddcama1>; */
+
+		mip4-ts-irq-gpios = <&ap_gpio 136 0x00>;
+		mip4-ts-reset-gpios = <&ap_gpio 66 0x00>;
+
+		touchscreen-size-x = <1080>;
+		touchscreen-size-y = <1920>;
+	};
+};
+
+&pmic_charger{
+	status = "okay";
+};
+
+&vddkpled{
+	status = "okay";
+};

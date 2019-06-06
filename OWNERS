@@ -1,0 +1,28 @@
+owners:
+- cao.yaobinxa@zte.com.cn
+- jia.baofeng@zte.com.cn
+- zhao.liqiang@zte.com.cn
+- zhou.teng@zte.com.cn
+- li.bixuan@zte.com.cn
+- wang.junwei2@zte.com.cn
+- cui.xiaochuan@zte.com.cn
+- wei.guohua@zte.com.cn
+- li.jiangshuo9@zte.com.cn
+- xiao.lei6@zte.com.cn
+- li.liang6@zte.com.cn
+matchers:
+- regex: drivers/misc/sprd_camera/.*
+  owners:
+  - yi.changming@zte.com.cn
+  - jiang.wanquan@zte.com.cn
+  - hu.jian9@zte.com.cn
+- regex: arch/arm64/boot/dts/sprd/.*
+  owners:
+  - yi.changming@zte.com.cn
+  - jiang.wanquan@zte.com.cn
+  - hu.jian9@zte.com.cn
+- regex: arch/arm/boot/dts/.*
+  owners:
+  - yi.changming@zte.com.cn
+  - jiang.wanquan@zte.com.cn
+  - hu.jian9@zte.com.cn

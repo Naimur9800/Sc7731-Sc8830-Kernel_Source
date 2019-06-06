@@ -1,0 +1,102 @@
+/*
+ * Spreadtrum Roc1 platform DTS file
+ *
+ * Copyright (C) 2018, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#include <dt-bindings/interrupt-controller/arm-gic.h>
+
+/ {
+	interrupt-parent = <&gic>;
+	#address-cells = <2>;
+	#size-cells = <2>;
+
+	soc: soc {
+		compatible = "simple-bus";
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+
+		ap-apb {
+			compatible = "simple-bus";
+			#address-cells = <2>;
+			#size-cells = <2>;
+			ranges;
+
+			uart0: serial@70000000 {
+				compatible = "sprd,sc9836-uart";
+				reg = <0 0x70000000 0 0x100>;
+				interrupts = <GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>;
+				clock-names = "uart", "source","enable";
+				status = "disabled";
+			};
+
+			uart1: serial@70100000 {
+				compatible = "sprd,sc9836-uart";
+				reg = <0 0x70100000 0 0x100>;
+				interrupts = <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>;
+				clock-names = "uart", "source","enable";
+				status = "disabled";
+			};
+		};
+
+		aon {
+			compatible = "simple-bus";
+			#address-cells = <2>;
+			#size-cells = <2>;
+			ranges;
+
+			aon_timer0: timer@40050000 {
+				compatible = "sprd,bcevt-r4p0";
+				reg = <0 0x40050000 0 0x14>;
+				interrupts = <GIC_SPI 28 IRQ_TYPE_LEVEL_HIGH>;
+				clock-frequency = <32768>;
+				status = "disable";
+			};
+		};
+
+		pcie0@20c00000 {
+			compatible = "sprd,pcie", "snps,dw-pcie";
+			reg = <0x0 0x20c00000 0x0 0x100000>,
+			      <0x3 0xffffe000 0x0 0x2000>;
+			reg-names = "dbi", "config";
+			#address-cells = <3>;
+			#size-cells = <2>;
+			device_type = "pci";
+			ranges = <0x01000000 0x0 0x00000000 0x3 0xfffee000 0x0 0x00010000
+				  0x43000000 0x0 0x10000000 0x3 0xf8000000 0x0 0x07fee000>;
+			#interrupt-cells = <3>;
+			interrupts = <GIC_SPI 148 IRQ_TYPE_LEVEL_HIGH>;
+			bus-range = <0  15>;
+			num-lanes = <1>;
+			num-vectors = <256>;
+			num-viewport = <8>;
+			status = "okay";
+		};
+
+		pcie1@20d00000 {
+			compatible = "sprd,pcie", "snps,dw-pcie";
+			reg = <0x0 0x20d00000 0x0 0x100000>,
+			      <0x3 0xf7f00000 0x0 0x100000>;
+			reg-names = "dbi", "config";
+			#address-cells = <3>;
+			#size-cells = <2>;
+			device_type = "pci";
+			ranges = <0x01000000 0x0 0x00000000 0x3 0xf7ef0000 0x0 0x00010000
+				  0x43000000 0x0 0x10000000 0x2 0x80000000 0x1 0x77ef0000>;
+			#interrupt-cells = <3>;
+			interrupts = <GIC_SPI 153 IRQ_TYPE_LEVEL_HIGH>;
+			bus-range = <16  31>;
+			num-lanes = <1>;
+			num-vectors = <256>;
+			num-viewport = <8>;
+			status = "okay";
+		};
+
+	};
+
+};
+

@@ -1,0 +1,15 @@
+Broadcom Bluesleep Device
+
+Required properties:
+
+- compatible: should be "brcm,bluesleep"
+- bt-wake-host-gpios: Broadcom bt wake up baseband chip
+- host-wake-bt-gpios: baseband chip wake up Broadcom chip
+
+Example:
+
+bluesleep {
+	compatible = "brcm,bluesleep";
+	bt-wake-host-gpios = <&ap_gpio 86 0>;
+	host-wake-bt-gpios = <&ap_gpio 85 0>;
+};

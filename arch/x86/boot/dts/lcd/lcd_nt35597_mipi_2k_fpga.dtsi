@@ -1,0 +1,44 @@
+/ { lcds {
+	lcd_nt35597_mipi_2k_fpga: lcd5597@5597 {
+
+		work-mode = <1>;
+		bpp = <24>;
+		lane-number = <4>;
+
+		dsc-compression = <0>;
+
+		fps = <3>;
+		panel-name = "lcd_nt35597_mipi_2k_fpga";
+
+		init-data = [
+			23 00 00 02 FF 10
+			23 00 00 02 BB 13
+			23 00 00 02 E5 00
+			23 00 00 02 C0 00
+			23 00 00 02 FB 01
+			13 78 00 01 11
+			13 64 00 01 29
+			];
+		sleep-in = [
+			13 0A 00 01 28
+			13 78 00 01 10
+			];
+		sleep-out = [
+			13 78 00 01 11
+			13 64 00 01 29
+			];
+
+		display-timings {
+			clock-frequency = <600000>;
+			hactive = <720>;
+			vactive = <1280>;
+			hback-porch = <64>;
+			hfront-porch = <64>;
+			vback-porch = <5>;
+			vfront-porch = <15>;
+			hsync-len = <2>;
+			vsync-len = <2>;
+		};
+	};
+};};
+

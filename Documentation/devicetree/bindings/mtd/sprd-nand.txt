@@ -1,0 +1,26 @@
+* Spreadtrum Nand Host Controller
+
+The Spreadtrum Nand Host Controller provides an interface for Nand.
+This file documents differences between the coreproperties described by Nand.txt
+and the properties used by the Spreadtrum Nand driver.
+
+Required properties:
+- compatible:
+ should be "sprd,nandc-r5"
+ in order to compatible with Nand controller version
+- reg: Registers location and length
+- interrupts: exactly one interrupt specifier
+- clock-frequency: Base freq of nand controller
+- clocks: Freq of source clk of nand controller ECC and ahb enable or disable
+Example:
+
+nandc: nandc@21a00000 {
+	compatible = "sprd,nandc-r5";
+	reg = <0x21a00000 0x1000>;
+	interrupts = <GIC_SPI 59 IRQ_TYPE_LEVEL_HIGH>;
+	clock-frequency = <192000000>;
+	clocks = <&clk_nandc_2x>,<&clk_nandc_ecc>,
+		 <&clk_rpll_195m>,<&ext_26m>,
+		 <&clk_ap_ahb_gates 10>;
+	status = "disabled";
+};

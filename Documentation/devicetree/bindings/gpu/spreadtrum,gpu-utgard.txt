@@ -1,0 +1,33 @@
+* ARM Mali-300/400/450 GPU
+* It has common properties with mali-midgartd, as decribed in spradtrum,gpu.txt.
+
+Required properties:
+    - compatible : "arm,mali-400" "sprd,mali-utgard" for mali 400 IP present in SC9830 etc. SoC
+
+Optional properties:
+    - pmu_domain_config:
+        - If the Mali internal PMU is present and the PMU IRQ is specified in
+            interrupt/interrupt-names ("IRQPMU").This contains the mapping of
+            Mali HW units to the PMU power domain.
+        -Mali Dynamic power domain configuration in sequence from 0-11, like:
+            <GP PP0 PP1 PP2 PP3  PP4 PP5 PP6 PP7 L2$0 L2$1 L2$2>.
+
+    - pmu-switch-delay:
+        - Only needed if the power gates are connected to the PMU in a high fanout
+            network. This value is the number of Mali clock cycles it takes to
+            enable the power gates and turn on the power mesh. This value will
+            have no effect if a daisy chain implementation is used.
+
+Example:
+	gpu@60000000 {
+		compatible = "arm,mali-400", "arm,mali-utgard";
+		...
+
+		pmu_domain_config = <0x1000 0x1000 0x1000
+			0x0 0x0 0x0
+			0x0 0x0 0x0
+			0x1000 0x0 0x0>;
+		pmu_switch_delay = <0xffff>;
+
+		...
+	};

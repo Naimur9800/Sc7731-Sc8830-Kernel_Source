@@ -1,0 +1,16 @@
+Spreadtrum gpio control leds driver bindings
+
+Required properties:
+- compatible: "sprd,gpio-rgb"
+- gpios: describes the gpio that is used for enabling/disabling the led.
+
+Example:
+
+	gpio-rgb {
+		compatible = "sprd,gpio-rgb";
+		gpios = <&ap_gpio 97 0
+			&ap_gpio 96 0
+			&ap_gpio 87 0>;
+		status = "okay";
+	};
+

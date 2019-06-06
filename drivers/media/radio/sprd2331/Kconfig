@@ -1,0 +1,11 @@
+#
+# Spreadtrum SC2331 FM drivers
+#
+config RADIO_SC2331
+	depends on SDIODEV
+	tristate "Spreadtrum SC2331 FM Support"
+	---help---
+	Say Y to enable built-in FM controller in the
+	Spreadtrum SC2331 based System-on-Chip devices.
+	To compile this driver as a module, choose M here.
+	If unsure say Y.

@@ -1,0 +1,30 @@
+* Spreadtrum Video Signal Processing Engine
+
+Required properties:
+- compatible: shall be one of the follows:
+              "sprd,sharkl-vsp", for sharkl series of chips,such as sc9830, sc9832;
+              "sprd,sharklt8-vsp", for sharklt8 series of chips,such as sc9838;
+- reg: physical base address of the controller and length of memory mapped region.
+- interrupts: VSP interrupt specifier.
+- sprd,syscon-aon-apb: AON-APB bus node, used to get VSP status
+- sprd,syscon-mm-ahb: mm-ahb bus node, used to get VSP status
+- clock-names: List of clock input name strings sorted in the same
+		order as the clocks property.  Consumers drivers
+		will use clock-names to match clock input names
+		with clocks specifiers.
+- clocks: The freq of source clk connected to VSP.
+
+
+Optional properties:
+-
+
+Examples:
+        vsp: video-codec@60900000{
+			compatible = "sprd,sharkl-vsp";
+			reg = <0x60900000 0xc000>;
+			interrupts = <GIC_SPI 43 IRQ_TYPE_LEVEL_HIGH>;
+			sprd,syscon-aon-apb = <&aon_apb_controller>;
+			sprd,syscon-mm-ahb = <&mm_ahb_controller>;
+			clock-names = "clk_mm_i", "clk_vsp", "clk_mm_axi";
+			clocks = <&clk_aon_apb_gates0 25>, <&clk_vsp>, <&clk_mm_ahb>;
+		};

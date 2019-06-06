@@ -1,0 +1,9 @@
+config SPRD_GSP
+	bool "SPRD GSP driver"
+	depends on ARCH_SPRD
+	depends on (ION_SPRD_STAGING || ION_SPRD)
+	depends on SYNC
+	depends on SPRD_IOMMU
+	---help---
+	  GSP is hardware which not only can compose multiple layers
+	  but also can transform and scale layers.

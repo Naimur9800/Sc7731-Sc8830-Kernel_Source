@@ -1,0 +1,16 @@
+ifdef BUILD_FROM_KERNEL
+include sprd-board-config/sharkle/sp9832e_1h10/sp9832e_1h10_base
+else
+include $(KERNEL_PATH)/sprd-board-config/sharkle/sp9832e_1h10/sp9832e_1h10_base
+endif
+
+BOARD_WCN_CONFIG :=
+BOARD_EXT_PMIC_CONFIG :=
+BOARD_TEE_CONFIG := trusty
+
+#DEFCONFIG
+KERNEL_DEFCONFIG := sprd_sharkle_defconfig
+
+#DTS
+TARGET_DTB := sp9832e-1h10-native
+TARGET_DTBO := sp9832e-1h10-overlay

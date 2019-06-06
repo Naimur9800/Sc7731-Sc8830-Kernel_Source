@@ -1,0 +1,399 @@
+/ {
+	sprd_headset: sprd-headset {
+		compatible = "sprd,sc2731-headset";
+		status = "disabled";
+		jack-type = <0>; /* 0: normal-open jack; 1: normal-close jack */
+		io-channels = <&pmic_adc 55>;
+		io-channel-names = "headset";
+		gpios = <&pmic_eic 3 0>, <&pmic_eic 8 0>;
+		gpio-trigger-levels = <1 1>;
+		gpio-dbnc-intervals = <10 100>;
+		gpio-names = "button", "detect_l";
+		adc-threshold-3pole-detect = <2650>;
+		irq-threshold-button = <6>;
+		headset-button@0 {
+			/* media */
+			adc-min = <0>;
+			adc-max = <520>;
+			code = <226>;
+		};
+		headset-button@1 {
+			/* volume up */
+			adc-min = <530>;
+			adc-max = <1050>;
+			code = <115>;
+		};
+		headset-button@2 {
+			/* volume down */
+			adc-min = <1080>;
+			adc-max =<2200>;
+			code = <114>;
+		};
+	};
+
+	sound_vbc_r3p0_sprd_codec: sound@0 {
+		compatible = "sprd,vbc-r3p0-codec-sc2731";
+		status = "disabled";
+		sprd-audio-card,name = "sprdphone-sc2731";
+		sprd-audio-card,widgets =
+			"Headphone", "inter HP PA",
+			"Speaker", "inter Spk PA",
+			"Speaker", "inter Ear PA";
+		sprd-audio-card,routing =
+			"HPMIC", "HP Mic Jack",
+			"MIC", "Mic Jack",
+			"AUXMIC", "Aux Mic Jack",
+			"inter HP PA", "HP PA",
+			"inter Spk PA", "Spk PA",
+			"inter Ear PA", "EAR";
+		sprd-audio-card,headset = <&sprd_headset>;
+
+		/* dai-links */
+		sprd-audio-card,dai-link@0 {
+			ignore-suspend = <0>;
+			plat {
+				sound-dai = <&sprd_pcm>;
+			};
+			cpu {
+				/* normal-without-dsp */
+				sound-dai = <&vbc_r3p0 0>;
+			};
+			codec {
+				/* sprd-codec-normal */
+				sound-dai = <&sprd_audio_codec_ana 0>;
+			};
+		};
+		sprd-audio-card,dai-link@1 {
+			plat {
+				sound-dai = <&sprd_pcm>;
+			};
+			cpu {
+				/* voice */
+				sound-dai = <&vbc_r3p0 3>;
+			};
+			codec {
+				/* sprd-codec-voice */
+				sound-dai = <&sprd_audio_codec_ana 1>;
+			};
+		};
+		sprd-audio-card,dai-link@2 {
+			plat {
+				sound-dai = <&sprd_pcm>;
+			};
+			cpu {
+				/* fast-playback */
+				sound-dai = <&vbc_r3p0 1>;
+			};
+			codec {
+				/* sprd-codec-fast-playback */
+				sound-dai = <&sprd_audio_codec_ana 7>;
+			};
+		};
+		sprd-audio-card,dai-link@3 {
+			plat {
+				sound-dai = <&sprd_pcm>;
+			};
+			cpu {
+				/* voice-capture */
+				sound-dai = <&vbc_r3p0 7>;
+			};
+			codec {
+				/* sprd-codec-normal */
+				sound-dai = <&sprd_audio_codec_ana 0>;
+			};
+		};
+		sprd-audio-card,dai-link@4 {
+			plat {
+				sound-dai = <&sprd_pcm>;
+			};
+			cpu {
+				/* fm */
+				sound-dai = <&vbc_r3p0 6>;
+			};
+			codec {
+				/* sprd-codec-fm */
+				sound-dai = <&sprd_audio_codec_ana 5>;
+			};
+		};
+		sprd-audio-card,dai-link@5 {
+			plat {
+				sound-dai = <&sprd_pcm>;
+			};
+			cpu {
+				/* offload */
+				sound-dai = <&vbc_r3p0 2>;
+			};
+			codec {
+				/* sprd-codec-offload-playback */
+				sound-dai = <&sprd_audio_codec_ana 6>;
+			};
+		};
+		sprd-audio-card,dai-link@6 {
+			plat {
+				sound-dai = <&sprd_pcm>;
+			};
+			cpu {
+				/* loop_record */
+				sound-dai = <&vbc_r3p0 8>;
+			};
+			codec {
+				/* sprd-codec-voip */
+				sound-dai = <&sprd_audio_codec_ana 2>;
+			};
+		};
+		sprd-audio-card,dai-link@7 {
+			plat {
+				sound-dai = <&sprd_pcm>;
+			};
+			cpu {
+				/* loop_play */
+				sound-dai = <&vbc_r3p0 9>;
+			};
+			codec {
+				/* sprd-codec-voip */
+				sound-dai = <&sprd_audio_codec_ana 2>;
+			};
+		};
+		sprd-audio-card,dai-link@8 {
+			plat {
+				sound-dai = <&sprd_pcm>;
+			};
+			cpu {
+				/* voip_record */
+				sound-dai = <&vbc_r3p0 4>;
+			};
+			codec {
+				/* sprd-codec-voip */
+				sound-dai = <&sprd_audio_codec_ana 2>;
+			};
+		};
+		sprd-audio-card,dai-link@9 {
+			plat {
+				sound-dai = <&sprd_pcm>;
+			};
+			cpu {
+				/* voip_play */
+				sound-dai = <&vbc_r3p0 5>;
+			};
+			codec {
+				/* sprd-codec-voip */
+				sound-dai = <&sprd_audio_codec_ana 2>;
+			};
+		};
+		sprd-audio-card,dai-link@10 {
+			plat {
+				sound-dai = <&sprd_pcm>;
+			};
+			cpu {
+				/* fm_capture */
+				sound-dai = <&vbc_r3p0 10>;
+			};
+			codec {
+				/* dummy-codec */
+				sound-dai = <0 0>;
+			};
+		};
+		sprd-audio-card,dai-link@11 {
+			plat {
+				sound-dai = <&sprd_pcm>;
+			};
+			cpu {
+				/* bt_capture */
+				sound-dai = <&vbc_r3p0 11>;
+			};
+			codec {
+				/* dummy-codec */
+				sound-dai = <0 0>;
+			};
+		};
+		sprd-audio-card,dai-link@12 {
+			ignore-pmdown-time = <0>;
+			ignore-suspend = <0>;
+			cpu {
+				/* compress-dai */
+				sound-dai = <&sprd_compr 0>;
+			};
+			codec {
+				/* sprd-dummy-playback-dai */
+				sound-dai = <0 1>;
+			};
+		};
+	};
+
+	sound_vbc_r3p0_ext_codec: sound@1 {
+		compatible = "sprd,vbc-r3p0-codec-rt5659";
+		status = "disabled";
+		sprd-audio-card,name = "sprdphone-rt5659";
+		sprd-audio-card,widgets =
+			"Microphone", "Headset-mic",
+			"Microphone", "Main-mic",
+			"Microphone", "Aux-mic",
+			"Headphone", "Headphone Jack",
+			"Speaker", "Speaker",
+			"Speaker", "Earpiece";
+		sprd-audio-card,routing =
+			"IN1P", "Headset-mic",
+			"IN1N", "Headset-mic",
+			"IN2P", "Main-mic",
+			"IN2N", "Main-mic",
+			"IN3P", "Aux-mic",
+			"IN3N", "Aux-mic",
+			"Headphone Jack", "HPOL",
+			"Headphone Jack", "HPOR",
+			"Speaker", "SPOL",
+			"Earpiece", "MONOOUT";
+		/* the detection of headphone & mic use the same gpio. */
+		sprd-audio-card,hp-det-gpio = <&ap_gpio 33 0>;
+		sprd-audio-card,codec-type = <1>;
+		sprd-audio-card,dai-link@0 {
+			ops = <0>;
+			init = <0>;
+			format = "i2s";
+			plat {
+				sound-dai = <&sprd_pcm>;
+			};
+			cpu {
+				/* normal-without-dsp */
+				sound-dai = <&vbc_r3p0 0>;
+			};
+		};
+		sprd-audio-card,dai-link@1 {
+			ops = <0>;
+			format = "i2s";
+			plat {
+				sound-dai = <&sprd_pcm>;
+			};
+			cpu {
+				/* voice */
+				sound-dai = <&vbc_r3p0 3>;
+			};
+		};
+		sprd-audio-card,dai-link@2 {
+			ops = <0>;
+			format = "i2s";
+			plat {
+				sound-dai = <&sprd_pcm>;
+			};
+			cpu {
+				/* fast-playback */
+				sound-dai = <&vbc_r3p0 1>;
+			};
+		};
+		sprd-audio-card,dai-link@3 {
+			ops = <0>;
+			format = "i2s";
+			plat {
+				sound-dai = <&sprd_pcm>;
+			};
+			cpu {
+				/* voice-capture */
+				sound-dai = <&vbc_r3p0 7>;
+			};
+		};
+		sprd-audio-card,dai-link@4 {
+			ops = <0>;
+			format = "i2s";
+			plat {
+				sound-dai = <&sprd_pcm>;
+			};
+			cpu {
+				/* fm */
+				sound-dai = <&vbc_r3p0 6>;
+			};
+		};
+		sprd-audio-card,dai-link@5 {
+			ops = <0>;
+			format = "i2s";
+			plat {
+				sound-dai = <&sprd_pcm>;
+			};
+			cpu {
+				/* offload */
+				sound-dai = <&vbc_r3p0 2>;
+			};
+		};
+		sprd-audio-card,dai-link@6 {
+			ops = <0>;
+			format = "i2s";
+			plat {
+				sound-dai = <&sprd_pcm>;
+			};
+			cpu {
+				/* loop_record */
+				sound-dai = <&vbc_r3p0 8>;
+			};
+		};
+		sprd-audio-card,dai-link@7 {
+			ops = <0>;
+			format = "i2s";
+			plat {
+				sound-dai = <&sprd_pcm>;
+			};
+			cpu {
+				/* loop_play */
+				sound-dai = <&vbc_r3p0 9>;
+			};
+		};
+		sprd-audio-card,dai-link@8 {
+			ops = <0>;
+			format = "i2s";
+			plat {
+				sound-dai = <&sprd_pcm>;
+			};
+			cpu {
+				/* voip_record */
+				sound-dai = <&vbc_r3p0 4>;
+			};
+		};
+		sprd-audio-card,dai-link@9 {
+			ops = <0>;
+			format = "i2s";
+			plat {
+				sound-dai = <&sprd_pcm>;
+			};
+			cpu {
+				/* voip_play */
+				sound-dai = <&vbc_r3p0 5>;
+			};
+		};
+		sprd-audio-card,dai-link@10 {
+			plat {
+				sound-dai = <&sprd_pcm>;
+			};
+			cpu {
+				/* fm_capture */
+				sound-dai = <&vbc_r3p0 10>;
+			};
+			codec {
+				/* dummy-codec */
+				sound-dai = <0 0>;
+			};
+		};
+		sprd-audio-card,dai-link@11 {
+			plat {
+				sound-dai = <&sprd_pcm>;
+			};
+			cpu {
+				/* bt_capture */
+				sound-dai = <&vbc_r3p0 11>;
+			};
+			codec {
+				/* dummy-codec */
+				sound-dai = <0 0>;
+			};
+		};
+		sprd-audio-card,dai-link@12 {
+			ignore-pmdown-time = <0>;
+			ignore-suspend = <0>;
+			cpu {
+				/* compress-dai */
+				sound-dai = <&sprd_compr 0>;
+			};
+			codec {
+				/* sprd-dummy-playback-dai */
+				sound-dai = <0 1>;
+			};
+		};
+	};
+};
+

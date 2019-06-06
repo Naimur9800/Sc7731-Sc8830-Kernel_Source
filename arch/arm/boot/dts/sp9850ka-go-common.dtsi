@@ -1,0 +1,260 @@
+/*
+ * Spreadtrum SP98x0 board (Android Go) common DTS file
+ *
+ * Copyright (C) 2016, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#include "sp9850ka-common.dtsi"
+
+/ {
+	sprd,sc-id = <9850 1 0x20000>;
+
+	aliases {
+		thm-sensor9 = &pa_temp;
+		thm-sensor10 = &board_temp;
+		i2c0 = &i2c0;
+		i2c1 = &i2c1;
+		i2c2 = &i2c2;
+		i2c3 = &i2c3;
+		i2c4 = &i2c4;
+		spi0 = &spi0;
+		spi1 = &spi1;
+		spi2 = &spi2;
+	};
+
+	memory: memory@80000000 {
+		device_type = "memory";
+		reg = <0x80000000 0x40000000>;
+	};
+
+	firmware {
+		android {
+			compatible = "android,firmware";
+
+			vbmeta {
+				compatible = "android,vbmeta";
+				parts = "vbmeta,boot,recovery,system,vendor";
+			};
+			fstab {
+				compatible = "android,fstab";
+				fs_system: system {
+					compatible = "android,system";
+					dev = "/dev/block/platform/soc/soc:ap-ahb/20600000.sdio/by-name/system";
+					type = "ext4";
+					mnt_flags = "ro,barrier=1";
+					fsmgr_flags = "wait";
+				};
+				fs_vendor: vendor {
+					compatible = "android,vendor";
+					dev = "/dev/block/platform/soc/soc:ap-ahb/20600000.sdio/by-name/vendor";
+					type = "ext4";
+					mnt_flags = "ro,barrier=1";
+					fsmgr_flags = "wait";
+				};
+			};
+		};
+	};
+
+	sprd-wlan {
+		compatible = "sprd,sc2332";
+	};
+
+	sprd-marlin2 {
+		compatible = "sprd,marlin2";
+		m2-to-ap-coexist-gpios = <&ap_gpio 94 0>;
+		m2-wakeup-ap-gpios = <&ap_gpio 122 0>;
+		permit-ap-send-gpios = <&ap_gpio 134 0>;
+		rstn-gpios = <&ap_gpio 123 0>;
+		chip-en-gpios = <&ap_gpio 97 0>;
+		m2-to-ap-irq-gpios = <&ap_gpio 121 0>;
+		vddwcn-supply = <&vddcon>;
+		vdd_marlin2_1v2-supply = <&vddldomem>;
+		clock-names = "clk_32k", "source", "enable";
+		clocks = <&clk_aux0>, <&ext_32k>,
+			 <&clk_aon_apb_gates1 2>;
+		sdhci-name = <&sdio1>;
+		common_chip_en;
+		power-ctl-disabled;
+	};
+
+	sprd-ge2 {
+		compatible = "sprd,ge2";
+		vddwcn-supply = <&vddcon>;
+		clock-names = "clk_32k", "source", "enable";
+		clocks = <&clk_aux0>,<&ext_32k>,
+			 <&clk_aon_apb_gates1 2>;
+		chip-en-gpios = <&ap_gpio 97 0>;
+		vddlna-supply = <&vddsim2>;
+	};
+
+	sprd-mtty {
+		compatible = "sprd,mtty";
+		sprd,name = "ttyM";
+	};
+
+	ipi: interrupt-controller {
+		compatible = "android,CustomIPI";
+		#interrupt-cells = <1>;
+		interrupt-controller;
+	};
+
+	trusty {
+		compatible = "android,trusty-smc-v1";
+
+		irq {
+			compatible = "android,trusty-irq-v1";
+			interrupt-templates = <&ipi 0>,
+						<&gic 1 GIC_PPI 0>,
+						<&gic 1 GIC_SPI 0>;
+			interrupt-ranges = < 0  15 0>,
+						<16  31 1>,
+						<32 223 2>;
+		};
+
+		virtio {
+			compatible = "android,trusty-virtio-v1";
+		};
+
+		log {
+			compatible = "android,trusty-log-v1";
+		};
+	};
+
+	pa_temp: pa-tsensor@9 {
+		compatible = "sprd,board-thermal";
+		#thermal-sensor-cells = <1>;
+		io-channels = <&pmic_adc 5 >;
+		io-channel-names = "adc_temp";
+		temp-tab-size = <16>;
+		temp-tab-val = <1140 1132 1109 1074 983 838 654 413
+				316 238 178 133 99 75 57 43>;
+		temp-tab-temp = <558 596 704 806 953 1101 1248 1450
+				1549 1649 1749 1849 1951 2049 2148 2252>;
+	};
+
+	board_temp: bd-tsensor@10 {
+		compatible = "sprd,board-thermal";
+		#thermal-sensor-cells = <1>;
+		io-channels = <&pmic_adc 3>;
+		io-channel-names = "adc_temp";
+		temp-tab-size = <16>;
+		temp-tab-val = <1140 1132 1109 1074 983 838 654 413
+				316 238 178 133 99 75 57 43>;
+		temp-tab-temp = <558 596 704 806 953 1101 1248 1450
+				1549 1649 1749 1849 1951 2049 2148 2252>;
+	};
+
+	dsim-plg-lte {
+		compatible = "sprd,dsim-plug";
+		sprd,name = "dsim-plg-lte";
+		sprd,dst = <5>;
+		sprd,channel = <23>;
+		sim1-gpios = <&ap_gpio 65535 0>;
+		sim2-gpios = <&ap_gpio 65535 0>;
+	};
+};
+
+&cpu0 {
+	enable-method = "psci";
+};
+
+&cpu1 {
+	enable-method = "psci";
+};
+
+&cpu2 {
+	enable-method = "psci";
+};
+
+&cpu3 {
+	enable-method = "psci";
+};
+
+&deep {
+	sprd,sys-base = <&ap_apb_controller>, <&ap_ahb_controller>,
+		<&pmu_apb_controller>, <&aon_apb_controller>;
+	sprd,sys-intc = <&intc0_controller>, <&intc1_controller>,
+		<&intc2_controller>, <&intc3_controller>,
+		<&aon_intc_controller>;
+	clocks = <&ext_26m>, <&clk_ap_top_axi>, <&clk_ap_ahb>, <&clk_ap_apb>,
+		<&clk_gsp>, <&clk_dispc0>, <&clk_dispc0_dpi>, <&clk_dphy_ref>,
+		<&clk_dphy_cfg>, <&clk_otg_ref>,
+		<&clk_ce_sefuse>, <&clk_ce_pub>, <&clk_ce_sec>,
+		<&clk_uart0>, <&clk_uart1>, <&clk_uart2>,
+		<&clk_uart3>, <&clk_uart4>, <&clk_i2c0>,
+		<&clk_i2c1>, <&clk_i2c2>, <&clk_i2c3>,
+		<&clk_i2c4>, <&clk_spi0>, <&clk_spi2>,
+		<&clk_iis0>, <&clk_iis1>, <&clk_iis2>,
+		<&clk_iis3>;
+};
+
+&csi0 {
+	status = "okay";
+};
+
+&csi1 {
+	status = "okay";
+};
+
+&cpp {
+	status = "okay";
+};
+
+&dispc0 {
+	status = "okay";
+};
+
+&dcam {
+	status = "okay";
+};
+
+&dmc_mpu {
+	sprd,ddr-interleaved = <0>;
+	sprd,ddr-chn = <8>;
+	chn-name = "MM", "GSP/GPU", "DISP",
+		   "CA7", "PUBCP", "VSP/JPEG",
+		   "WTLCP", "AON/AP";
+	memory-region = <&pub0_mpu_reserved>;
+};
+
+&dphy0 {
+	status = "okay";
+};
+
+&dsi0 {
+	status = "okay";
+};
+
+&isp {
+	status = "okay";
+};
+
+&pmic_fgu {
+	ocv-type = <1>;
+};
+
+&pwms {
+	status = "okay";
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&uart1 {
+	status = "okay";
+};
+
+&uart2 {
+	status = "okay";
+};
+
+&uart3 {
+	status = "okay";
+};
+
+&pa_temp {
+	status = "disabled";
+};

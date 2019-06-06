@@ -1,0 +1,394 @@
+/*
+ * Spreadtrum SP7731e board common DTS file
+ *
+ * Copyright (C) 2017, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#include "lcd/lcd_ili9881c_3lane_mipi_hd.dtsi"
+#include "lcd/lcd_jd9161_mipi_fwvga.dtsi"
+#include "lcd/lcd_jd9161_xxx_mipi_wvga.dtsi"
+#include "lcd/lcd_st7701_boe_mipi_wvga.dtsi"
+#include "lcd/lcd_st7701_coe_mipi_wvga.dtsi"
+#include "lcd/lcd_dummy_mipi.dtsi"
+#include "sc2720.dtsi"
+#include "sprd-sound.dtsi"
+#include "sc7731e-wcn.dtsi"
+#include "sprd-battery.dtsi"
+#include <dt-bindings/thermal/thermal.h>
+
+/ {
+
+	aliases {
+		cooling-device0 = &cluster0_cooling;
+		thm-sensor9 = &chg_temp;
+		thm-sensor10 = &board_temp;
+		thm-sensor11 = &cpu_thmzone;
+	};
+
+	firmware {
+		android {
+			compatible = "android,firmware";
+
+			vbmeta {
+				compatible = "android,vbmeta";
+				parts = "vbmeta,boot,recovery,system,vendor,product";
+			};
+
+			fstab {
+				compatible = "android,fstab";
+				vendor {
+					compatible = "android,vendor";
+					dev = "/dev/block/platform/soc/soc:ap-ahb/20600000.sdio/by-name/vendor";
+					type = "ext4";
+					mnt_flags = "ro,barrier=1";
+					fsmgr_flags = "wait";
+				};
+				product {
+					compatible = "android,product";
+					dev = "/dev/block/platform/soc/soc:ap-ahb/20600000.sdio/by-name/product";
+					type = "ext4";
+					mnt_flags = "ro,barrier=1";
+					fsmgr_flags = "wait";
+				};
+			};
+		};
+	};
+
+	thermal-zones {
+
+		cpu_thmzone: cpu-thmzone {
+			polling-delay-passive = <100>;
+			polling-delay = <1000>;
+			sustainable-power = <1000>;
+			thermal-sensors = <&cpu_thm  0>;
+			trips {
+				cpu_threshold: trip-point@0 {
+					temperature = <70000>;
+					hysteresis = <1000>;
+					type = "passive";
+				};
+				cpu_target: trip-point@1 {
+					temperature = <85000>;
+					hysteresis = <1000>;
+					type = "passive";
+				};
+				cpu_crit: cpu_crit {
+					temperature = <110000>;
+					hysteresis = <2000>;
+					type = "critical";
+				};
+			};
+			cooling-maps {
+				map0 {
+					trip = <&cpu_target>;
+					contribution = <1024>;
+					cooling-device =
+					<&cluster0_cooling
+						THERMAL_NO_LIMIT
+						THERMAL_NO_LIMIT>;
+				};
+			};
+		};
+
+		chg_thmzone: chg-thmzone {
+			polling-delay-passive = <0>;
+			polling-delay = <0>;
+			thermal-sensors = <&chg_temp  9>;
+		};
+
+		bd_thmzone: board-thmzone {
+			polling-delay-passive = <0>;
+			polling-delay = <0>;
+			thermal-sensors = <&board_temp  10>;
+		};
+	};
+
+	cooling-devices {
+		cluster0_cooling: cluster0-cooling {
+			compatible = "sprd,cluster-cooling";
+			#cooling-cells = <2>; /* min followed by max */
+			sprd,efuse-block7 = <7>;
+			sprd,efuse-block15 = <15>;
+			/* core_leak =                             */
+			/*(LIT_LEAK[4:0]+1) x 2mA x 0.85V x 18.69% */
+			sprd,leak-core = <2 85 1869>;
+			/* cluster_leak =                           */
+			/* (LIT_LEAK[4:0]+1) x 2mA x 0.85V x 25.24% */
+			sprd,leak-cluster = <2 85 2524>;
+			/*core Tscale = aT^3 + bT^2 + cT +di   */
+			sprd,core-temp-scale =
+			/* a*10^7   b*10^7      c*10^7     d*10^7 */
+			<  30       (-2702)     142970     (-1296653)>;
+			/*core Vscale = eV^3 + fV^2 + gV + h */
+			sprd,core-voltage-scale =
+			/* e*10^2   f*10^2     g*10^2  h*10^2*/
+			<  722      (-1459)    1190    (-316)>;
+			/*cluster Tscale = aT^3 + bT^2 + cT +di   */
+			sprd,cluster-temp-scale =
+			/* a*10^7   b*10^7      c*10^7     d*10^7 */
+			<  30       (-2609)     139842     (-1206078)>;
+			/*cluster Vscale = eV^3 + fV^2 + gV + h */
+			sprd,cluster-voltage-scale =
+			/* e*10^2   f*10^2     g*10^2  h*10^2*/
+			<  614      (-1110)    821     (-188)>;
+			sprd,efuse-switch = <0>;
+			sprd,hotplug-period = <10>;
+			sprd,min-cpufreq = <768000>;
+			sprd,min-cpunum = <4>;
+			sprd,core-base = <1139>;
+			sprd,cluster-base = <2751>;
+			sprd,dynamic-core =
+			/*Pdynperghz    Freq     Vbase  */
+			< 816           768      900>;
+			sprd,dynamic-cluster =
+			/*Pdynperghz    Freq     Vbase  */
+			< 15           768      900>;
+		};
+	};
+
+	chg_temp:chg-tsensor@9 {
+		compatible = "sprd,board-thermal";
+		#thermal-sensor-cells = <1>;
+		io-channels = <&pmic_adc 2>;
+		io-channel-names = "adc_temp";
+		temp-tab-size = <15>;
+		temp-tab-val = <1131 1110 1074 983 838 654 413 316
+				238 178 133 100 75 57 43>;
+		temp-tab-temp = <603 702 805 953 1101 1248 1449 1549
+				1649 1749 1849 1949 2049 2149 2249>;
+	};
+
+	board_temp:bd-tsensor@10 {
+		compatible = "sprd,board-thermal";
+		#thermal-sensor-cells = <1>;
+		io-channels = <&pmic_adc 1>;
+		io-channel-names = "adc_temp";
+		temp-tab-size = <15>;
+		temp-tab-val = <1131 1110 1074 983 838 654 413 316
+				238 178 133 100 75 57 43>;
+		temp-tab-temp = <603 702 805 953 1101 1248 1449 1549
+				1649 1749 1849 1949 2049 2149 2249>;
+	};
+
+	/* smartphone board only */
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		smem_reserved: sipc-mem@87800000 {
+			reg = <0x87800000 0x00200000>;
+		};
+
+		/*start address must be 32M aligned */
+		wcn_reserved: wcn-mem@88000000{
+			reg = <0x88000000 0x00300000>;
+		};
+
+		gnss_reserved: gnss-mem@88300000{
+			reg = <0x88300000 0x0015a800>;
+		};
+
+		cp_reserved: cp-modem@89600000 {
+			reg = <0x89600000 0x02300000>;
+		};
+
+		/*Only used for iq, will be removed in normal mode by uboot */
+		iq_reserved: iq-mem@93100000{
+			compatible = "sprd,iq-mem";
+			reg = <0x93100000 0x4000000>;
+		};
+
+		/*start address must be 64M aligned */
+		sml_reserved: sml-mem@94000000{
+			reg = <0x94000000 0x00020000>;
+		};
+
+		tos_reserved: tos-mem@94020000{
+			reg = <0x94020000 0x002e0000>;
+		};
+
+		pstore: pstore@9e524000 {
+			reg = <0x9e524000 0x00040000>;
+		};
+	};
+
+	ramoops {
+		compatible = "ramoops";
+		memory-region = <&pstore>;
+		record-size		= <0x0 0x00008000>;
+		console-size	= <0x0 0x00008000>;
+		pmsg-size		= <0x0 0x00008000>;
+	};
+
+	sprd-iq {
+		compatible = "sprd,iq";
+		sprd,region = <&iq_reserved>;
+		sprd,mapping-offs = <0x0>;
+	};
+
+	panel_if: sprd-panel-if {
+		compatible = "sprd-panel-if";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		panel-drivers = <
+			&lcd_st7701_boe_mipi_wvga
+			&lcd_st7701_coe_mipi_wvga
+			&lcd_ili9881c_3lane_mipi_hd
+			&lcd_jd9161_mipi_fwvga
+			&lcd_jd9161_xxx_mipi_wvga
+			&lcd_dummy_mipi_hd
+		>;
+		/* input port */
+		port@1 {
+			reg = <1>;
+			panel_in: endpoint@0 {
+				remote-endpoint = <&dphy0_out>;
+			};
+		};
+	};
+
+	adf: sprd-adf {
+		compatible = "sprd,sprd-adf";
+		status = "okay";
+		sprd,display-mode = <3>;
+		sprd,dispc = <&dispc0>;
+	};
+
+	sprd-wlan {
+		compatible = "sprd,sp7731e";
+	};
+
+	ddr_dfs: scene-frequency {
+		compatible = "sprd,dfs";
+		force-high-freq = <533>;
+	};
+
+	sprd-hotplug {
+		enable-dynamic-hotplug;
+	};
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&uart1 {
+	status = "okay";
+};
+
+&dispc0 {
+	status = "okay";
+};
+
+&dsi0 {
+	status = "okay";
+};
+
+&dphy0 {
+	status = "okay";
+};
+
+&dphy0_out {
+	remote-endpoint = <&panel_in>;
+};
+
+&pwms {
+	status = "okay";
+};
+
+&sprd_wdt {
+	sprd,wdt-phandle = <&pmic_wdt>;
+	clocks = <&clk_aon_apb_gates1 8>, <&clk_apb_rtc_gates 9>;
+};
+
+&sdio0 {
+	sprd,sdr104-dly = <0x7f 0xb0 0xb4 0xb4>;
+	sprd,sdr50-dly = <0x7f 0x45 0x41 0x41>;
+	vmmc-supply = <&vddsdcore>;
+	vqmmc-supply = <&vddsdio>;
+	voltage-ranges = <3000 3000>;
+	bus-width = <4>;
+	sd-uhs-sdr50;
+	sprd,name = "sdio_sd";
+	no-sdio;
+	no-mmc;
+	status = "okay";
+};
+
+&sdio3 {
+	sprd,hs400es-dly = <0x45 0x7f 0x30 0x30>;
+	sprd,hs400-dly = <0x45 0xaa 0x30 0x30>;
+	sprd,hs200-dly = <0x7f 0xaa 0xa8 0xa8>;
+	sprd,ddr52-dly = <0x80 0xbe 0x22 0x22>;
+	vmmc-supply = <&vddemmccore>;
+	voltage-ranges = <3000 3000>;
+	bus-width = <8>;
+	non-removable;
+	cap-mmc-hw-reset;
+	mmc-hs400-enhanced-strobe;
+	mmc-hs400-1_8v;
+	mmc-hs200-1_8v;
+	mmc-ddr-1_8v;
+	sprd,name = "sdio_emmc";
+	no-sdio;
+	no-sd;
+	status = "okay";
+};
+
+&adi_bus {
+	sprd,hw-channels = <3 0x8c68>, <33 0x8c20>,
+		<35 0x8cc0>, <36 0x8ccc>;
+};
+
+&battery {
+	charger-det-gpios = <&pmic_eic 0 0>;
+	battery-det-gpios = <&pmic_eic 8 0>;
+	io-channels = <&pmic_adc 0>,<&pmic_adc 5>,
+			<&pmic_adc 14>;
+	io-channel-names = "adc_temp","adc_vbat",
+			"adc_vchg";
+	status = "okay";
+};
+
+&sprd_audio_codec_ana {
+	status = "okay";
+	digital-codec = <&sprd_audio_codec_dig>;
+};
+
+&sprd_headset {
+	status = "okay";
+	io-channels = <&pmic_adc 20>;
+	io-channel-names = "headmic_in_little";
+	gpios = <&pmic_eic 3 0>, <&pmic_eic 7 0>,
+		<&pmic_eic 11 0>, <&pmic_eic 5 0>,
+		<&pmic_eic 12 0>;
+	gpio-trigger-levels = <1 1 1 1 1>;
+	gpio-dbnc-intervals = <30 100 100 100 100>;
+	gpio-names = "button", "detect_l",
+		"detect_h", "detect_mic",
+		"detect_all";
+	adc-threshold-3pole-detect = <2950>;
+	sprd,adc-gnd = <450>;
+	sprd,stable-value = <2170>;
+	sprd,coefficient = <917280>;
+};
+
+&sound_vbc_r1p0v3_sprd_codec {
+	status = "okay";
+};
+
+&sound_sprd_ap_alliis {
+	status = "okay";
+};
+
+&chg_temp {
+	status = "disabled";
+};
+
+&vddcore {
+	sprd,hw-regulator;
+	sprd,hw-step = <6250>;
+};

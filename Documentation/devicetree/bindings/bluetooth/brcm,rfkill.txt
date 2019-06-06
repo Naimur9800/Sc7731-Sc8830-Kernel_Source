@@ -1,0 +1,15 @@
+Broadcom Rfkill Device
+
+Required properties:
+
+- compatible: should be "brcm,rfkill"
+- power-gpios: power up broadcom chip
+- reset-gpios: reset broadcom chip
+
+Example:
+
+rfkill {
+	compatible = "brcm,rfkill";
+	power-gpios = <&ap_gpio 92 0>;
+	reset-gpios = <&ap_gpio 122 0>;
+};

@@ -1,0 +1,18 @@
+/*
+ * Spreadtrum SP9832E 1H10 GO NO FP board DTS file
+ *
+ * Copyright (C) 2016-2017, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+#include "sp9832e-1h10-go.dts"
+
+/ {
+	model = "Spreadtrum SP9832E-1H10-NO-FP Board";
+	reserved-memory {
+		tos_reserved: tos-mem@94020000{
+			reg = <0x94020000 0x002e0000>;
+		};
+		/delete-node/ sh-mem@96000000;
+	};
+};

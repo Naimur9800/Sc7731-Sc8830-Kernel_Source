@@ -1,0 +1,18 @@
+Spreadtrum ddr dvfs bindings
+
+Required properties:
+- compatible:
+   must be
+  "sprd,ddr-boost-freq"
+
+- sprd,ddr-boost-freq:
+  ddr boost frequence, the value depend on platform.
+  such as 9820e should be 667, 7731e should be 553
+
+Example:
+
+sprd-ddr-boost {
+	compatible = "sprd,ddr-boost-freq";
+	sprd,ddr-boost-freq = <667>;
+};
+

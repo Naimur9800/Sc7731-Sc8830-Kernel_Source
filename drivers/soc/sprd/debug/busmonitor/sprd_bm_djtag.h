@@ -1,0 +1,1922 @@
+/*
+ * Copyright (C) 2015 Spreadtrum Communications Inc.
+ *
+ * This software is licensed under the terms of the GNU General Public
+ * License version 2, as published by the Free Software Foundation, and
+ * may be copied, distributed, and modified under those terms.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#ifndef __SPRD_DJTAG_H__
+#define __SPRD_DJTAG_H__
+
+extern int sprd_bm_monitor_cp(long start_addr, long end_addr);
+extern int sprd_bm_monitor_ap(long start_addr, long end_addr);
+/*
+  *		DJTAG  Define
+  */
+/* for iwhale2 */
+#ifndef BIT_AP_AHB_BUSMON3_EB
+#define BIT_AP_AHB_BUSMON3_EB                  BIT(16)
+#define BIT_AP_AHB_BUSMON2_EB                  BIT(15)
+#define BIT_AP_AHB_BUSMON1_EB                  BIT(14)
+#define BIT_AP_AHB_BUSMON0_EB                  BIT(13)
+#endif
+/* for whale2 */
+#ifndef BIT_AP_AHB_BUSMON_EB
+#define BIT_AP_AHB_BUSMON_EB			(0xf << 13)
+#endif
+#ifndef REG_DISP_AHB_GEN_BUSMON_CFG
+#define REG_DISP_AHB_GEN_BUSMON_CFG		(0x000c)
+#define BIT_DISP_AHB_GPU_GSP_BUSMON_EN		BIT(5)
+#define BIT_DISP_AHB_GSP1_BUSMON_EN		BIT(4)
+#define BIT_DISP_AHB_GSP0_BUSMON_EN		BIT(3)
+#define BIT_DISP_AHB_TMC_BUSMON_EN		BIT(2)
+#define BIT_DISP_AHB_DISPC1_BUSMON_EN		BIT(1)
+#define BIT_DISP_AHB_DISPC0_BUSMON_EN		BIT(0)
+#endif
+#ifndef REG_CAM_AHB_BUSMON_CK_EN
+#define REG_CAM_AHB_BUSMON_CK_EN		(0x0024)
+#define BIT_CAM_AHB_BUSMON_M2_EB                 BIT(2)
+#define BIT_CAM_AHB_BUSMON_M1_EB                 BIT(1)
+#define BIT_CAM_AHB_BUSMON_M0_EB                 BIT(0)
+#endif
+#ifndef BIT_CAM_AHB_BUSMON_M3_EB
+#define BIT_CAM_AHB_BUSMON_M8_EB                 BIT(8)
+#define BIT_CAM_AHB_BUSMON_M7_EB                 BIT(7)
+#define BIT_CAM_AHB_BUSMON_M6_EB                 BIT(6)
+#define BIT_CAM_AHB_BUSMON_M5_EB                 BIT(5)
+#define BIT_CAM_AHB_BUSMON_M4_EB                 BIT(4)
+#define BIT_CAM_AHB_BUSMON_M3_EB                 BIT(3)
+#endif
+#ifndef REG_VSP_AHB_GEN_CKG_CFG
+#define REG_VSP_AHB_GEN_CKG_CFG			(0x0008)
+#define BIT_VSP_AHB_VPP_BUSMON_EN		BIT(10)
+#define BIT_VSP_AHB_VSP_ENC_BUSMON_EN		BIT(9)
+#define BIT_VSP_AHB_VSP_BUSMON_EN		BIT(8)
+#endif
+/* for sharkl2 */
+#ifndef BIT_AON_APB_DJTAG_SOFT_RST
+#define BIT_AON_APB_DJTAG_SOFT_RST	BIT(7)
+#endif
+#define BIT_DJTAG_PUB0_SOFTRESET				(BIT(17))
+#define BIT_DJTAG_AON_SOFTRESET					(BIT(16))
+#define BIT_DJTAG_AGCP_SOFTRESET				(BIT(10))
+#define BIT_DJTAG_WTLCP_SOFTRESET				(BIT(9))
+#define BIT_DJTAG_PUBCP_SOFTRESET				(BIT(8))
+#define BIT_DJTAG_DISP_SOFTRESET				(BIT(5))
+#define BIT_DJTAG_CAM_SOFTRESET					(BIT(4))
+#define BIT_DJTAG_VSP_SOFTRESET					(BIT(3))
+#define BIT_DJTAG_GPU_SOFTRESET					(BIT(2))
+#define BIT_DJTAG_MCPU_SOFTRESET				(BIT(1))
+#define BIT_DJTAG_AP_SOFTRESET					(BIT(0))
+#define BIT_DJTAG_REG_ACCESS_EB				 	(BIT(11))
+#define BIT_AON_APB_DJTAG_EB_T					(BIT(20))
+#define BIT_DJTAG_CHAIN_UPDATE_T				(BIT(8))
+#define BIT_AP_AHB_BUSMONITOR_EB_T				(BIT(13))
+
+#define DJTAG_SOFTRESET_MASK					0xffffffff
+#define DJTAG_IR_LEN							0x9
+#define DJTAG_DR_LEN							0x20
+#define DJTAG_DAP_OFFSET						0x8
+#define DJTAG_AUTO_SCAN_IR						0x200
+#define DJTAG_DAP_MUX_RESET						0x108
+
+#define SPRD_DJTAG_SUCCESS						0x0
+#define DJTAG_MAX_AUTOSCAN_CHANS				16
+#define USER_CFG_USERID_MASK					0xfffffff
+#define USER_CFG_ENUSERID					0x80000000
+struct __iomem sprd_djtag_reg {
+	u32 ir_len_cfg;
+	u32 dr_len_cfg;
+	u32 ir_cfg;
+	u32 dr_cfg;
+	u32 dr_pause_recov_cfg;
+	u32 rnd_en_cfg;
+	u32 upd_dr_cfg;
+	u32 autoscan_chain_addr[16];
+	u32 autoscan_chain_pattern[16];
+	u32 autoscan_chain_data[16];
+	u32 autoscan_chain_mask[16];
+	u32 autoscan_en;
+	u32 autoscan_int_raw;
+	u32 autoscan_int_mask;
+	u32 autoscan_int_en;
+	u32 autoscan_int_clr;
+	u32 dap_mux_ctrl_rst;
+};
+
+struct djtag_autoscan_set {
+	 u32 autoscan_chain_addr;
+	 u32 autoscan_chain_pattern;
+	 u32 autoscan_chain_mask;
+	 bool scan;
+};
+
+struct jtag_autoscan_info {
+	u32 autoscan_chain_addr;
+	u32 autoscan_chain_pattern;
+	u32 autoscan_chain_data;
+	u32 autoscan_chain_mask;
+	bool occurred;
+};
+
+struct autoscan_occur_info {
+	u32 autoscan_chain_addr;
+	u32 autoscan_chain_pattern;
+	u32 autoscan_chain_data;
+	u32 autoscan_chain_mask;
+	bool occurred;
+};
+
+/*
+  *		DJTAG Bus Monitor Reg Define
+  */
+#define BM_INT_MASK_STATUS			BIT(31)
+#define BM_INT_RAW_STATUS			BIT(30)
+#define BM_INT_CLR				BIT(29)
+#define BM_INT_EN				BIT(28)
+#define BM_BUF_CLR				BIT(27)
+#define BM_RD_WR_SEL				BIT(26)
+#define BM_BUF_RD_EN				BIT(25)
+#define BM_BUF_EN				BIT(24)
+#define BM_CNT_CLR				BIT(4)
+#define BM_CNT_INTERNAL_START			BIT(3)
+#define BM_CNT_EN				BIT(1)
+#define BM_CHN_EN				BIT(0)
+#define BM_AXI_SIZE_DWORD			(BIT(21) | BIT(22))
+#define BM_AXI_SIZE_WORD			BIT(22)
+#define BM_AXI_SIZE_HWORD			BIT(21)
+#define BM_AXI_SIZE_EN				BIT(20)
+#define BM_WRITE_CFG				BIT(1)
+#define BM_WRITE_EN				BIT(0)
+#define AUTOSCAN_ADDRESS(SUBSYS, DAP, CHAIN)  ((SUBSYS<<16)|(DAP<<8)|(CHAIN))
+
+enum ahb_busmon_djtag_ir {
+	AHB_CHN_INT = 8,
+	AHB_CHN_CFG,
+	AHB_ADDR_MIN,
+	AHB_ADDR_MAX,
+	AHB_ADDR_MASK,
+	AHB_DATA_MIN_L32,
+	AHB_DATA_MIN_H32,
+	AHB_DATA_MAX_L32,
+	AHB_DATA_MAX_H32,
+	AHB_DATA_MASK_L32,
+	AHB_DATA_MASK_H32,
+	AHB_CNT_WIN_LEN,
+	AHB_PEAK_WIN_LEN,
+	AHB_MATCH_ADDR,
+	AHB_MATCH_CMD,
+	AHB_MATCH_DATA_L32,
+	AHB_MATCH_DATA_H32,
+	AHB_RTRANS_IN_WIN,
+	AHB_RBW_IN_WIN,
+	AHB_RLATENCE_IN_WIN,
+	AHB_WTRANS_IN_WIN,
+	AHB_WBW_IN_WIN,
+	AHB_WLATENCE_IN_WIN,
+	AHB_PEAKBW_IN_WIN,
+	AHB_RESERVED,
+	AHB_MON_TRANS_LEN,
+	AHB_BUS_PEEK,
+	AHB_ADDR_MIN_H32,
+	AHB_ADDR_MAX_H32,
+	AHB_ADDR_MASK_H32,
+	AHB_MATCH_ADDR_H32,
+};
+
+enum axi_busmon_djtag_ir {
+	AXI_CHN_INT = 8,
+	AXI_CHN_CFG,
+	AXI_ID_CFG,
+	AXI_ADDR_MIN,
+	AXI_ADDR_MIN_H32,
+	AXI_ADDR_MAX,
+	AXI_ADDR_MAX_H32,
+	AXI_ADDR_MASK,
+	AXI_ADDR_MASK_H32,
+	AXI_DATA_MIN_L32,
+	AXI_DATA_MIN_H32,
+	AXI_DATA_MIN_EXT_L32,
+	AXI_DATA_MIN_EXT_H32,
+	AXI_DATA_MAX_L32,
+	AXI_DATA_MAX_H32,
+	AXI_DATA_MAX_EXT_L32,
+	AXI_DATA_MAX_EXT_H32,
+	AXI_DATA_MASK_L32,
+	AXI_DATA_MASK_H32,
+	AXI_DATA_MASK_EXT_L32,
+	AXI_DATA_MASK_EXT_H32,
+	AXI_MON_TRANS_LEN,
+	AXI_MATCH_ID,
+	AXI_MATCH_ADDR,
+	AXI_MATCH_ADDR_H32,
+	AXI_MATCH_CMD,
+	AXI_MATCH_DATA_L32,
+	AXI_MATCH_DATA_H32,
+	AXI_MATCH_DATA_EXT_L32,
+	AXI_MATCH_DATA_EXT_H32,
+	AXI_BUS_STATUS,
+	AXI_USER_CFG,
+	AXI_MATCH_USERID,
+};
+enum chain_ir {
+	CHAN_BYPASS = 0,
+	CHAN_IDCODE = 1,
+	CHAN_USERCODE = 2,
+	/* IR3-7 reserved */
+	CHAN_0 = 8,
+	CHAN_1,
+	CHAN_2,
+	CHAN_3,
+	CHAN_4,
+	CHAN_5,
+	CHAN_6,
+	CHAN_7,
+	CHAN_8,
+	CHAN_9,
+	CHAN_10,
+	CHAN_11,
+	CHAN_12,
+	CHAN_13,
+	CHAN_14,
+	CHAN_15,
+	CHAN_16,
+	CHAN_17,
+	CHAN_18,
+	CHAN_19,
+	CHAN_20,
+	CHAN_21,
+	CHAN_22,
+	CHAN_23,
+	CHAN_24,
+	CHAN_25,
+	CHAN_26,
+	CHAN_27,
+	CHAN_28,
+	CHAN_29,
+	CHAN_30,
+};
+
+enum bm_dap_id {
+	BM_DAP_0 = 0,
+	BM_DAP_1,
+	BM_DAP_2,
+	BM_DAP_3,
+	BM_DAP_4,
+	BM_DAP_5,
+	BM_DAP_6,
+	BM_DAP_7,
+	BM_DAP_8,
+	BM_DAP_9,
+	BM_DAP_10,
+	BM_DAP_11,
+	BM_DAP_12,
+	BM_DAP_13,
+	BM_DAP_14,
+	BM_DAP_15,
+	BM_DAP_16,
+	BM_DAP_17,
+	BM_DAP_18,
+	BM_DAP_19,
+	BM_DAP_20,
+	BM_DAP_21,
+	BM_DAP_22,
+	BM_DAP_23,
+	BM_DAP_24,
+	BM_DAP_25,
+	BM_DAP_26,
+	BM_DAP_27,
+	BM_DAP_28,
+	BM_DAP_29,
+	BM_DAP_30,
+	BM_DAP_31,
+	BM_DAP_32,
+	BM_DAP_33,
+	BM_DAP_34,
+	BM_DAP_35,
+	BM_DAP_36,
+	BM_DAP_37,
+	BM_DAP_38,
+	BM_DAP_39,
+	BM_DAP_40,
+	BM_DAP_41,
+	BM_DAP_42,
+	BM_DAP_43,
+	BM_DAP_44,
+	BM_DAP_45,
+	BM_DAP_46,
+	BM_DAP_47,
+	BM_DAP_48,
+	BM_DAP_49,
+	BM_DAP_50,
+	BM_DAP_51,
+	BM_DAP_52,
+	BM_DAP_53,
+	BM_DAP_54,
+	BM_DAP_55,
+	BM_DAP_56,
+	BM_DAP_57,
+	BM_DAP_58,
+	BM_DAP_59,
+	BM_DAP_MAX = 0xff
+};
+
+enum bm_type {
+	AHB_BM = 0,
+	AXI_BM,
+};
+
+enum old_bm_arch {
+	MUX_AP_BM = 0,
+	MUX_CPU_BM,
+	MUX_GPU_BM,
+	MUX_VSP_BM,
+	MUX_CAM_BM,
+	MUX_DISP_BM,
+	MUX_PUBCP_BM,
+	MUX_WTLCP_BM,
+	MUX_AGCP_BM,
+	MUX_PUB0_BM,
+	MUX_PUB1_BM,
+	MUX_AON_BM,
+	MUX_DAP_MUX_BM,
+};
+
+enum new_bm_arch {
+	NMUX_AP_BM = 0,
+	NMUX_MM_BM,
+	NMUX_GPU_BM,
+	NMUX_AON_BM,
+	NMUX_PUB_BM,
+	NMUX_WTLCP_BM,
+	NMUX_PUBCP_BM,
+	NMUX_CPU_BM,
+	NMUX_DAP_MUX_BM,
+};
+
+enum bm_rw {
+	BM_READ = 0,
+	BM_WRITE,
+	BM_READWRITE,
+};
+
+enum bm_chip {
+	WHALE_CHIP,
+	WHALE2_CHIP,
+	IWHALE2_CHIP,
+	ISHARKL2_CHIP,
+	SHARKL2_CHIP,
+	SHARKLJ1_CHIP,
+};
+
+struct bm_match_setting {
+	enum bm_type bm_type;
+	enum bm_dap_id bm_dap;
+	enum bm_rw rw_cfg;
+	u32 bm_addr_min_l32;
+	u32 bm_addr_min_h32;
+	u32 bm_addr_max_l32;
+	u32 bm_addr_max_h32;
+	u32 bm_addr_mask_l32;
+	u32 bm_addr_mask_h32;
+	u32 bm_userid;
+};
+
+struct bm_match_set_reg {
+	u32 bm_chn_cfg;
+	u32 bm_addr_min;
+	u32 bm_addr_max;
+	u32 bm_addr_mask;
+	u32 bm_data_min_l32;
+	u32 bm_data_min_h32;
+	u32 bm_data_max_l32;
+	u32 bm_data_max_h32;
+	u32 bm_data_mask_l32;
+	u32 bm_data_mask_h32;
+};
+
+struct axi_bm_match_set_reg {
+	u32 bm_chn_cfg;
+	u32 bm_id_cfg;
+	u32 bm_addr_min_l32;
+	u32 bm_addr_min_h32;
+	u32 bm_addr_max_l32;
+	u32 bm_addr_max_h32;
+	u32 bm_addr_mask_l32;
+	u32 bm_addr_mask_h32;
+	u32 bm_data_min_l32;
+	u32 bm_data_min_h32;
+	u32 bm_data_min_ext_l32;
+	u32 bm_data_min_ext_h32;
+	u32 bm_data_max_l32;
+	u32 bm_data_max_h32;
+	u32 bm_data_max_ext_l32;
+	u32 bm_data_max_ext_h32;
+	u32 bm_data_mask_l32;
+	u32 bm_data_mask_h32;
+	u32 bm_data_mask_ext_l32;
+	u32 bm_data_mask_ext_h32;
+};
+
+struct bm_perform_set_reg {
+	u32 bm_cnt_win_len;
+	u32 bm_peak_win_len;
+};
+
+struct bm_match_read_reg {
+	u32 bm_match_addr;
+	u32 bm_match_cmd;
+	u32 bm_match_data_l32;
+	u32 bm_match_data_h32;
+};
+
+struct bm_perform_read_reg {
+	u32 bm_rtrans_in_win;
+	u32 bm_rbw_in_win;
+	u32 bm_rlatence_in_win;
+	u32 bm_wtrans_in_win;
+	u32 bm_wbw_in_win;
+	u32 bm_wlatence_in_win;
+	u32 bm_peakbw_in_win;
+};
+
+struct ahb_bm_reg {
+	u32	ahb_bm_chn_int;
+	struct bm_match_set_reg		ahb_bm_match_set_reg;
+	struct bm_perform_set_reg	ahb_bm_perform_set_reg;
+	struct bm_match_read_reg	ahb_bm_match_read_reg;
+	struct bm_perform_read_reg	ahb_bm_perform_read_reg;
+	u32	resv1;
+	u32	ahb_bm_trans_len;
+	u32	ahb_bm_bus_peek;
+	u32	ahb_bm_addr_minh;
+	u32	ahb_bm_addr_maxh;
+	u32	ahb_bm_addr_maskh;
+	u32	ahb_bm_match_h;
+};
+
+struct axi_bm_reg {
+	u32	axi_bm_chn_int;
+	struct axi_bm_match_set_reg	axi_bm_match_set_reg;
+	u32	axi_bm_trans_len;
+	u32	axi_bm_match_id;
+	u32	axi_bm_match_addr_l32;
+	u32	axi_bm_match_addr_h32;
+	u32	axi_bm_cmd;
+	u32	axi_bm_match_data_l32;
+	u32	axi_bm_match_data_h32;
+	u32	axi_bm_match_data_ext_l32;
+	u32	axi_bm_match_data_ext_h32;
+	u32	axi_bm_bus_status;
+	u32	axi_bm_match_userid;
+};
+
+struct bm_debug_info {
+	u32 match_index;
+	u32 match_addr_l;
+	u32 match_addr_h;
+	u32 match_cmd;
+	u32 match_data_l;
+	u32 match_data_h;
+	u32 match_data_ext_l;
+	u32 match_data_ext_h;
+	u32 match_id;
+	u32 match_userid;
+	unsigned char *chn_name;
+	bool bm_panic_st;
+	bool whale2poll;
+	bool iwhale2poll;
+};
+
+struct chain_data {
+	struct bm_def_monitor *bm_def_monitor;
+	int bm_dev_id_max;
+	enum bm_chip chip;
+	struct subsystem_chain *subsys_debug_chains;
+	int subsys_debug_cnt;
+};
+
+struct sprd_djtag_dev {
+	spinlock_t djtag_lock;
+	struct hwspinlock *hw_lock;
+	struct device dev;
+	void __iomem *djtag_reg_base;
+	struct regmap *aon_apb;
+	struct regmap *ap_ahb;
+	struct regmap *cam_ahb;
+	struct regmap *disp_ahb;
+	struct regmap *vsp_ahb;
+	struct task_struct *djtag_thl;
+	bool djtag_auto_scan_st;
+	bool bm_panic_st;
+	int subsys_set;
+	int djtag_irq;
+	struct miscdevice misc;
+	struct jtag_autoscan_info autoscan_info[DJTAG_MAX_AUTOSCAN_CHANS];
+	struct djtag_autoscan_set autoscan_setting[DJTAG_MAX_AUTOSCAN_CHANS];
+	struct bm_debug_info bm_dev_info;
+	const struct chain_data *pdata;
+};
+
+struct bm_def_monitor {
+	int	bm_arch;
+	enum bm_type	bm_type;
+	enum bm_dap_id	bm_dap;
+	enum bm_rw	rw_cfg;
+	u32 bm_addr_min_l32;
+	u32 bm_addr_min_h32;
+	u32 bm_addr_max_l32;
+	u32 bm_addr_max_h32;
+	u32 bm_addr_mask_l32;
+	u32 bm_addr_mask_h32;
+	unsigned char *chn_name;
+};
+
+struct bm_poll {
+	int	bm_arch;
+	enum bm_dap_id	bm_dap;
+	enum chain_ir	bm_chain;
+	u32	bm_mask;
+	u32	channel;
+};
+
+
+static struct bm_def_monitor *bm_def_monitor;
+static const char *compatible_str;
+static int bm_dev_id_max;
+static u32 bm_chains_value;
+
+struct subsystem_chain {
+	int subsys;
+	unsigned char *subsystem_name;
+	unsigned long dap_index;
+	unsigned long chain_start;
+	unsigned long chain_num;
+};
+
+static struct subsystem_chain whale2subsys_chain_tab[] = {
+	{MUX_AP_BM, "AP", BM_DAP_0, 0, 4},
+	{MUX_CPU_BM, "CA53", BM_DAP_0, 0, 3},
+	{MUX_GPU_BM, "GPU", BM_DAP_0, 0, 2},
+	{MUX_VSP_BM, "VSP", BM_DAP_0, 0, 2},
+	{MUX_CAM_BM, "CAM", BM_DAP_0, 0, 2},
+	{MUX_DISP_BM, "DISP", BM_DAP_0, 0, 1},
+	{MUX_PUBCP_BM, "PUBCP", BM_DAP_8, 0, 4},
+	{MUX_WTLCP_BM, "WTLCP", BM_DAP_0, 0, 10},
+	{MUX_AGCP_BM, "AGCP", BM_DAP_6, 0, 5},
+	{MUX_PUB0_BM, "PUB0", BM_DAP_0, 0, 4},
+	{MUX_PUB1_BM, "PUB1", BM_DAP_0, 0, 4},
+	{MUX_AON_BM, "AON", BM_DAP_5, 0, 5},
+};
+
+static struct subsystem_chain iwhale2subsys_chain_tab[] = {
+	{MUX_AP_BM, "AP", BM_DAP_0, 0, 4},
+	{MUX_AP_BM, "AP", BM_DAP_0, 5, 1},
+	{MUX_CPU_BM, "CA53", BM_DAP_0, 0, 0},
+	{MUX_GPU_BM, "GPU", BM_DAP_0, 0, 5},
+	{MUX_VSP_BM, "VSP", BM_DAP_0, 20, 4},
+	{MUX_CAM_BM, "CAM", BM_DAP_0, 25, 5},
+	{MUX_DISP_BM, "DISP", BM_DAP_0, 0, 0},
+	{MUX_PUBCP_BM, "PUBCP", BM_DAP_8, 0, 3},
+	{MUX_PUBCP_BM, "PUBCP", BM_DAP_8, 17, 1},
+	{MUX_WTLCP_BM, "WTLCP", BM_DAP_0, 0, 10},
+	{MUX_WTLCP_BM, "WTLCP", BM_DAP_0, 64, 4},
+	{MUX_AGCP_BM, "AGCP", BM_DAP_6, 0, 5},
+	{MUX_AGCP_BM, "AGCP", BM_DAP_6, 18, 3},
+	{MUX_PUB0_BM, "PUB0", BM_DAP_0, 0, 4},
+	{MUX_PUB1_BM, "PUB1", BM_DAP_0, 0, 4},
+	{MUX_AON_BM, "AON", BM_DAP_5, 3, 1},
+	{MUX_AON_BM, "AON", BM_DAP_5, 7, 22},
+};
+
+static struct subsystem_chain sharkl2subsys_chain_tab[] = {
+	{NMUX_AP_BM, "AP", BM_DAP_0, 0, 5},
+	{NMUX_AON_BM, "AON", BM_DAP_0, 0, 7},
+	{NMUX_PUBCP_BM, "PUBCP", BM_DAP_8, 0, 25},
+	{NMUX_WTLCP_BM, "WTLCP", BM_DAP_0, 0, 66},
+	{NMUX_MM_BM, "MM", BM_DAP_0, 0, 2},
+	{NMUX_GPU_BM, "GPU", BM_DAP_0, 0, 2},
+	{NMUX_PUB_BM, "PUB", BM_DAP_0, 0, 1},
+};
+
+static struct subsystem_chain isharkl2subsys_chain_tab[] = {
+	{MUX_AP_BM, "AP", BM_DAP_0, 0, 8},
+	{MUX_GPU_BM, "GPU", BM_DAP_0, 0, 12},
+	{MUX_VSP_BM, "VSP", BM_DAP_0, 20, 3},
+	{MUX_CAM_BM, "CAM", BM_DAP_0, 0, 1},
+	{MUX_CAM_BM, "CAM", BM_DAP_0, 11, 9},
+	{MUX_PUBCP_BM, "PUBCP", BM_DAP_8, 0, 19},
+	{MUX_WTLCP_BM, "WTLCP", BM_DAP_0, 0, 66},
+	{MUX_AON_BM, "AON", BM_DAP_5, 3, 5},
+};
+
+static struct subsystem_chain sharklj1subsys_chain_tab[] = {
+	{NMUX_AP_BM, "AP", BM_DAP_0, 0, 10},
+	{NMUX_AON_BM, "AON", BM_DAP_6, 0, 5},
+	{NMUX_PUBCP_BM, "PUBCP", BM_DAP_8, 0, 24},
+	{NMUX_WTLCP_BM, "WTLCP", BM_DAP_0, 0, 66},
+	{NMUX_MM_BM, "MM", BM_DAP_0, 0, 7},
+	{NMUX_GPU_BM, "GPU", BM_DAP_0, 0, 8},
+	{NMUX_PUB_BM, "PUB", BM_DAP_0, 0, 1},
+	{NMUX_CPU_BM, "CA53", BM_DAP_0, 0, 3},
+};
+
+static struct bm_poll whale2_poll[] = {
+	{MUX_VSP_BM, BM_DAP_0, CHAN_5, 0x7, 13},
+	{MUX_CAM_BM, BM_DAP_0, CHAN_0, 0x1ff, 16},
+	{MUX_DISP_BM, BM_DAP_0, CHAN_7, 0x7, 25},
+	{MUX_DISP_BM, BM_DAP_0, CHAN_12, 0x7, 28},
+};
+
+static struct bm_poll iwhale2_poll[] = {
+	{MUX_GPU_BM, BM_DAP_0, CHAN_0, 0x80000000, -27},
+	{MUX_GPU_BM, BM_DAP_0, CHAN_0, 0x40000000, -25},
+};
+
+static struct bm_def_monitor bm_def_monitor_whale[] = {
+	{MUX_AP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap ca53"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap dma"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap sdio0"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap sdio1"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_5, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap sdio2"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_6, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap emmc"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_7, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap nandc"},
+	{MUX_AP_BM, AHB_BM, BM_DAP_8, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap otg"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_9, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap usb3"},
+	{MUX_AP_BM, AHB_BM, BM_DAP_10, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap hsic"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_11, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap zipenc"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_12, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap zipdec"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_13, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap cc63p"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_14, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap cc63s"},
+
+	{MUX_CPU_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ca53 nic"},
+	{MUX_CPU_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ca53 ddr"},
+
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_0, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "pubcp cr5 0"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "pubcp cr5 1"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "pubcp dma"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "pubcp sec0"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "pubcp sec1"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_5, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "pubcp ppp0"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_6, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "pubcp ppp1"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_7, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "pubcp tft"},
+
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp ldsp tl420 p"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp tl420 d"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp ldsp dma"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp lte proc p1"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_5, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp tgdsp tl420 p"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_6, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp tgdsp tl420 d"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_7, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp tgdsp dma"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_8, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp pub cp dsp"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_9, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp rxdfe"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_10, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp tbuf"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_11, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp fbuf"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_12, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp che"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_13, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp chepp"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_14, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp csi mea"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_15, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp hsdl"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_16, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp p2 s0"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_17, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp p1 s0"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_18, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp mea"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_19, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp p2 ulmac"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_20, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp p2 dbuf"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_21, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp p2 m1"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_22, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp p2 m2"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_23, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc rxdfe"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_24, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc tbuf"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_25, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc fbuf"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_26, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc che"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_27, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc chepp"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_28, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc sci meas"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_29, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc hsdl"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_30, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc p2 s0"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_31, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc p1 s0"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_32, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc mea"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_33, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc p2 ulmac"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_34, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc p2 dbuf"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_35, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc p2 m1"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_36, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc p2 m2"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_42, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc p1 s1"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_43, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp acc2ddr m0"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_44, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp acc2ddr m1"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_45, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp acc2ddr m2"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_46, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp acc2ddr m3"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_47, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp acc2ddr m4"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_48, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp acc2ddr m5"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_49, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp wdma link0"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_50, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp wdma link1"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_51, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp wdma1"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_52, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp wdma2"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_53, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp pub cp s4"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_54, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp dsp s8"},
+
+	{MUX_AGCP_BM, AXI_BM, BM_DAP_0, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "agcp tl420 pmss"},
+	{MUX_AGCP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "agcp tl420 dmss"},
+	{MUX_AGCP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "agcp ap dma"},
+	{MUX_AGCP_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "agcp cp dma"},
+	{MUX_AGCP_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "agcp aon ag cp"},
+	{MUX_AGCP_BM, AXI_BM, BM_DAP_5, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "agcp v"},
+
+	{MUX_AON_BM, AXI_BM, BM_DAP_0, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "aon ap"},
+	{MUX_AON_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "aon wtlcp"},
+	{MUX_AON_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "aon agcp"},
+	{MUX_AON_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "aon pubcp"},
+	{MUX_AON_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "aon sp"},
+};
+
+
+static struct bm_def_monitor bm_def_monitor_whale2[] = {
+	{MUX_AP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap ca53"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap dma"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap sdio0"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap sdio1"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_5, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap sdio2"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_6, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap emmc"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_9, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap usb3"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_11, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap zipenc"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_12, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap zipdec"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_13, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap cc63p"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_14, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ap cc63s"},
+
+	{MUX_CPU_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ca53 nic"},
+	{MUX_CPU_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "ca53 ddr"},
+
+	{MUX_VSP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "vsp"},
+	{MUX_VSP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "vsp enc"},
+	{MUX_VSP_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "vpp"},
+
+	{MUX_CAM_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "cam Dcam0"},
+	{MUX_CAM_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "cam Dcam1"},
+	{MUX_CAM_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "cam Dcam2isp"},
+	{MUX_CAM_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "cam JPG0"},
+	{MUX_CAM_BM, AXI_BM, BM_DAP_5, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "cam JPG1"},
+	{MUX_CAM_BM, AXI_BM, BM_DAP_6, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "cam CPP"},
+	{MUX_CAM_BM, AXI_BM, BM_DAP_7, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "cam ISP_AXI0"},
+	{MUX_CAM_BM, AXI_BM, BM_DAP_8, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "cam ISP_AXI1"},
+	{MUX_CAM_BM, AXI_BM, BM_DAP_9, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "cam ISP_AXI2"},
+
+	{MUX_DISP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "disp0 busmon"},
+	{MUX_DISP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "disp1 busmon"},
+	{MUX_DISP_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "tmc busmon"},
+	{MUX_DISP_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "gsp0 busmon"},
+	{MUX_DISP_BM, AXI_BM, BM_DAP_5, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "gsp1 busmon"},
+	{MUX_DISP_BM, AXI_BM, BM_DAP_6, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "gsp_gpu busmon"},
+
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_0, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "pubcp cr5 0"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "pubcp cr5 1"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "pubcp dma"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "pubcp sec0"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "pubcp sec1"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_5, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "pubcp tft"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_6, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "pubcp from_aon"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_7, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "pubcp emmc"},
+
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp ldsp tl420 p"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp tl420 d"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp ldsp dma"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp lte pcc"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_5, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp tgdsp tl420 p"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_6, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp tgdsp tl420 d"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_7, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp tgdsp dma"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_8, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp cr5_s5"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_9, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp rxdfe"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_10, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp tbuf"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_11, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp fbuf"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_12, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp che"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_13, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp chepp"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_14, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp csi meas"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_15, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp hsdl"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_16, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp p2 s0"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_17, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp p1 cfg s0"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_18, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp mea"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_19, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp ulmac"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_20, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp dbuf"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_21, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp pbch"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_22, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp pdcch"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_23, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc RXDFE"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_24, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc tbuf"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_25, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc fbuf"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_26, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc che"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_27, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc chepp"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_28, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc csi meas"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_29, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc hsdl"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_30, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc p2 s0"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_31, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc p1 cfg s0"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_32, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc mea"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_33, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc ulmac"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_34, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc dbuf"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_35, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc pbch"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_36, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc pdcch"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_37, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp hard m0"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_38, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp hard m1"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_39, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp hard m2"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_42, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp lte scc"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_43, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp acc2ddr m0"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_44, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp acc2ddr m1"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_45, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp acc2ddr m2"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_46, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp acc2ddr m3"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_47, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp acc2ddr m4"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_49, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp wcdma link0"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_50, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp wcdma link1"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_51, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp wcdma wdma1"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_52, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp wcdma wdma2"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_53, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp pubcp s4"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_54, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp dsp s8"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_56, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp scc p1 s4"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_57, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "wtlcp p1 s4"},
+
+	{MUX_AGCP_BM, AXI_BM, BM_DAP_0, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "agcp tl420 pmss"},
+	{MUX_AGCP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "agcp tl420 dmss"},
+	{MUX_AGCP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "agcp ap dma"},
+	{MUX_AGCP_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "agcp cp dma"},
+	{MUX_AGCP_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "agcp aon ag cp"},
+	{MUX_AGCP_BM, AXI_BM, BM_DAP_5, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "agcp v"},
+
+	{MUX_AON_BM, AXI_BM, BM_DAP_0, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "aon ap"},
+	{MUX_AON_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "aon wtlcp"},
+	{MUX_AON_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "aon agcp"},
+	{MUX_AON_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "aon pubcp"},
+	{MUX_AON_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "aon sp"},
+
+	{MUX_AON_BM, AHB_BM, BM_DAP_16, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "aon d-mcu"},
+	{MUX_AON_BM, AHB_BM, BM_DAP_17, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "aon i-mcu"},
+	{MUX_AON_BM, AHB_BM, BM_DAP_18, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "aon s-mcu"},
+	{MUX_AON_BM, AHB_BM, BM_DAP_19, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "aon cfg"},
+	{MUX_AON_BM, AHB_BM, BM_DAP_20, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "aon func-tst"},
+	{MUX_AON_BM, AHB_BM, BM_DAP_21, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "aon cm4_pub_dmar"},
+	{MUX_AON_BM, AHB_BM, BM_DAP_22, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, "aon cm4_dma"},
+};
+
+static struct bm_def_monitor bm_def_monitor_iwhale2[] = {
+	{MUX_AP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap bia"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap dma"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap pub"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap aon"},
+
+	{MUX_GPU_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "gpu pub0"},
+	{MUX_GPU_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "gpu pub1"},
+
+	{MUX_VSP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "vsp vsp"},
+	{MUX_VSP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "vsp gps"},
+
+	{MUX_CAM_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "cam dispc"},
+	{MUX_CAM_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "cam cam_isp"},
+	{MUX_CAM_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "cam jpg_cpp"},
+
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_0, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp cr5 axi"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp cr5 peri"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp dma"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp sec0"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp sec1"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_5, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp tft"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_6, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp aon"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_7, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp sdio"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_9, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp coresight"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_10, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp dma_link"},
+
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp ldsp p"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp ldsp d"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp ldsp dma"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp tgdsp p"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_5, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp tgdsp d"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_6, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp tgdsp dma"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_7, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp proc pc s1"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_8, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp proc sc s1"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_9, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp acc2ddr m1"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_10, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp acc2ddr m2"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_11, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp acc2ddr m3"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_12, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp acc2ddr m4"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_13, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp acc2ddr m5"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_49, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp wcdma wdma link0"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_50, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp wcdma wdma link1"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_51, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp wcdma wdma1"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_52, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp wcdma wdma2"},
+
+	{MUX_AGCP_BM, AXI_BM, BM_DAP_0, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "agcp tl420 pmss"},
+	{MUX_AGCP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "agcp tl420 dmss"},
+	{MUX_AGCP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "agcp ap dma"},
+	{MUX_AGCP_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "agcp cp dma"},
+	{MUX_AGCP_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "agcp aon ag cp"},
+	{MUX_AGCP_BM, AXI_BM, BM_DAP_5, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "agcp src"},
+
+	{MUX_AON_BM, AXI_BM, BM_DAP_0,
+	BM_WRITE, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000, "aon ap"},
+	{MUX_AON_BM, AXI_BM, BM_DAP_1,
+	BM_WRITE, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000, "aon wtlcp"},
+	{MUX_AON_BM, AXI_BM, BM_DAP_2,
+	BM_WRITE, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000, "aon agcp"},
+	{MUX_AON_BM, AXI_BM, BM_DAP_3,
+	BM_WRITE, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000, "aon pubcp"},
+	{MUX_AON_BM, AXI_BM, BM_DAP_4,
+	BM_WRITE, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000, "aon sp"},
+
+	{MUX_AON_BM, AHB_BM, BM_DAP_16,
+	BM_WRITE, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000, "aon d-mcu"},
+	{MUX_AON_BM, AHB_BM, BM_DAP_17,
+	BM_WRITE, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000, "aon i-mcu"},
+	{MUX_AON_BM, AHB_BM, BM_DAP_18,
+	BM_WRITE, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000, "aon s-mcu"},
+	{MUX_AON_BM, AHB_BM, BM_DAP_19,
+	BM_WRITE, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000, "aon cfg"},
+	{MUX_AON_BM, AHB_BM, BM_DAP_20,
+	BM_WRITE, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000, "aon func-tst"},
+	{MUX_AON_BM, AHB_BM, BM_DAP_21,
+	BM_WRITE, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000, "aon cm4_pub_dmar"},
+	{MUX_AON_BM, AHB_BM, BM_DAP_22,
+	BM_WRITE, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000, "aon cm4_dma"},
+};
+
+static struct bm_def_monitor bm_def_monitor_isharkl2[] = {
+	{MUX_AP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap bia"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap dma"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap pub"},
+	{MUX_AP_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap aon"},
+
+	{MUX_GPU_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "gpu memif"},
+
+	{MUX_VSP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "vsp vsp"},
+	{MUX_VSP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "vsp gps"},
+
+	{MUX_CAM_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "cam dispc"},
+	{MUX_CAM_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "cam cam_isp"},
+	{MUX_CAM_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "cam jpg_cpp"},
+
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_0, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp cr5 axi"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp cr5 peri"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp dma"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp sec0"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp sec1"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_5, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp tft"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_6, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp aon"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_7, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp sdio"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_9, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp dma_link0"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_10, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp dma_link1"},
+	{MUX_PUBCP_BM, AXI_BM, BM_DAP_11, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp coresight"},
+
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp ldsp p"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp ldsp d"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp ldsp dma"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp tgdsp p"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_5, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp tgdsp d"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_6, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp tgdsp dma"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_7, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp lte s8"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_8, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp m6 from pubcp s5"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_9, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp acc2ddr m0"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_10, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp acc2ddr m1"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_11, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp acc2ddr m2"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_12, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp acc2ddr m3"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_49, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp wcdma wdma link0"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_50, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp wcdma wdma1"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_51, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp wcdma m2"},
+	{MUX_WTLCP_BM, AXI_BM, BM_DAP_52, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp wcdma m3"},
+
+	{MUX_AON_BM, AXI_BM, BM_DAP_0,
+	BM_WRITE, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000, "aon ap"},
+	{MUX_AON_BM, AXI_BM, BM_DAP_1,
+	BM_WRITE, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000, "aon wtlcp"},
+	{MUX_AON_BM, AXI_BM, BM_DAP_2,
+	BM_WRITE, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000, "aon dma"},
+	{MUX_AON_BM, AXI_BM, BM_DAP_3,
+	BM_WRITE, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000, "aon pubcp"},
+	{MUX_AON_BM, AXI_BM, BM_DAP_4,
+	BM_WRITE, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000, "aon sp"},
+
+	{MUX_AON_BM, AHB_BM, BM_DAP_16,
+	BM_WRITE, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000, "aon d-mcu"},
+	{MUX_AON_BM, AHB_BM, BM_DAP_17,
+	BM_WRITE, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000, "aon i-mcu"},
+	{MUX_AON_BM, AHB_BM, BM_DAP_18,
+	BM_WRITE, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000, "aon s-mcu"},
+	{MUX_AON_BM, AHB_BM, BM_DAP_19,
+	BM_WRITE, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000, "aon cfg"},
+	{MUX_AON_BM, AHB_BM, BM_DAP_20,
+	BM_WRITE, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000, "aon func-tst"},
+	{MUX_AON_BM, AHB_BM, BM_DAP_21,
+	BM_WRITE, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000, "aon cm4_pub_dmar"},
+	{MUX_AON_BM, AHB_BM, BM_DAP_22,
+	BM_WRITE, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000, "aon cm4_dma"},
+};
+
+static struct bm_def_monitor bm_def_monitor_sharkl2[] = {
+	{NMUX_AP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap ce pub"},
+	{NMUX_AP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap ce_sec"},
+	{NMUX_AP_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap dma"},
+	{NMUX_AP_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap sdio0"},
+	{NMUX_AP_BM, AXI_BM, BM_DAP_5, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap sdio1"},
+	{NMUX_AP_BM, AXI_BM, BM_DAP_6, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap sdio2"},
+	{NMUX_AP_BM, AXI_BM, BM_DAP_7, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap emmc"},
+	{NMUX_AP_BM, AXI_BM, BM_DAP_8, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap usb"},
+	{NMUX_AP_BM, AXI_BM, BM_DAP_9, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap main_m0"},
+	{NMUX_AP_BM, AXI_BM, BM_DAP_10, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap main_m1"},
+	{NMUX_AP_BM, AXI_BM, BM_DAP_11, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap ap_pub"},
+
+	{NMUX_PUBCP_BM, AXI_BM, BM_DAP_0, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp cr5 0"},
+	{NMUX_PUBCP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp cr5 1"},
+	{NMUX_PUBCP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp dma"},
+	{NMUX_PUBCP_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp sec1"},
+	{NMUX_PUBCP_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp sec2"},
+	{NMUX_PUBCP_BM, AXI_BM, BM_DAP_5, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp tft"},
+	{NMUX_PUBCP_BM, AXI_BM, BM_DAP_6, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp aon"},
+	{NMUX_PUBCP_BM, AXI_BM, BM_DAP_7, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp sdio"},
+	{NMUX_PUBCP_BM, AXI_BM, BM_DAP_9, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp dma_link0"},
+	{NMUX_PUBCP_BM, AXI_BM, BM_DAP_10, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp dma_link1"},
+
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp ldsp tl420 p"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp ldsp tl420 d"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp ldsp dma"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp tgdsp p"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_5, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp tgdsp d"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_6, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp tgdsp dma"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_7, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp lte2dsp"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_8, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp pubcp2wtl"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_9, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp lte csdfe"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_10, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp lte ce"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_11, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp lte fec"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_12, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp lte ulch"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_13, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp lte hsdl"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_43, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp wcdma2ddr"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_44, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp lte2ddr"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_45, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp hu3gea2ddr"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_46, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp hu3geb2ddr"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_47, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp dsp2ddr"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_49, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp wcdma dmalink0"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_50, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp wcdma dma1"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_51, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp wcdma pubcp"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_52, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp wcdma from dsp"},
+
+	{NMUX_AON_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "aon dma"},
+};
+
+static struct bm_def_monitor bm_def_monitor_sharklj1[] = {
+	{NMUX_AP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap ca53 slice sec"},
+	{NMUX_AP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap dma"},
+	{NMUX_AP_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap ce pub"},
+	{NMUX_AP_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap sdio0"},
+	{NMUX_AP_BM, AXI_BM, BM_DAP_5, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap sdio1"},
+	{NMUX_AP_BM, AXI_BM, BM_DAP_6, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap sdio2"},
+	{NMUX_AP_BM, AXI_BM, BM_DAP_7, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap emmc"},
+	{NMUX_AP_BM, AXI_BM, BM_DAP_8, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap usb"},
+	{NMUX_AP_BM, AXI_BM, BM_DAP_9, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap ce sec"},
+	{NMUX_AP_BM, AXI_BM, BM_DAP_10, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap ap_pub"},
+	{NMUX_AP_BM, AXI_BM, BM_DAP_11, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ap nandc"},
+
+	{NMUX_MM_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "mm isp"},
+	{NMUX_MM_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "mm dcam"},
+	{NMUX_MM_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "mm vsp"},
+	{NMUX_MM_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "mm jpg"},
+	{NMUX_MM_BM, AXI_BM, BM_DAP_5, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "mm cpp"},
+
+	{NMUX_PUBCP_BM, AXI_BM, BM_DAP_0, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp cr5 0"},
+	{NMUX_PUBCP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp cr5 1"},
+	{NMUX_PUBCP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp dma"},
+	{NMUX_PUBCP_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp sec1"},
+	{NMUX_PUBCP_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp sec2"},
+	{NMUX_PUBCP_BM, AXI_BM, BM_DAP_5, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp tft"},
+	{NMUX_PUBCP_BM, AXI_BM, BM_DAP_6, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp aon"},
+	{NMUX_PUBCP_BM, AXI_BM, BM_DAP_7, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp sdio"},
+	{NMUX_PUBCP_BM, AXI_BM, BM_DAP_9, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp dma_link1"},
+	{NMUX_PUBCP_BM, AXI_BM, BM_DAP_10, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "pubcp dma_link0"},
+
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp ldsp tl420 p"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp ldsp tl420 d"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp ldsp dma"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp tgdsp p"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_5, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp tgdsp d"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_6, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp tgdsp dma"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_7, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp lte2dsp"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_8, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp pubcp2wtl"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_9, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp lte csdfe"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_10, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp lte ce"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_11, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp lte fec"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_12, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp lte ulch"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_13, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp lte hsdl"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_43, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp wcdma2ddr"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_44, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp lte2ddr"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_45, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp hu3gea2ddr"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_46, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp hu3geb2ddr"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_47, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp dsp2ddr"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_49, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp wcdma dmalink0"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_50, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp wcdma dma1"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_51, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp wcdma pubcp"},
+	{NMUX_WTLCP_BM, AXI_BM, BM_DAP_52, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "wtlcp wcdma from dsp"},
+
+	{NMUX_AON_BM, AXI_BM, BM_DAP_0, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "aon ap"},
+	{NMUX_AON_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "aon pubcp"},
+	{NMUX_AON_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "aon wtlcp"},
+	{NMUX_AON_BM, AXI_BM, BM_DAP_3, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "aon arm7"},
+	{NMUX_AON_BM, AXI_BM, BM_DAP_4, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "aon dma"},
+	{NMUX_AON_BM, AHB_BM, BM_DAP_5, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "aon funcdma"},
+	{NMUX_AON_BM, AHB_BM, BM_DAP_7, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "aon sp m0"},
+	{NMUX_AON_BM, AHB_BM, BM_DAP_8, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "aon sp m1"},
+	{NMUX_CPU_BM, AXI_BM, BM_DAP_1, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ca53 nic"},
+	{NMUX_CPU_BM, AXI_BM, BM_DAP_2, BM_WRITE,
+	0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, "ca53 ddr"},
+};
+
+static u32 iwhale2_userid_cfg[ARRAY_SIZE(bm_def_monitor_iwhale2)] = {0};
+static u32 sharkl2_userid_cfg[ARRAY_SIZE(bm_def_monitor_sharkl2)] = {0};
+static u32 isharkl2_userid_cfg[ARRAY_SIZE(bm_def_monitor_isharkl2)] = {0};
+static u32 sharklj1_userid_cfg[ARRAY_SIZE(bm_def_monitor_sharklj1)] = {0};
+static struct chain_data whale_data = {bm_def_monitor_whale,
+	ARRAY_SIZE(bm_def_monitor_whale), WHALE_CHIP,
+	whale2subsys_chain_tab, ARRAY_SIZE(whale2subsys_chain_tab)};
+static struct chain_data whale2_data = {bm_def_monitor_whale2,
+	ARRAY_SIZE(bm_def_monitor_whale2), WHALE2_CHIP,
+	whale2subsys_chain_tab, ARRAY_SIZE(whale2subsys_chain_tab)};
+static struct chain_data iwhale2_data = {bm_def_monitor_iwhale2,
+	ARRAY_SIZE(bm_def_monitor_iwhale2), IWHALE2_CHIP,
+	iwhale2subsys_chain_tab, ARRAY_SIZE(iwhale2subsys_chain_tab)};
+static struct chain_data isharkl2_data = {bm_def_monitor_isharkl2,
+	ARRAY_SIZE(bm_def_monitor_isharkl2), ISHARKL2_CHIP,
+	isharkl2subsys_chain_tab, ARRAY_SIZE(isharkl2subsys_chain_tab)};
+static struct chain_data sharkl2_data = {bm_def_monitor_sharkl2,
+	ARRAY_SIZE(bm_def_monitor_sharkl2), SHARKL2_CHIP,
+	sharkl2subsys_chain_tab, ARRAY_SIZE(sharkl2subsys_chain_tab)};
+static struct chain_data sharklj1_data = {bm_def_monitor_sharklj1,
+	ARRAY_SIZE(bm_def_monitor_sharklj1), SHARKLJ1_CHIP,
+	sharklj1subsys_chain_tab, ARRAY_SIZE(sharklj1subsys_chain_tab)};
+#endif

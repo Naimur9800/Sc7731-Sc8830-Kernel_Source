@@ -1,0 +1,93 @@
+/ { lcds {
+	lcd_jd9161_holitech_mipi_wvga: lcd9161@9161 {
+		zte,lcd-init-code-version = "20181106";
+		zte,lcd-backlight-register-bit-length = <0x08>;
+		zte,lcd-cabc-default-value = <0x02>;
+		zte,lcd-cabc-off-command = [23 00 00 02 55 00];
+		zte,lcd-cabc-low-command = [23 00 00 02 55 01];
+		zte,lcd-cabc-medium-command = [23 00 00 02 55 02];
+		zte,lcd-cabc-high-command = [23 00 00 02 55 03];
+		zte,lcm_backlight_curve_mode = "lcd_brightness_max_350_lux";
+
+		work-mode = <1>;
+		bpp = <24>;
+		lane-number = <2>;
+
+		need-check-esd = <0>;
+		esd-timeout = <1000>;
+
+		fps = <60>;
+		width-mm = <55>;
+		height-mm = <94>;
+		panel-name = "lcd_jd9161_holitech_mipi_wvga";
+
+		power-on-sequence = <
+					32  1  10
+					32  0  20
+					32  1  50
+					>;
+		power-off-sequence = <
+					32  0  20
+					>;
+
+		init-data = [
+			39 00 00 04 BF 91 61 F2
+			39 00 00 03 B3 00 BD
+			39 00 00 03 B4 00 BF
+			39 00 00 07 B8 00 BF 01 00 BF 01
+			39 00 00 04 BA 3E 23 00
+			39 00 00 02 C3 02
+			39 00 00 03 C4 00 64
+			39 00 00 0A C7 00 01 32 05 65 2B 12 A5 A5
+			39 00 00 27 C8 7F 78 68 5A 49 34 34 1C 37 38 3B 5E 52 63 5C
+				64 5E 58 4E 7F 78 68 5A 49 34 34 1C 37 38 3B 5E 52 63 5C 64 5E 58 4E
+			39 00 00 06 D0 2E 00 01 03 80
+			39 00 00 11 D4 1E 1F 17 37 06 04 0A 08 00 02 1F 1F 1F 1F 1F 1F
+			39 00 00 11 D5 1E 1F 17 37 07 05 0B 09 01 03 1F 1F 1F 1F 1F 1F
+			39 00 00 11 D6 1F 1E 17 17 09 0B 05 07 03 01 1F 1F 1F 1F 1F 1F
+			39 00 00 11 D7 1F 1E 17 17 08 0A 04 06 02 00 1F 1F 1F 1F 1F 1F
+			39 00 00 15 D8 20 00 00 30 03 30 01 02 00 01 02 06 70 00 00 73 07 06 70 08
+			39 00 00 14 D9 00 0A 0A 80 00 00 06 7b 00 80 00 33 6A 1F 00 00 00 03 7b
+			39 00 00 02 35 00
+			39 00 00 02 BE 01
+			39 00 00 02 C1 10
+			39 00 00 0B CC 34 20 38 60 11 91 00 40 00 00
+			39 00 00 02 BE 00
+			39 00 00 02 51 00
+			39 00 00 02 53 2C
+			39 00 00 02 55 02
+			05 78 00 02 11 00
+			05 0a 00 02 29 00
+			39 00 00 04 BF 09 B1 7F
+			];
+		sleep-in = [
+			13 0A 00 01 28
+			13 78 00 01 10
+			];
+		sleep-out = [
+			13 78 00 01 11
+			13 64 00 01 29
+			];
+
+		display-timings {
+			clock-frequency = <500000>;
+			hactive = <480>;
+			vactive = <800>;
+			hback-porch = <46>;
+			hfront-porch = <38>;
+			vback-porch = <12>;
+			vfront-porch = <18>;
+			hsync-len = <8>;
+			vsync-len = <2>;
+		};
+		oled-backlight {
+			default-brightness = <102>;
+			max-level = <255>;
+			brightness-levels = [
+				23 00 00 02 51 00
+				23 00 00 02 53 2C
+			];
+		};
+	};
+};};
+

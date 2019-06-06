@@ -1,0 +1,20 @@
+Spreadtrum Type-C phy
+-----------------------
+Required properties:
+ - compatible: sprd,typec
+ - reg: offset and length of the PHY registers
+ - mode: 0 ufp, 1 dfp, 2 drp
+ - tsleep: in millisecond
+
+For generic PHY binding properties, refer to phy/phy-bindings.txt
+
+Example:
+
+	pmic_typec: typec@100 {
+			compatible = "sprd,typec";
+			interrupt-parent = <&pmic>;
+			interrupts = <13 IRQ_TYPE_LEVEL_HIGH>;
+			reg = <0x100>;
+			mode = <2>;
+			tsleep = <1500>;
+                };

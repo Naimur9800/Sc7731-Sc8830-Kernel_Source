@@ -1,0 +1,8 @@
+
+config SPRD_CAMERA_CAM_SL5_ROC1
+    bool "Spreadtrum Camera SharkL5 & ROC1"
+    depends on SPRD_CAMERA
+    help
+        This is camera driver for Spreadtrum SOC SharkL5 & ROC1.
+        Include submodule dcam_if_lite r1p0, isp r8p1, facedector
+

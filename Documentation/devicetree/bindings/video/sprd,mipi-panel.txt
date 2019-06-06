@@ -1,0 +1,201 @@
+Spreadtrum MIPI Panel Binding file
+-----------------------------------
+In Spreadtrum Board configuration, Each MIPI Panel have their
+own specific DTSI file.
+All the Panel specific data is presented into this file.
+
+MIPI Panel driver(generic for all mipi Panels) read the Panel data from
+this DTSI file and communicate(send/receive data) with Panel accordingly.
+
+According to the panel connected with Board, we have to include the right
+Panel(DTSI) file in the DTS(Spreadtrum Board file).
+
+
+-- lcd_XXX_mipi --> mipi panel node label
+	here XXX would be any LCD panel name. E.g. hx8394a
+
+-------------------
+Required properties
+-------------------
+	-reg			: Id of lcd panel
+	-panel-name		: Name of lcd panel
+
+	*Display timing parameter refer-
+	kernel\documentation\devicetree\bindings\video\display-timing.txt.
+
+	-hactive		: Display timing parameter
+	-vactive		: Display timing parameter
+	-hfront-porch		: Display timing parameter
+	-hback-porch		: Display timing parameter
+	-hsync-len		: Display timing parameter
+	-vback-porch		: Display timing parameter
+	-vfront-porch		: Display timing parameter
+	-vsync-len		: Display timing parameter
+	-hsync-active		: hsync pulse is active low/high/ignored
+	-vsync-active		: vsync pulse is active low/high/ignored
+	-de-active		: data-enable pulse is active low/high/ignored
+
+	-fps			: frame per second E.g. 60, 30, etc.
+	-work-mode		: type of work mode
+				command mode(0) or video mode(1)
+
+	-bpp			: DPI, eDPI bus width -> 16, 18 or 24
+	-lane-number		: number of MIPI D-PHY lanes
+	-dphy-freq		: MIPI PHY frequency
+	-color-mode_pol		: color mode polarity
+	-shut-down_pol		: shut down polarity
+
+Optional Properties :
+--------------------
+	-clean-lcd		: 0 or 1, whether to clean LCD
+				at the time of resume
+	-direction		: refer to "LCD Direction Info" section
+	-te-active		: tearing polarity
+	-sprd,simu-width	: low resolution simulator width
+	-sprd,simu-height	: heigh resolution simulator width
+	-esd			: ESD value used in esd operations
+--------------------------------
+Panel's operations specific nodes
+--------------------------------
+
+Panel init operation
+--------------------
+- init-data --> Panel init operation specific info/data.
+	- Command Structure: [cmd_type, wait_time, 2-bytes-data-len, data]
+				--- N commands
+			[cmd_type, wait_time, 2-bytes-data-len, data]
+
+-----------------------
+Panel read-id operation
+-----------------------
+- readid-wrcmd --> read-id operation's write data/info.
+	ex: [37 00 00 02 03 00]
+	command structure same as of init-data node(mentioned above)
+
+- readid-rdcmd:Read data from Panel for LCD Panel id.
+	ex: [0x04 3]
+	command structure: [read_addr-1,length_to_read]
+	--- N read
+	[read_addr-n,length_to_read]
+
+- readid-cmp: compare data to compare with data read from Panel
+					for LCD Panel id.
+	ex: [00 83 01 94 2 0x1A]
+	command structure: [byte-to-compare-1,data]
+	--- N comparison
+	[byte-to-compare-n,data]
+
+---------------------
+Panel sleep operation
+---------------------
+- sleep-in: command data for set of commands, for panel_sleep operation.
+
+	ex: [39 00 00 02 28 00]
+	command structure same as of init-data node(mentioned above)
+
+- sleep-out: command data for set of commands, for panel_sleep operation.
+	ex: [39 78 00 02 11 00]
+	command structure same as of init-data node(mentioned above)
+
+-----------------------
+ESD specific operations ->>>
+-----------------------
+- esd-check: command data to write to lcd in ESD operation
+	ex: [37 00 00 02 01 00]
+	command structure same as of init-data node(mentioned above)
+
+
+---------------------
+LCD Direction Info
+---------------------
+LCD_DIRECT_NORMAL	0
+LCD_DIRECT_ROT_90	1
+LCD_DIRECT_ROT_180	2
+LCD_DIRECT_ROT_270	3
+LCD_DIRECT_MIR_H	4
+LCD_DIRECT_MIR_V	5
+LCD_DIRECT_MIR_HV	6
+---------------------
+
+
+Example:
+--------
+/{
+	lcd_hx8394a_mipi: lcd-hx8394a-mipi@0 {
+
+		reg			= <0x8394>;
+		panel-name		= "lcd_hx8394a_mipi";
+
+		hactive			= <720>;
+		vactive			= <1280>;
+		hfront-porch		= <80>;
+		hback-porch		= <60>;
+		hsync-len		= <60>;
+		vback-porch		= <12>;
+		vfront-porch		= <38>;
+		vsync-len		= <4>;
+		hsync-active		= <0>;
+		vsync-active		= <0>;
+		de-active		= <0>;
+		te-active		= <0>;
+
+		fps			= <60>;
+		direction		= <0>;
+		work-mode		= <1>;
+		bpp			= <24>;
+		lane-number		= <4>;
+		dphy-freq		= <450000>;
+		color-mode-pol		= <1>;
+		shut-down-pol		= <1>;
+
+		esd			= <28>;
+
+		init-data		= [
+					39 00 00 04 B9 FF 83 94
+					39 00 00 11 BA 63 82 00 16 C5
+					00 10 FF 0F 24 03 21 24 25 20 08
+					39 00 00 12 B1 01 00 04 C4 03 12
+					F1 24 2C 3F 3F 57 02 00 E6 E2 A6
+					39 00 00 07 B2 00 C8 0E 30 00 33
+					39 00 00 20 B4 80 04 32 10 08 54
+					15 0F 22 10 08 47 53 54 0A 4B 53
+					54 02 61 61 02 06 44 06 5F 0A 6B
+					70 05 08 39 00 00 02 B6 21
+					39 00 00 37 D5 00 00 00 00 0A 00
+					01 22 00 33 CC 00 AA BB 01 23 45
+					67 9A BC 45 67 88 88 88 88 88 88
+					88 01 88 88 88 88 88 88 88 88 88
+					88 88 88 88 88 88 88 88 88 88 88
+					88 88 3C 01 39 00 00 02 cc 09
+					39 00 00 05 bf 06 02 10 04
+					39 00 00 05 c7 00 10 00 10
+					39 00 00 1A E0 00 04 08 28 2F 3F
+					15 34 06 0C 0E 12 14 13 14 11 19
+					00 04 08 29 2E 3F 15 35
+					39 00 00 11 07 0C 0F 11 13 11 12
+					10 16 0A 17 07 12 0A 17 06 11
+					39 00 00 03 c0 0c 17
+					39 00 00 03 c6 08 08
+					39 00 00 02 D4 32
+					39 78 00 01 11
+					39 0a 00 12 BA 63 82 00 16 C5 00
+					10 FF 0F 24 03 21 24 25 20 08 3D
+					39 64 00 01 29
+					];
+
+		esd-check		= [37 00 00 02 01 00];
+
+		readid-wrcmd		= [37 00 00 02 03 00];
+		readid-rdcmd		= [04 3];
+		readid-cmp		= [00 83 01 94 02 1A];
+
+		sleep-in		= [
+					39 00 00 02 28 00
+					39 78 00 02 10 00
+					];
+		sleep-out		= [
+					39 78 00 02 11 00
+					39 00 00 02 29 00
+					];
+	};
+};

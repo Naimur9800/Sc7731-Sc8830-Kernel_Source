@@ -1,0 +1,60 @@
+/*
+ * Spreadtrum SP9853i-presi board common DTS file
+ *
+ * Copyright (C) 2016, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#ifdef CONFIG_MOBILEVISOR
+#include "irq-vmm.h"
+#include "bia-vmm.dtsi"
+#else
+#include "irq-hw-sc9853.h"
+#include "bia.dtsi"
+#endif
+
+#include "sc9853i-presi.dtsi"
+#include "lcd/lcd_nt35597_mipi_2k.dtsi"
+#include "lcd/lcd_nt35597_mipi_2k_fpga.dtsi"
+#include "lcd/lcd_dummy_rgb.dtsi"
+
+/ {
+	panel_if: sprd-panel-if {
+		compatible = "sprd-panel-if";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		panel-drivers = <
+			&lcd_nt35597_mipi_2k
+			&lcd_dummy_rgb
+		>;
+
+		/* input port */
+		port@1 {
+		/* WARNING: the reg property must be 1 ! */
+			reg = <1>;
+			panel_in: endpoint@0 {
+				remote-endpoint = <&dphy0_out>;
+			};
+		};
+	};
+
+	adf: sprd-adf {
+		compatible = "sprd-adf";
+		status = "okay";
+		sprd,display-mode = <3>;
+		sprd,dispc = <&dispc0>;
+	};
+};
+
+&dispc0 {
+	status = "okay";
+};
+
+&dsi0 {
+	status = "okay";
+};
+
+&dphy0 {
+	status = "okay";
+};

@@ -1,0 +1,14 @@
+P&L sensor epl2182  devicetree bindings
+
+Required properties for the I2C bindings:
+- compatible:		should be set to "elan,epl2182_pls"
+- reg:			i2c slave address
+- gpios:		interrupt gpio
+
+Example for a I2C device node:
+	epl2182_pls@49{
+		compatible = "elan,epl2182_pls";
+		reg = <0x49>;
+		gpios = <&ap_gpio 140 1>;
+	};
+

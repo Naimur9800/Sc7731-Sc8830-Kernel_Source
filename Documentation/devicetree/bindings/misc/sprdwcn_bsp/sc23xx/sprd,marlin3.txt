@@ -1,0 +1,53 @@
+Spreadtrum SC2355 platform devices.
+
+This node provides properties for controlling the SPREADTRUM wireless device.
+
+Required properties:
+
+- compatible : Should be "sprd,marlin3".
+- m2-to-ap-coexist-gpios : sc2355 GPIO0, used for debug.
+- m2-wakeup-ap-gpios : sc2355 GPIO1, CP2 wake up AP for SDIO.
+- permit-ap-send-gpios : SC2355 GPIO2.
+- m2-to-ap-irq-gpios : SC2355 INT.
+- sprd,wait-ge2-disabled : used for GNSS download through SDIO, not use UART.
+- common_chip_en :BTWF and GNSS share the same chip_eb pin.
+
+Optional properties:
+- vddio-supply = <&vddgen>: this supply is alway on.
+- sprd,no-power-off :SC2355 chip not power down.
+
+Example:
+
+	sprd_marlin3: sprd-marlin3 {
+		compatible = "sprd,marlin3";
+		m2-to-ap-coexist-gpios = <&ap_gpio 119 0>;
+		m2-wakeup-ap-gpios = <&ap_gpio 77 0>;
+		permit-ap-send-gpios = <&ap_gpio 69 0>;
+		rstn-gpios = <&ap_gpio 95 0>;
+		chip-en-gpios = <&ap_gpio 94 0>;
+		m2-to-ap-irq-gpios = <&ap_gpio 96 0>;
+		dvdd12-supply = <&vddcon>;
+		avdd12-supply = <&vddcon>;
+		avdd33-supply = <&vddwifipa>;
+		clock-names = "clk_32k","source","enable";
+		clocks = <&clk_aux0>,<&ext_32k>,
+			 <&clk_aon_apb_gates1 2>;
+		sdhci-name = <&sdio1>;
+		common_chip_en;
+		sprd,no-power-off;
+		sprd,wait-ge2-disabled;
+		adma_tx_enable;
+		adma_rx_enable;
+		pwrseq_disable;
+		post-power-on-delay-ms = <20>;
+	};
+
+sprd-mtty {
+        compatible = "sprd,mtty";
+        sprd,name = "ttyBT";
+};
+
+sprd-fm{
+        compatible  = "sprd,marlin3_fm";
+        sprd,name = "sprd-fm";
+};

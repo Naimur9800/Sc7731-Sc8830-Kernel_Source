@@ -1,0 +1,32 @@
+# to add sprd vsp configs in the future
+config SPRD_VSP
+	tristate "SPRD vsp driver"
+	depends on ION_SPRD
+
+if SPRD_VSP
+
+config SPRD_VSP_PW_DOMAIN
+	bool "SPRD vsp power domain"
+	---help---
+	 say Y if in whale series chip; otherwise, N.
+	 this is to power on vsp domain.
+
+config SPRD_VSP_PW_DOMAIN_R6P0
+	bool "SPRD vsp power domain r6p0"
+	---help---
+	 say Y if in vsp r6p0 chip; otherwise, N.
+	 this is to power on vsp domain r6p0.
+
+config SPRD_VSP_PW_DOMAIN_R7P0
+	bool "SPRD vsp power domain r7p0"
+	---help---
+	say Y if in vsp sharkle; otherwise, N.
+	this is to power on vsp domain r7p0.
+
+endif
+
+config SPRD_VSP_ENC
+	tristate "SPRD vsp_enc driver"
+	---help---
+	 say Y if in whale2 series chip; otherwise, N.
+	 this is only for 264 enc of 1080p.

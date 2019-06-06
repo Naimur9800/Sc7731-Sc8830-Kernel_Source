@@ -1,0 +1,1104 @@
+/*
+ * Spreadtrum isharkl2 SoC DTS file
+ *
+ * Copyright (C) 2015, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#include "iwhale2.dtsi"
+#include "sc9853-modem.dtsi"
+#include "sc9853-clocks.dtsi"
+#include <dt-bindings/pinctrl/sc9853i_pinctrl.h>
+
+/{
+	cpuinfo_hardware = "Spreadtrum SC9853";
+
+	aliases {
+		thm-sensor1 = &ddr_thm;
+		thm-sensor2 = &gpu_thm;
+	};
+
+	soc {
+		hdlcd:hdlcd@d3200000 {
+			compatible = "sprd,x86-hdlcd-isharkl2";
+			reg = <0x0 0xd3200000 0x0 0x1000>; /* use dispc1 of isharkl2 */
+			interrupts = <DISPC0_IRQ 2>; /* use dispc0 of isharkl2 */
+			clocks = <&ext_26m>;
+			clock-names = "pxlclk";
+			memory-region = <&fb_reserved>;
+			sprd,syscon-lpc-ahb = <&lpc_ahb_controller>;
+			sprd,syscon-dispc-ahb = <&dispc_ahb_controller>;
+			sprd,syscon-aon-pwu-apb = <&aon_pwu_apb_controller>;
+			sprd,syscon-aon-apb = <&aon_apb_controller>;
+			sprd,syscon-ap-apb = <&ap_apb_controller>;
+			sprd,syscon-ap-cam-clk = <&ap_cam_clk_controller>;
+		};
+
+		soc-pm {
+			sprd,sys-ap-apb = <&ap_apb_controller>;
+			sprd,sys-ap-ahb = <&ap_ahb_controller>;
+			sprd,sys-aon-apb = <&aon_apb_controller>;
+			sprd,sys-aon-pwu-apb = <&aon_pwu_apb_controller>;
+			sprd,sys-aon-com-pmu-apb = <&aon_com_pmu_apb_controller>;
+			sprd,sys-aon-intc0 = <&aon_intc0_controller>;
+			sprd,sys-aon-intc1 = <&aon_intc1_controller>;
+			sprd,sys-aon-intc2 = <&aon_intc2_controller>;
+			sprd,sys-aon-intc3 = <&aon_intc3_controller>;
+
+			sprd,deep-ap-clk0 = <&clk_ap_apb &clk_uart0 &clk_uart1
+				&clk_uart2 &clk_uart3 &clk_uart4 &clk_i2c0
+				&clk_i2c1 &clk_i2c2 &clk_i2c3 &clk_i2c4
+				&clk_i2c5 &clk_spi0 &clk_spi1 &clk_spi3
+				&clk_efs &clk_ce0 &clk_ce1 &clk_ap_axi
+				&clk_usb2_utmi &clk_pti>;
+			sprd,deep-ap-clk1 = <&clk_iis0 &clk_iis1 &clk_iis2
+				&clk_iis3>;
+			sprd,deep-ap-clkp = <&ext_26m &clk_twpll_153m6>;
+
+		};
+
+		ap-ahb {
+			sprd_tmc: sprd-tmc@c0fc3000 {
+				/* it is arm's coresight component TMC, but there is no
+				  * coresight sw arch driver in BIA platform, it is necessary
+				  * to make a common driver to dump TMC buffer trace
+				  * for PUBCP, the PUBCP will create a server in userspace,
+				  * when CP crash/timerout, it will dump TMC buffer trace.
+				  */
+				compatible = "sprd,tmc-etb";
+				reg = <0 0xc0fc3000 0 0x1000>;
+				arm,buffer-size = <0x2000>;
+			};
+
+			usb2: usb2@e2500000 {
+				compatible  = "sprd,usb-v2.0";
+				reg = <0 0xe2500000 0 0x1000>;
+				vbus-gpios = <&pmic_eic 0 0>;
+				interrupts = <USB2_IRQ 2>;
+				clocks = <&clk_aon_cgm_reg1 14>;
+				clock-names = "ref_clk";
+				sprd,syscon-ap-ahb = <&ap_ahb_controller>;
+				usb-phy = <&intelphy>;
+			};
+
+			intelphy: intelphy@e4140000 {
+				compatible = "sprd,intelphy";
+				reg = <0 0xe4140000 0 0x40000>,
+					<0 0xe4150000 0 0x10000>,
+					<0 0xe4103000 0 0x1000>;
+				reg-names = "phy_glb_regs",
+						"phy_sideclk_regs",
+						"phy_g4_regs";
+				sprd,syscon-ap-ahb = <&ap_ahb_controller>;
+				sprd,syscon-aon-com-pmu-apb = <&aon_com_pmu_apb_controller>;
+				sprd,vdd-voltage = <3300000>;
+			};
+
+			sdio3: sdio@c0c00000 {
+				compatible  = "sprd,sdhc-r8";
+				reg = <0 0xc0c00000 0 0x100000>;
+				interrupts = <SDIO3_IRQ 2>;
+				clock-names = "sdio", "source","enable",
+						"ckg_eb", "ckg_1x_eb";
+				clocks = <&clk_emmc_2x>,
+					<&clk_rpll0_390m>,
+					<&clk_ap_ahb_gates 10>,
+					<&clk_top_cgm_reg1 9>,
+					<&clk_top_cgm_reg1 8>;
+				status = "disabled";
+			};
+
+			sdio0: sdio@c0900000 {
+				compatible  = "sprd,sdhc-r8";
+				reg = <0 0xc0900000 0 0x100000>;
+				interrupts = <SDIO0_IRQ 2>;
+				clock-names = "sdio", "source","enable",
+						"ckg_eb", "ckg_1x_eb";
+				clocks = <&clk_sdio0_2x>,
+					<&clk_rpll0_390m>,
+					<&clk_ap_ahb_gates 7>,
+					<&clk_top_cgm_reg1 2>,
+					<&clk_top_cgm_reg1 3>;
+				status = "disabled";
+			};
+
+			sdio1: sdio@c0a00000 {
+				compatible  = "sprd,sdhc-r8";
+				reg = <0 0xc0a00000 0 0x100000>;
+				interrupts = <SDIO1_IRQ 2>;
+				clock-names = "sdio", "source","enable",
+						"ckg_eb", "ckg_1x_eb";
+				clocks = <&clk_sdio1_2x>,
+					<&clk_rpll0_390m>,
+					<&clk_ap_ahb_gates 8>,
+					<&clk_top_cgm_reg1 4>,
+					<&clk_top_cgm_reg1 5>;
+				status = "disabled";
+			};
+
+			sdio2: sdio@c0b00000 {
+				compatible  = "sprd,sdhc-r8";
+				reg = <0 0xc0b00000 0 0x100000>;
+				interrupts = <SDIO2_IRQ 2>;
+				clock-names = "sdio", "source","enable",
+						"ckg_eb", "ckg_1x_eb";
+				clocks = <&clk_sdio2_2x>,
+					<&clk_rpll0_390m>,
+					<&clk_ap_ahb_gates 9>,
+					<&clk_top_cgm_reg1 6>,
+					<&clk_top_cgm_reg1 7>;
+				status = "disabled";
+			};
+
+			dispc0: dispc@d3200000 {
+				compatible = "sprd,display-controller";
+				reg = <0 0xd3200000 0 0x1000>;
+				dev-id = <0>;
+				sprd,dpi_clk_div = <1>;
+				interrupts = <DISPC0_IRQ 2>;
+				clock-src = <384000000 256000000 153600000>;
+				clock-names =   "clk_dispc_core_parent",
+						"clk_dispc_dpi_parent",
+						"clk_dispc_core",
+						"clk_dispc_dpi",
+						"clk_dispc_ahb_eb",
+						"clk_dispc_ckg_ahb_eb",
+						"clk_dispc_mtx_ahb_eb",
+						"clk_disp_emc_apb_eb",
+						"clk_disp_apb_eb",
+						"clk_disp_cam_eb";
+
+				clocks =	<&clk_twpll_384m>,
+						<&clk_twpll_153m6>,
+						<&clk_dispc0>,
+						<&clk_dispc0_dpi>,
+						<&clk_dahb_gates 0>,
+						<&clk_dahb_gates 2>,
+						<&clk_dahb_gates 3>,
+						<&clk_aon_apb_gates1 11>,
+						<&clk_aon_apb_gates1 30>,
+						<&clk_aon_apb_gates1 29>;
+
+				iommus = <&iommu_dispc>;
+				status = "disabled";
+
+				sprd,ip = "dpu-r1p0";
+				sprd,soc = "isharkl2";
+
+				/* output port */
+				port {
+					dispc0_out: endpoint@0 {
+						remote-endpoint = <&dsi0_in>;
+					};
+				};
+			};
+
+			iommu_dispc: iommu@d3200000 {
+				compatible = "sprd,iommuexi-dispc";
+				reg = <0 0xd3200000 0 0x800>,
+				<0 0xd3200800 0 0x60>,
+				<0 0x60000000 0 0x10000000>;
+				reg_name = "mmu_interrupt_reg","mmu_reg",
+						"iova pool";
+				status = "disabled";
+				#iommu-cells = <0>;
+			};
+
+			dsi0: dsi@d3900000 {
+				compatible = "sprd,dsi-controller";
+				#address-cells = <1>;
+				#size-cells = <0>;
+				dev-id = <0>;
+				reg = <0 0xd3900000 0 0x1000>;
+
+				interrupts = <DSI0_IRQ 2>,
+					   <DSI0_PLL_IRQ 2>;
+				status = "disabled";
+				clock-names =   "clk_dphy0_ckg_eb",
+						"clk_disp_ckg_ahb_eb",
+						"clk_dsi0_ahb_eb",
+						"clk_disp_apb_eb",
+						"clk_disp_cam_eb";
+
+				clocks =	<&clk_dahb_gates 4>,
+						<&clk_dahb_gates 2>,
+						<&clk_dahb_gates 1>,
+						<&clk_aon_apb_gates1 30>,
+						<&clk_aon_apb_gates1 29>;
+
+				sprd,ip = "synps,dwc-mipi-dsi-host";
+				sprd,soc = "isharkl2";
+
+				/* output port */
+				port@0 {
+					reg = <0>;
+					dsi0_out: endpoint {
+						remote-endpoint = <&dphy0_in>;
+					};
+				};
+
+				/* input port */
+				port@1 {
+					reg = <1>;
+					dsi0_in: endpoint {
+						remote-endpoint = <&dispc0_out>;
+					};
+				};
+			};
+
+			dphy0: dphy@0 {
+				compatible = "sprd,mipi-dsi-phy";
+				#address-cells = <1>;
+				#size-cells = <0>;
+				reg = <0 0xd3900000 0 0x1000>,
+				 <0 0xe41b0000 0 0x1000>,
+				 <0 0xe41f8000 0 0x1000>;
+				status = "disabled";
+
+				sprd,ip = "intel,ip733mdsitop";
+				sprd,soc = "isharkl2";
+
+				/* output port */
+				port@0 {
+					reg = <0>;
+					dphy0_out: endpoint {
+						remote-endpoint = <&panel_in>;
+					};
+				};
+
+				/* input port*/
+				port@1 {
+					reg = <1>;
+					dphy0_in: endpoint {
+						remote-endpoint = <&dsi0_out>;
+					};
+				};
+			};
+		};
+		ap-apb {
+			ompatible = "simple-bus";
+			#address-cells = <2>;
+			#size-cells = <2>;
+			ranges;
+
+			i2s0: i2s@e7600000  {
+				compatible = "sprd,i2s";
+				#sound-dai-cells = <0>;
+				reg = <0 0xe7600000 0 0x100000>;
+				sprd,dai_name = "i2s_bt_sco0";
+				sprd,hw_port = <0>;
+				sprd,syscon-ap-apb = <&ap_apb_controller>;
+				status = "disable";
+			};
+
+			i2s1: i2s@e7700000  {
+				compatible = "sprd,i2s";
+				#sound-dai-cells = <0>;
+				reg = <0 0xe7700000 0 0x100000>;
+				sprd,dai_name = "ap-i2s1";
+				sprd,hw_port = <1>;
+				sprd,syscon-ap-apb = <&ap_apb_controller>;
+				status = "disable";
+			};
+
+			i2s2: i2s@e7800000  {
+				compatible = "sprd,i2s";
+				#sound-dai-cells = <0>;
+				reg = <0 0xe7800000 0 0x100000>;
+				sprd,dai_name = "ap-i2s2";
+				sprd,hw_port = <2>;
+				sprd,syscon-ap-apb = <&ap_apb_controller>;
+				status = "disable";
+			};
+
+			i2s3: i2s@e7900000  {
+				compatible = "sprd,i2s";
+				#sound-dai-cells = <0>;
+				reg = <0 0xe7900000 0 0x100000>;
+				sprd,dai_name = "ap-i2s3";
+				sprd,hw_port = <3>;
+				sprd,syscon-ap-apb = <&ap_apb_controller>;
+				status = "disable";
+			};
+		};
+
+		aon {
+
+			ap_iefuse: iefuse@e4240000 {
+				compatible = "sprd,ap_iefuse_r1p0";
+				sprd,syscon-enable = <&aon_apb_controller>;
+				reg = <0 0xe4240000 0 0x10000>;
+				clock-names = "enable";
+				clocks = <&clk_aon_apb_gates0 13>;
+				sprd,block-num = <64>;
+				sprd,block-width = <32>;
+				hwlocks = <&hwslock1 8>;
+				hwlock-names = "ap_efuse";
+			};
+
+			pin_controller: pinctrl@e42a0000 {
+				compatible = "sprd,sc9853i-pinctrl";
+				reg = <0 0xe42a0000 0 0x10000>;
+			};
+			pwms: pwm@e4260000 {
+				#pwm-cells = <2>;
+				compatible = "sprd,pwm-r3p0";
+				reg = <0 0xe4260000 0 0x10000>;
+				clock-names = "sprd_pwm_clk_parent", "clk_pwm";
+				clocks = <&ext_26m>, <&clk_pwm0>;
+				status = "okay";
+			};
+			ddr_thm: ddr-thm@e42f0000 {
+				compatible = "sprd,r2p0-thm";
+				sprd,syscon-enable = <&aon_apb_controller>;
+				reg = <0 0xe42f0000 0 0x100>;
+				clock-names = "enable";
+				clocks = <&clk_aon_apb_gates1 1>;
+				#thermal-sensor-cells = <1>;
+				power-down = <0>;
+				otp-temp = <120000>;
+				algor_ver = <0>;
+				cal_k = <1455>;
+				cal_b = <67200>;
+				cal_efuse_blk = <7>;
+				cal_efuse_bit = <13>;
+				ratio_off_bit = <6>;
+				ratio_sign_bit = <12>;
+			};
+
+			gpu_thm: gpu-thm@e43b0000 {
+				compatible = "intel,bia-thm";
+				sprd,syscon-enable = <&aon_common_apb_controller>;
+				reg = <0x0 0xe43b0000 0x0 0x1000>;
+				interrupts = <ITHM_ALERT_IRQ 2>, <ITHM0_OVERHEAT_IRQ 2>;
+				clock-names = "enable";
+				clocks = <&clk_aon_apb_gates1 15>;
+				intel,rf-period = <0>;
+				intel,burst-mode = <0>;
+				#thermal-sensor-cells = <1>;
+				intel,otp-temp = <120000>;
+				intel,warning-temp = <100000>;
+			};
+
+			aon_dma: dma-controller@e4600000 {
+				compatible = "sprd,aon-dma-v3.0";
+				reg = <0 0xe4600000 0 0x10000>;
+				/*interrupts = <DMA_AON_IRQ 2>;*/
+				#dma-cells = <1>;
+				#dma-channels = <32>;
+				sprd,full-type-offset = <0>;
+				sprd,syscon-dma-glb = <&aon_apb_controller>;
+				clock-names = "enable";
+				clocks = <&clk_aon_apb_gate2 4>;
+			};
+
+			bm-djtag@e4340000 {
+				compatible  = "sprd,bm-djtag-isharkl2";
+				reg = <0 0xe4340000 0 0x10000>;
+				interrupts = <DJTAG_IRQ 2>;
+				sprd,syscon-aon-glb = <&aon_apb_controller>;
+				sprd,syscon-ap-glb = <&ap_ahb_controller>;
+				hwlocks = <&hwslock1 10>;
+				hwlock-names = "djtag";
+			};
+
+			sprd_audio_codec_dig: audio-codec@e4410000 {
+				compatible = "sprd,sharkl2-audio-codec";
+				reg = <0 0xe4410000 0 0x10000>;
+				sprd,def_da_fs = <44100>;
+				sprd,syscon-aon-apb = <&aon_apb_controller>;
+				/* isharkl2 use g2 */
+				sprd,anlg-phy-g-syscon = <&anlg_phy_g2_controller>;
+			};
+
+			vbc: vbc@e4400000 {
+				compatible = "sprd,vbc-r1p0v3";
+				#sound-dai-cells = <1>;
+				reg = <0 0xe4400000 0 0x10000>;
+				sprd,syscon-aon-apb = <&aon_apb_controller>;
+				sprd,syscon-pmu-apb = <&aon_pwu_apb_controller>;
+				sprd,dynamic-eq-support = <0>;
+				 /* da01, ad01, ad23 */
+				sprd,vbc-iis-lr-invert = <0 0 1>;
+				/*0: aon dma, 1: ap dma
+				 * da01, da23, ad01, ad23
+				 */
+				sprd,vbc-use-dma-type = <0 0 1 1>;
+				sprd,vbc-use-ad01-only = <0>;
+				/*iis pin map*/
+				pinctrl-names =
+				/*iis 0*/
+				"ap_iis0_0", "pubcp_iis0_0", "tgdsp_iis0_0",
+				"vbc_iis1_0", "vbc_iis2_0", "vbc_iis3_0",
+				/*iis 2*/
+				"ap_iis0_2", "pubcp_iis0_2", "tgdsp_iis0_2",
+				"vbc_iis1_2", "vbc_iis2_2", "vbc_iis3_2",
+				/*iis 1*/
+				"ap_iis0_1", "ap_iis1_1", "pubcp_iis0_1",
+				"tgdsp_iis0_1", "tgdsp_iis1_1",
+				"vbc_iis1_1", "vbc_iis2_1", "vbc_iis3_1";
+				/*sys iis 0*/
+				pinctrl-0 = <&ap_iis0_0>;
+				pinctrl-1 = <&pubcp_iis0_0>;
+				pinctrl-2 = <&tgdsp_iis0_0>;
+				pinctrl-3 = <&vbc_iis1_0>;
+				pinctrl-4 = <&vbc_iis2_0>;
+				pinctrl-5 = <&vbc_iis3_0>;
+				/*sys iis 2*/
+				pinctrl-6 = <&ap_iis0_2>;
+				pinctrl-7 = <&pubcp_iis0_2>;
+				pinctrl-8 = <&tgdsp_iis0_2>;
+				pinctrl-9 = <&vbc_iis1_2>;
+				pinctrl-10 = <&vbc_iis2_2>;
+				pinctrl-11 = <&vbc_iis3_2>;
+				/*sys iis 1*/
+				pinctrl-12 = <&ap_iis0_1>;
+				pinctrl-13 = <&ap_iis1_1>;
+				pinctrl-14 = <&pubcp_iis0_1>;
+				pinctrl-15 = <&tgdsp_iis0_1>;
+				pinctrl-16 = <&tgdsp_iis1_1>;
+				pinctrl-17 = <&vbc_iis1_1>;
+				pinctrl-18 = <&vbc_iis2_1>;
+				pinctrl-19 = <&vbc_iis3_1>;
+			};
+
+			modem_dbg_log: modem-dbg-log@e44f0000 {
+				compatible = "sprd,dbg-log-isharkl2";
+				reg = <0 0xe44f0000 0 0x1000>,
+				    <0 0xe41c0000 0 0x1000>;
+				sprd,syscon-aon-apb = <&aon_apb_controller>;
+				sprd,syscon-ana-g8 = <&anlg_phy_g8_controller>;
+			};
+		};
+
+		pub {
+			dmc_mpu: dmc-mpu@c0010000{
+				compatible = "sprd,dmc-mpu-isharkl2";
+				reg = <0 0xc0010000 0 0x1000>;
+				interrupts = <DMC_MPU_IRQ 2>;
+			};
+
+			bm_perf: bm-perf@c0020000{
+				compatible = "sprd,bm-perf-isharkl2";
+				reg =	<0 0xc0020000 0 0x60000>,
+					<0 0 0 0>,
+					<0 0xe44D0000 0 0x10000>,
+					<0 0xc0010000 0 0x4>,
+					<0 0 0 0>;
+				reg-names = "pub0","pub1","timer",
+						"pub0_glb","pub1_glb";
+				interrupts = <PUB0_AXI_BM_IRQ 2>;
+				sprd,syscon-aon-glb =  <&aon_apb_controller>;
+			};
+		};
+
+		mm {
+			compatible = "simple-bus";
+			#address-cells = <2>;
+			#size-cells = <2>;
+			ranges;
+
+			vsp: video-codec@D1200000{
+				compatible = "sprd,isharkl2-vsp";
+				reg = <0 0xd1200000 0 0xc000>;
+				interrupts = <VSP_IRQ 2>;
+				sprd,syscon-pmu-apb = <&aon_pwu_apb_controller>;
+				sprd,syscon-com-pmu-apb = <&aon_com_pmu_apb_controller>;
+				sprd,syscon-aon-apb = <&aon_apb_controller>;
+				sprd,syscon-mm-ahb = <&vsp_sys_ahb_controller>;
+
+				clock-names = "clk_mm_eb",
+					"clk_axi_gate_vsp",
+					"clk_vsp_ckg",
+					"clk_ahb_gate_vsp_eb",
+					"clk_ahb_vsp",
+					"ahb_parent_clk",
+					"ahb_parent_df_clk",
+					"clk_vsp";
+				clocks = <&clk_aon_apb_gates1 28>,
+					<&clk_vsp_ahb_gates 10>,
+					<&clk_vsp_ahb_gates 1>,
+					<&clk_vsp_ahb_gates 0>,
+					<&clk_vsp_ahb>,
+					<&clk_twpll_153m6>,
+					<&clk_twpll_96m>,
+					<&clk_vsp>;
+				iommus = <&iommu_vsp>;
+				status = "disabled";
+			};
+
+			iommu_vsp: iommu@d1200000 {
+				compatible  = "sprd,iommuexi-vsp";
+				reg = <0 0xd1200000 0 0x1140>,
+					<0 0xd1201140 0 0x60>,
+					<0 0x10000000 0 0x10000000>;
+				reg_name = "mmu_interrupt_reg","mmu_reg",
+						"iova pool";
+				status = "disabled";
+				#iommu-cells = <0>;
+			};
+
+			gsp_core0: gsp@d1600000 {
+				compatible = "sprd,gsp-core";
+				reg = <0 0xd1600000 0 0x800>,
+					<0 0xd1100000 0 0x1000>,
+					<0 0xd1000000 0 0x1000>;
+				reg-names = "gsp_ctl_reg_base",
+						"vsp_sys_regmap",
+						"vsp_clk_regmap";
+				core-id = <0>;
+				kcfg-num = <16>;
+				interrupts = <GSP0_IRQ 2>;
+				iommus = <&iommu_gsp>;
+				sprd,syscon-pmu-apb = <&aon_pwu_apb_controller>;
+				sprd,syscon-aon-apb = <&aon_apb_controller>;
+
+				clock-names = "clk_gsp0","clk_gsp_parent",
+					"clk_gsp_ahb_vsp",
+					"clk_gsp_ahb_vsp_parent",
+					"clk_vsys_mtx","clk_vsys_mtx_parent",
+					"clk_aon_vsp_eb",
+					"clk_gsp_emc_eb",
+					"clk_vsp_ahb_ckg_eb",
+					"clk_vsys_mtx_eb",
+					"clk_gsp0_eb";
+				clocks = <&clk_gsp0>,<&clk_twpll_384m>,
+					<&clk_vsp_ahb>,<&clk_twpll_153m6>,
+					<&clk_vsys_mtx>,<&clk_twpll_384m>,
+					<&clk_aon_apb_gates1 28>,
+					<&clk_aon_apb_gates1 13>,
+					<&clk_vsp_ahb_gates 1>,
+					<&clk_vsp_ahb_gates 10>,
+					<&clk_vsp_ahb_gates 5>;
+			};
+
+			iommu_gsp: iommu@d1600000 {
+				compatible  = "sprd,iommuexi-gsp";
+				reg = <0 0xd1600000 0 0x804>,
+				<0 0xd1600804 0 0x60>,
+				<0 0x70000000 0 0x10000000>;
+				reg_name = "mmu_interrupt_reg","mmu_reg",
+						"iova pool";
+				status = "disabled";
+				#iommu-cells = <0>;
+			};
+
+			dcam: dcam@d2200000 {
+				compatible = "sprd,dcam";
+				reg = <0 0xd2200000 0 0x100000>, <0 0xd2300000 0 0x100000>;
+				interrupts = <DCAM0_IRQ 2>, <DCAM1_IRQ 2>;
+				sprd,cam-ahb-syscon = <&lpc_ahb_controller>;
+				clock-names = "dcam0_eb","dcam1_eb",
+					"dcam0_mg_eb", "dcam1_mg_eb",
+					"dcam0_d2ia_mg_eb", "dcam1_d2ib_mg_eb",
+					"clk_mm_ahb_parent",
+					"dcam0_clk","dcam1_clk",
+					"dcam0_clk_parent","dcam1_clk_parent",
+					"dcam_clk_76m8","dcam_clk_153m6","dcam_clk_256m",
+					"dcam_clk_307m2","dcam_clk_384m",
+					"clk_ahb_cam",
+					"clk_ahb_cam_parent",
+					"cam_aon_eb",
+					"clk_gate_eb",
+					"sys_mtx_eb";
+				clocks = <&clk_cam_ahb_gates 0>,<&clk_cam_ahb_gates 1>,
+					<&clk_module_gates 0>, <&clk_module_gates 1>,
+					<&clk_module_gates 2>, <&clk_module_gates 3>,
+					<&ext_26m>,
+					<&clk_dcam0_if>,<&clk_dcam1_if>,
+					<&clk_twpll_384m>,<&clk_twpll_256m>,
+					<&clk_twpll_76m8>,<&clk_twpll_153m6>,<&clk_twpll_256m>,
+					<&clk_twpll_307m2>,<&clk_twpll_384m>,
+					<&clk_cam_ahb>,
+					<&clk_twpll_128m>,
+					<&clk_aon_apb_gates1 29>,
+					<&clk_dahb_gates 2>,
+					<&clk_dahb_gates 3>;
+				sprd,isp = <&isp>;
+				sprd,dcam-count = <2>;
+				sprd,dcam1 = <&dcam1>;
+				iommus = <&iommu_dcam>;
+				status = "disable";
+			};
+
+			iommu_dcam: iommu@d2200000 {
+				compatible  = "sprd,iommuexi-dcam";
+				reg = <0 0xd2200000 0 0x80>,
+					<0 0xd2200080 0 0x60>,
+					<0 0x30000000 0 0x4000000>;
+				reg_name = "mmu_interrupt_reg","mmu_reg",
+						"iova pool";
+				status = "disabled";
+				#iommu-cells = <0>;
+			};
+
+			dcam1: dcam1@d2300000 {
+				compatible = "sprd,dcam1";
+				iommus = <&iommu_dcam1>;
+				status = "disable";
+			};
+
+			iommu_dcam1: iommu@d2300000 {
+				compatible  = "sprd,iommuexi-dcam1";
+				reg = <0 0xd2300000 0 0x80>,
+					<0 0xd2300080 0 0x60>,
+					<0 0x34000000 0 0x4000000>;
+				reg_name = "mmu_interrupt_reg","mmu_reg",
+						"iova pool";
+				status = "disabled";
+				#iommu-cells = <0>;
+			};
+
+			jpg: jpeg-codec@d2500000{
+				compatible = "sprd,sharkl2-jpg";
+				reg = <0 0xd2500000 0 0x100000>;
+				interrupts = <JPG0_IRQ 2>;
+				sprd,syscon-aon-apb = <&aon_apb_controller>;
+				sprd,syscon-mm-ahb = <&lpc_ahb_controller>;
+				clock-names = "clk_mm_eb",
+					"clk_axi_gate_jpg",
+					"clk_ahb_gate_jpg_eb",
+					"clk_ahb_cam",
+					"clk_jpg";
+				clocks = <&clk_aon_apb_gates1 29>,
+					<&clk_cam_ahb_gates 25>,
+					<&clk_cam_ahb_gates 5>,
+					<&clk_cam_ahb>,
+					<&clk_jpg0>;
+				iommus = <&iommu_jpg>;
+				status = "disabled";
+			};
+
+			iommu_jpg: iommu@d2500000 {
+				compatible  = "sprd,iommuexi-jpg";
+				reg = <0 0xd2500000 0 0x100>,
+					<0 0xd2500100 0 0x60>,
+					<0 0x20000000 0 0x10000000>;
+				reg_name = "mmu_interrupt_reg","mmu_reg",
+						"iova pool";
+				status = "disabled";
+				#iommu-cells = <0>;
+			 };
+
+			csi0: csi0@d2700000 {
+				compatible = "sprd,csi-controller";
+				reg = <0x0 0xd2700000 0x0 0x1000>;
+				interrupts = <CSI0_IRQ 2>;
+				clock-names = "clk_cphy_gate", "clk_mipi_gate",
+						"clk_csi_eb", "clk_mipi_csi_eb";
+				clocks = <&clk_cam_ckg_gates 0>, <&clk_cam_ckg_gates 1>,
+						<&clk_cam_ahb_gates 3>, <&clk_mipi_csi0_gate 16>;
+				sprd,csi-id = <0>;
+				sprd,ip-version = <0x3131312a>;
+				sprd,cam-ahb-syscon = <&lpc_ahb_controller>;
+				sprd,anlg-phy-g8-syscon = <&anlg_phy_g8_controller>;
+				status = "disable";
+			};
+
+			csi1: csi1@d2800000 {
+				compatible = "sprd,csi-controller";
+				reg = <0x0 0xd2800000 0x0 0x1000>;
+				interrupts = <CSI1_IRQ 2>;
+				clock-names = "clk_cphy_gate", "clk_mipi_gate",
+					"clk_csi_eb", "clk_mipi_csi_eb";
+				clocks = <&clk_cam_ckg_gates 2>, <&clk_cam_ckg_gates 3>,
+					<&clk_cam_ahb_gates 4>, <&clk_mipi_csi1_gate 16>;
+				sprd,csi-id = <1>;
+				sprd,ip-version = <0x3131312a>;
+				sprd,cam-ahb-syscon = <&lpc_ahb_controller>;
+				sprd,anlg-phy-g8-syscon = <&anlg_phy_g8_controller>;
+				status = "disable";
+			};
+
+			mipi_csi_phy0: mipi-csi-phy0 {
+					compatible = "sprd,mipi-csi-phy";
+					sprd,phyid = <0>;
+					status = "disabled";
+			};
+
+			mipi_csi_phy1: mipi-csi-phy1 {
+					compatible = "sprd,mipi-csi-phy";
+					sprd,phyid = <1>;
+					status = "disabled";
+			};
+
+
+			cpp: cpp@d2b00000 {
+				compatible = "sprd,cpp";
+				reg = <0x0 0xd2b00000 0x0 0x200>;
+				interrupts = <CPP_IRQ 2>;
+				clock-names = "clk_cpp",
+						"clk_cpp_parent",
+						"cpp_eb",
+						"jpg_cpp_mtx_eb",
+						"cpp_axi_eb";
+				clocks = <&clk_cpp>,
+					<&clk_twpll_307m2>,
+					<&clk_cam_ahb_gates 10>,
+					<&clk_cam_ahb_gates 25>,
+					<&clk_cam_ckg_gates 13>;
+				sprd,syscon-cam-ahb = <&lpc_ahb_controller>;
+				sprd,syscon-pmu-apb = <&aon_pwu_apb_controller>;
+				iommus = <&iommu_cpp>;
+			};
+
+			iommu_cpp: iommu@d2b00000 {
+				compatible  = "sprd,iommuexi-cpp";
+				reg = <0 0xd2b00000 0 0x200>,
+					<0 0xd2b00200 0 0x60>,
+					<0 0x50000000 0 0x8000000>;
+				reg_name = "mmu_interrupt_reg","mmu_reg",
+						"iova pool";
+				status = "disabled";
+				#iommu-cells = <0>;
+			};
+
+			isp: isp@d2e00000 {
+				compatible = "sprd,isp";
+				reg = <0x0 0xd2e00000 0x0 0x100000>, <0x0 0xd2f00000 0x0 0x100000>;
+				interrupts = <ISP_CH0_IRQ 2>, <ISP_MAIN_CH1_IRQ 2>, <ISP_LITE_CH0_IRQ 2>, <ISP_LITE_CH1_IRQ 2>;
+				sprd,cam-ahb-syscon = <&lpc_ahb_controller>;
+
+				clock-names = "isp0_eb",
+					"isp0_iclk_eb", "isp1_mclk_eb",
+					"isp0_axi_eb", "isp1_axi_eb",
+					"isp_mtx_eb",
+					"cam_mtx_eb",
+					"isp0_ia_i_eb", "isp1_ib_i_eb",
+					"isp0_clk", "isp1_clk",
+					"isp_clk_76m8","isp_clk_128m","isp_clk_256m",
+					"isp_clk_307m2","isp_clk_384m","isp_clk_576m",
+					"isp0_clk_parent", "isp1_clk_parent";
+
+				clocks = <&clk_cam_ahb_gates 2>,
+					<&clk_cam_ahb_gates 16>, <&clk_cam_ahb_gates 17>,
+					<&clk_cam_ckg_gates 10>, <&clk_cam_ckg_gates 11>,
+					<&clk_cam_ahb_gates 19>,
+					<&clk_cam_ahb_gates 23>,
+					<&clk_module_gates 7>, <&clk_module_gates 8>,
+					<&clk_isp_ick>, <&clk_isp_mck>,
+					<&clk_twpll_76m8>,<&clk_twpll_128m>,<&clk_twpll_256m>,
+					<&clk_twpll_307m2>,<&clk_twpll_384m>,<&clk_isppll_576m>,
+					<&clk_isppll_576m>, <&clk_twpll_256m>;
+
+				sprd,isp-count = <2>;
+				sprd,isp1 = <&isp1>;
+				iommus = <&iommu_isp>;
+				status = "disable";
+			};
+
+			iommu_isp: iommu@d2e00000 {
+				compatible  = "sprd,iommuexi-isp";
+				reg = <0 0xd2e00000 0 0x800>,
+					<0 0xd2e00800 0 0x400>,
+					<0 0x40000000 0 0x10000000>;
+				reg_name = "mmu_interrupt_reg","mmu_reg",
+						"iova pool";
+				status = "disabled";
+				#iommu-cells = <0>;
+			};
+
+			isp1: isp1@d2f00000 {
+				compatible = "sprd,isp1";
+				iommus = <&iommu_isp1>;
+				status = "disable";
+			};
+
+			iommu_isp1: iommu@d2f00000 {
+				compatible  = "sprd,iommuexi-isp1";
+				reg = <0 0xd2f00000 0 0x800>,
+					<0 0xd2f00800 0 0x400>,
+					<0 0x10000000 0 0x10000000>;
+				reg_name = "mmu_interrupt_reg","mmu_reg",
+						"iova pool";
+				status = "disabled";
+				#iommu-cells = <0>;
+			};
+
+			gpu: gpu@d0000000 {
+				compatible = "sprd,mali-midgard";
+				reg = <0x0 0xd0000000 0x0 0x4000>;
+				sprd,syscon-aon-apb = <&aon_apb_controller>;
+				sprd,syscon-pmu-apb = <&aon_pwu_apb_controller>;
+				interrupts = <GPU_IRQ 2>,
+					<GPU_IRQ 2>,
+					<GPU_IRQ 2>;
+				interrupt-names = "JOB",
+					"MMU",
+					"GPU";
+
+				clocks = <&clk_aon_apb_gates0 27>,
+					<&clk_gpu_core>,<&clk_twpll_384m>,
+					<&clk_twpll_512m>,<&clk_gpll>;
+
+				operating-points = <
+					/* kHz    uV */
+					384000    0
+					512000    0
+					750000    0
+					>;
+
+				sprd,dfs-lists = <
+					/* kHz  uV  idx div */
+					384000  0   2   1
+					512000  0   3   1
+					750000  0   4   1
+					>;
+
+				sprd,dfs-default = <2>;
+				sprd,dfs-scene-extreme = <2>;
+				sprd,dfs-scene-high = <1>;
+				sprd,dfs-scene-medium = <1>;
+				sprd,dfs-scene-low = <0>;
+				sprd,dfs-range-max = <2>;
+				sprd,dfs-range-min = <0>;
+			};
+		};
+	};
+
+	sprd_pcm: sprd-pcm-audio {
+		compatible = "sprd,pcm-platform-sharkl2";
+		#sound-dai-cells = <0>;
+		/* non-i2s playbacks use aon dma */
+		/* reference dma node dma-channels proporty
+		 * do not conflict with others
+		 * ap_dma (29-32 for security)
+		 */
+		dmas = <&aon_dma 1 &aon_dma 2
+			&aon_dma 3 &aon_dma 4
+			&aon_dma 5 &aon_dma 6
+			&aon_dma 7 &aon_dma 8
+			&ap_dma 1 &ap_dma 2
+			&ap_dma 3 &ap_dma 4>;
+		dma-names = "da01-l", "da01-r", "da23-l", "da23-r",
+			"normal-2stage-p", "normal-2stage-c",
+			"deep-2stage-p", "ad23-2stage-c",
+			"ad01-l", "ad01-r", "ad23-l", "ad23-r";
+		/* bit map for dma-2stage-usecase
+		 * bit[0] == 1, normal playback
+		 * bit[1] ==1, deepbuf playback
+		 * bit[2] ==1, caputre
+		 * other bit to do
+		 */
+		sprd,dma-2stage-usecase = <2>;
+		sprd,node-count-2stage-level-1 = <1>;
+		sprd,sys-aon-pwu-apb = <&aon_pwu_apb_controller>;
+		sprd,sys-aon-com-pmu-apb = <&aon_com_pmu_apb_controller>;
+		/* 0: no interrupt, 1: from arm, 2:from ap
+		* note:if use arm ap should not register dma interrupt,
+		* and you should register intterupt in arm code.
+		*/
+		sprd,dma-2stage-level-1-int-source = <1>;
+	};
+
+	sprd_pcm_iis: sprd-pcm-iis {
+		compatible = "sprd,pcm-platform-sharkl2";
+		#sound-dai-cells = <0>;
+		dmas = <&ap_dma 5 &ap_dma 6
+			&ap_dma 7 &ap_dma 8
+			&ap_dma 9 &ap_dma 10
+			&ap_dma 11 &ap_dma 12>;
+		dma-names = "iis0_tx", "iis0_rx",
+			"iis1_tx", "iis1_rx",
+			"iis2_tx", "iis2_rx",
+			"iis3_tx", "iis3_rx";
+		sprd,dma-2stage-usecase = <2>;
+		sprd,node-count-2stage-level-1 = <1>;
+		sprd,sys-aon-pwu-apb = <&aon_pwu_apb_controller>;
+		sprd,sys-aon-com-pmu-apb = <&aon_com_pmu_apb_controller>;
+		sprd,dma-2stage-level-1-int-source = <1>;
+	};
+
+	vaudio: vaudio {
+		compatible = "sprd,vaudio";
+		#sound-dai-cells = <1>;
+		clocks = <&clk_audio_gate 5>;
+		clock-names = "tuned_26m";
+	};
+
+	saudio_lte{
+		compatible = "sprd,saudio";
+		sprd,saudio-dst-id = <5>;	/* SIPC_ID_LTE */
+		sprd,ctrl_channel = <10>;	/* SMSG_CH_VBC */
+		sprd,playback_channel = <11 131>;	/* SMSG_CH_PLAYBACK */
+		sprd,capture_channel = <12>;	/* SMSG_CH_CAPTURE */
+		sprd,monitor_channel = <13>;	/*SMSG_CH_MONITOR_AUDIO */
+		sprd,device = <2>;
+		sprd,saudio-names = "saudiolte";
+		sprd,ap_addr_to_cp = <0x80000000>;
+	};
+
+	saudio_voip{
+		compatible = "sprd,saudio";
+		sprd,saudio-dst-id = <5>;	/* SIPC_ID_LTE */
+		sprd,ctrl_channel = <14>;	/* SMSG_CH_CTRL_VOIP */
+		sprd,playback_channel = <15 151>;	/* SMSG_CH_PLAYBACK_VOIP */
+		sprd,capture_channel = <16>;	/* SMSG_CH_CAPTURE_VOIP */
+		sprd,monitor_channel = <17>;	/*SMSG_CH_MONITOR_VOIP */
+		sprd,device = <2>;
+		sprd,saudio-names = "saudiovoip";
+		sprd,ap_addr_to_cp = <0x80000000>;
+	};
+
+	audio-mem-mgr {
+		compatible = "sprd,audio-mem-sharkl2";
+		sprd,iram_phy_addr = <0xe6012000 0xb000>;
+		/* note:mmap address must paga_size align */
+		sprd,iram_normal = <0xe6012000 0x0>;
+		sprd,iram_deepbuf = <0xe6012000 0xa000>;
+		sprd,iram_4arm7 = <0xe601c000 0x1000>;
+	};
+
+};
+
+&uart0 {
+	clocks = <&clk_uart0>, <&ext_26m>,
+		<&clk_ap_apb_gates 14>;
+};
+
+&uart1 {
+	clocks = <&clk_uart1>, <&ext_26m>,
+		<&clk_ap_apb_gates 15>;
+};
+
+&uart2 {
+	clocks = <&clk_uart2>, <&ext_26m>,
+		<&clk_ap_apb_gates 16>;
+};
+
+&uart3 {
+	clocks = <&clk_uart3>, <&ext_26m>,
+		<&clk_ap_apb_gates 17>;
+};
+
+&i2c0 {
+	clocks = <&clk_i2c0>, <&ext_26m>,
+		<&clk_ap_apb_gates 8>;
+};
+
+&i2c1 {
+	clocks = <&clk_i2c1>, <&ext_26m>,
+		<&clk_ap_apb_gates 9>;
+};
+
+&i2c2 {
+	clocks = <&clk_i2c2>, <&ext_26m>,
+		<&clk_ap_apb_gates 10>;
+};
+
+&i2c4 {
+	clocks = <&clk_i2c4>, <&ext_26m>,
+		<&clk_ap_apb_gates 12>;
+};
+
+&i2c5 {
+	clocks = <&clk_i2c5>, <&ext_26m>,
+		<&clk_ap_apb_gates 13>;
+};
+
+&i2c6 {
+	clocks = <&clk_aon_i2c>, <&ext_26m>,
+		<&clk_aon_apb_gates0 31>;
+};
+
+&spi0 {
+	clocks = <&clk_spi0>,<&ext_26m>,
+		<&clk_ap_apb_gates 5>;
+};
+
+&spi1 {
+	clocks = <&clk_spi1>,<&ext_26m>,
+		<&clk_ap_apb_gates 6>;
+};
+
+&spi2 {
+	clocks = <&clk_ap_hs_spi>,<&ext_26m>,
+		<&clk_ap_apb_gates 7>,
+		<&clk_aon_apb_gates0 21>;
+};
+
+&spi3 {
+	clocks = <&clk_spi3>,<&ext_26m>,
+		<&clk_ap_apb_gates 20>;
+};
+
+&hwslock1 {
+	clocks = <&clk_aon_apb_gates0 22>;
+};
+
+&pin_controller {
+	vio_sd0_sl_0: regctrl0 {
+		pins = <SC9853_VSD_MS 0x0>;
+	};
+	vio_sd0_sl_1: regctrl1 {
+		pins = <SC9853_VSD_MS 0x1>;
+	};
+	/* for sys iis0 */
+	ap_iis0_0:reg3-iis0-0 {
+		pins = <SC9853_IIS0_SYS_SEL 0x0>;
+	};
+	pubcp_iis0_0:reg3-iis0-4 {
+		pins = <SC9853_IIS0_SYS_SEL 0x4>;
+	};
+	tgdsp_iis0_0:reg3-iis0-5 {
+		pins = <SC9853_IIS0_SYS_SEL 0x5>;
+	};
+	vbc_iis1_0:reg3-iis0-d {
+		pins = <SC9853_IIS0_SYS_SEL 0xd>;
+	};
+	vbc_iis2_0:reg3-iis0-e {
+		pins = <SC9853_IIS0_SYS_SEL 0xe>;
+	};
+	vbc_iis3_0:reg3-iis0-f {
+		pins = <SC9853_IIS0_SYS_SEL 0xf>;
+	};
+	/* for sys iis2*/
+	ap_iis0_2:reg3-iis2-0 {
+		pins = <SC9853_IIS2_SYS_SEL 0x0>;
+	};
+	pubcp_iis0_2:reg3-iis2-4 {
+		pins = <SC9853_IIS2_SYS_SEL 0x4>;
+	};
+	tgdsp_iis0_2:reg3-iis2-5 {
+		pins = <SC9853_IIS2_SYS_SEL 0x5>;
+	};
+	vbc_iis1_2:reg3-iis2-d {
+		pins = <SC9853_IIS2_SYS_SEL 0xd>;
+	};
+	vbc_iis2_2:reg3-iis2-e {
+		pins = <SC9853_IIS2_SYS_SEL 0xe>;
+	};
+	vbc_iis3_2:reg3-iis2-f {
+		pins = <SC9853_IIS2_SYS_SEL 0xf>;
+	};
+	/* for sys iis1*/
+	ap_iis0_1:reg3-iis1-0 {
+		pins = <SC9853_IIS1_SYS_SEL 0x0>;
+	};
+	ap_iis1_1:reg3-iis1-1 {
+		pins = <SC9853_IIS1_SYS_SEL 0x1>;
+	};
+	pubcp_iis0_1:reg3-iis1-4 {
+		pins = <SC9853_IIS1_SYS_SEL 0x4>;
+	};
+	tgdsp_iis0_1:reg3-iis1-5 {
+		pins = <SC9853_IIS1_SYS_SEL 0x5>;
+	};
+	tgdsp_iis1_1:reg3-iis1-6 {
+		pins = <SC9853_IIS1_SYS_SEL 0x6>;
+	};
+	vbc_iis1_1:reg3-iis1-d {
+		pins = <SC9853_IIS1_SYS_SEL 0xd>;
+	};
+	vbc_iis2_1:reg3-iis1-e {
+		pins = <SC9853_IIS1_SYS_SEL 0xe>;
+	};
+	vbc_iis3_1:reg3-iis1-f {
+		pins = <SC9853_IIS1_SYS_SEL 0xf>;
+	};
+};
+
+&hwslock1 {
+	sprd,ver_id_reg = <0xe42e3120>;
+};

@@ -1,0 +1,24 @@
+Spreadtrum leds driver bindings
+
+Required properties:
+- compatible: must be one of
+  sprd,sc2731-bltc-rgb"
+  sprd,sc2731-kpled"
+
+- reg: the chipselect index
+- sprd,prechg-led-gpios: only for bltc-rgb.
+  When battery over discharge,
+  signal light will flash in charging.
+
+Example:
+
+bltc-rgb@200  {
+	compatible = "sprd,sc2731-bltc-rgb";
+	reg = <0x200>;
+	sprd,prechg-led-gpios = <&ap_gpio 33 0>;
+};
+
+kpled@2c4 {
+	compatible = "sprd,sc2731-kpled";
+	reg = <0x2c4>;
+};

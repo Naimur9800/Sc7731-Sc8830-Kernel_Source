@@ -1,0 +1,47 @@
+Spreadtrum deepsleep bindings
+
+Required properties:
+- compatible: must be "sprd,deep-sleep".
+- reg: address range of dcam-r3p0 device.
+- sprd,sys-ap-ahb: ap ahb controller.
+- sprd,sys-ap-apb: ap apb controller.
+- sprd,sys-pmu-apb: aon pmu controller.
+- sprd,sys-aon-apb: aon apb controller.
+- sprd,sys-ap-intc0: ap interrupt controller0.
+- sprd,sys-ap-intc1: ap interrupt controller1.
+- sprd,sys-ap-intc2: ap interrupt controller2.
+- sprd,sys-ap-intc3: ap interrupt controller3.
+- sprd,sys-aon-intc: aon interrupt controller.
+- sprd,sys-aon-iram0: aon iram.
+- sprd,deep-ap-clk0: ap clock config.
+- sprd,deep-ap-clkp: ap clock parent.
+
+Example:
+
+		deep-sleep {
+			compatible = "sprd,deep-sleep";
+
+			sprd,sys-ap-ahb = <&ap_ahb_controller>;
+			sprd,sys-ap-apb = <&ap_apb_controller>;
+			sprd,sys-pmu-apb = <&pmu_apb_controller>;
+			sprd,sys-aon-apb = <&aon_apb_controller>;
+
+			sprd,sys-ap-intc0 = <&intc0_controller>;
+			sprd,sys-ap-intc1 = <&intc1_controller>;
+			sprd,sys-ap-intc2 = <&intc2_controller>;
+			sprd,sys-ap-intc3 = <&intc3_controller>;
+			sprd,sys-aon-intc = <&aon_intc_controller>;
+			sprd,sys-aon-iram0 = <&aon_iram0>;
+
+			sprd,deep-ap-clk0 = <&clk_ap_top_axi &clk_ap_ahb
+				&clk_ap_apb &clk_gsp &clk_dispc0
+				&clk_dispc0_dpi &clk_dsi_rxesc &clk_dphy_ref
+				&clk_dphy_cfg &clk_otg_ref &clk_otg_utmi
+				&clk_ce_sefuse &clk_ce_pub &clk_ce_sec
+				&clk_uart0 &clk_uart1 &clk_uart2
+				&clk_uart3 &clk_uart4
+				&clk_i2c0 &clk_i2c1 &clk_i2c2 &clk_i2c3
+				&clk_i2c4 &clk_spi0 &clk_spi2 &clk_iis0
+				&clk_iis1 &clk_iis2 &clk_iis3>;
+			sprd,deep-ap-clkp = <&ext_26m &ext_32k>;
+		};

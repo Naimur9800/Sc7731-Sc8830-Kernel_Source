@@ -1,0 +1,67 @@
+
+config SPRD_CAMERA_MULTI_DCAM
+    bool "Spreadtrum Camera Multi DCAM"
+    depends on SPRD_CAMERA
+    help
+        This is a multi DCAM driver for Spreadtrum SOCs.
+
+config SPRD_CAMERA_SINGLE_DCAM
+    bool "Spreadtrum Camera Single DCAM"
+    depends on SPRD_CAMERA
+    help
+        This is a single DCAM driver for Spreadtrum SOCs.
+
+config SPRD_CAMERA_DCAM_IF_R2P0
+    bool "Spreadtrum Camera DCAM IF R2P0"
+    depends on SPRD_CAMERA
+    help
+        This is a single DCAM IF driver for Spreadtrum SOCs.
+
+config SPRD_CAMERA_DCAM_IF_R3P0
+    bool "Spreadtrum Camera DCAM IF R3P0"
+    depends on SPRD_CAMERA
+    help
+        This is DCAM_IF_R3P0 driver for Spreadtrum SOCs
+        and sharl2, if you want to use this config,
+        please to read spec and driver code,
+        they can help you to use r3p0 driver
+
+config SPRD_CAMERA_DCAM_IF_R3P0V2
+    bool "Spreadtrum Camera DCAM IF R3P0V2"
+    depends on SPRD_CAMERA
+    help
+        This is DCAM_IF_R3P0V2 driver for Spreadtrum SOCs
+        and iSharkl2, if you want to use this config,
+        please to read spec and driver code,
+        they can help you to use r3p0v2 driver
+
+
+config SPRD_CAMERA_DCAM_IF_R4P0
+    bool "Spreadtrum Camera DCAM IF R4P0"
+    depends on SPRD_CAMERA
+    help
+        This is DCAM_IF_R4P0 driver for Spreadtrum SOCs
+        and sharle, if you want to use this config,
+        please to read spec and driver code,
+        they can help you to use r4p0 driver
+
+config SPRD_CAMERA_DCAM_R6P0
+    bool "Spreadtrum Camera DCAM R6P0"
+    depends on SPRD_CAMERA
+    help
+        This is DCAM_R6P0 driver for Spreadtrum SOCs
+        and pike2, if you want to use this config,
+        please to read spec and driver code,
+        they can help you to use r6p0 driver
+
+config SPRD_CAMERA_ISP_R6P10
+    bool "Spreadtrum Camera ISP R6P10"
+    depends on SPRD_CAMERA
+    help
+        This is ISP R6P10 driver for Spreadtrum SOCs.
+
+config SPRD_CAMERA_ISP_R6P10V2
+    bool "Spreadtrum Camera ISP R6P10V2"
+    depends on SPRD_CAMERA
+    help
+        This is ISP R6P10V2 driver for Spreadtrum SOCs.

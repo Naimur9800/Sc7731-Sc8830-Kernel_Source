@@ -1,0 +1,53 @@
+/*****************************************
+Do not modify dts file, please modify according dtsi file
+******************************************/
+#include "../sp9832e-1h10-gofu.dts"
+#include "sprd_base_diff.dtsi"
+
+&sound_vbc_r1p0v3_sprd_codec {
+	status = "okay";
+	sprd-audio-card,widgets =
+		"Headphone", "inter HP PA",
+		"Speaker", "inter Ear PA";
+	sprd-audio-card,routing =
+		"HPMIC", "HP Mic Jack",
+		"MIC", "Mic Jack",
+		"AUXMIC", "Aux Mic Jack",
+		"inter HP PA", "HP PA",
+		"Ext Spk", "Spk PA",
+		"inter Ear PA", "EAR",
+		"DMIC", "DMic Jack",
+		"DMIC1", "DMic1 Jack",
+
+		/* For vbc loopback */
+		"Aud input", "AD Clk",
+		"Aud input1", "AD Clk",
+		"Aud input", "Digital ADCL Switch",
+		"Aud input", "Digital ADCR Switch",
+		"Aud input1", "Digital ADC1L Switch",
+		"Aud input1", "Digital ADC1R Switch";
+	sprd,spk-ext-pa-info = <0 0 3 0>;
+	sprd,spk-ext-pa-gpio = <&ap_gpio 63 0>;
+	sprd,spk-ext-pa-names = "ext_spk_r";
+};
+
+&i2c3 {
+	status = "okay";
+	clock-frequency = <400000>;
+
+	/delete-node/ adaptive-touchscreen@38;
+
+	synaptics_dsx@22 {
+		compatible = "synaptics,dsx-i2c";
+		reg = <0x22>;
+		interrupt-parent = <&ap_gpio>;
+		interrupts = <144 0x2008>;
+		synaptics,irq-gpio = <&ap_gpio 144 0x2008>; /* IRQF_ONESHOT | IRQF_TRIGGER_LOW */
+		synaptics,reset-gpio = <&ap_gpio 145 0>;
+		synaptics,irq-on-state = <0>;
+		synaptics,power-delay-ms = <200>;
+		synaptics,reset-delay-ms = <200>;
+		synaptics,reset-on-state = <0>;
+		synaptics,reset-active-ms = <20>;
+	};
+};

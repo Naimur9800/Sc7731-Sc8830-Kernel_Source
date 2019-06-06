@@ -1,0 +1,24 @@
+
+menu "Modem Control modules"
+
+config SPRD_MODEM_CTRL
+	bool "Sprd Modem Control Driver"
+        default n
+        help
+          Spreadtrum modem control is a module that
+          It can contol the modem start and stop, It
+          be usded for modem boot, modem assert and
+          modem reset.
+
+config SPRD_MODEM_CTRL_AGDSP
+        bool "Sprd Modem Control support AGDSP"
+        default n
+        depends on SPRD_SIPC
+        help
+          Spreadtrum Modem Control AGDSP FEATURE,
+          if It is enable, The modem control mudule
+          will boot agdsp, It only can be opend in
+          those board that the chip has AGDSP.
+
+endmenu
+

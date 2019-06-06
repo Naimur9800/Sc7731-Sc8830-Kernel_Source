@@ -1,0 +1,35 @@
+menuconfig OTP_SPRD
+
+    bool "Spreadtrum OTP Efuse"
+    default y
+    help
+      Spreadtrum OTP Efuse Support.
+
+if OTP_SPRD
+
+config OTP_SPRD_AP_EFUSE
+    tristate "Spreadtrum AP AON Efuse driver "
+    default y
+    help
+      Say Y here to support spreadtrum AP efuse .
+
+config OTP_SPRD_AP_PUBLIC_EFUSE
+    tristate "Spreadtrum AP Public Efuse driver "
+    default n
+    help
+      Say Y here to support Spreadtrum AP Public efuse .
+
+config OTP_SPRD_AP_IEFUSE
+    tristate "Spreadtrum AP AON IEfuse driver "
+    default n
+    help
+      Say Y here to support spreadtrum AP iefuse .
+
+config OTP_SPRD_PMIC_EFUSE
+    tristate "Spreadtrum PMIC eFuse/eMemory driver"
+    depends on SPI_SPRD_ADI
+    default y
+    help
+      Say Y here to support spreadtrum PMIC efuse.
+
+endif

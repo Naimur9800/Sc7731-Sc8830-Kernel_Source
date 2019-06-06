@@ -1,0 +1,7 @@
+
+config SPRD_ADS
+        bool "avoid disturb solution support"
+        default n
+        depends on ARCH_SPRD
+        ---help---
+	  To avoid disturb solution to spreadtrum SoC.

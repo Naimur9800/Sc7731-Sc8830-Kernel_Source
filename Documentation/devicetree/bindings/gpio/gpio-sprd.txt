@@ -1,0 +1,30 @@
+* SPREADTRUM GPIO controller bindings
+
+Required properties:
+- compatible: "sprd,ap-eic".
+  where <chip> is digital(sc9838) or analog(sc2723t),
+  eic is a gpi with the capability to latch a signal or debounce a signal,
+  gpio did not have the capability.
+- reg: Should contain GPIO controller registers location and length
+- interrupts: Should be the port interrupt shared by all the gpios.
+- #gpio-cells: Should be two.  The first cell is the gpio number and
+  the second cell is used to specify optional parameters (currently
+  unused).
+- gpio-controller: Marks the device node as a GPIO controller.
+- sprd,gpiobase: identifies the first GPIO number handled by the chip.
+- sprd,ngpios: the number of GPIOs handld by the controller.
+
+
+Example:
+	ap_eic: gpio-controller@40210000 {
+		compatible = "sprd,ap-eic";
+		reg = <0 0x40210000 0 0x1000>;
+		gpio-controller;
+		#gpio-cells = <2>;
+		sprd,gpiobase = <288>;/*TODO:Need to be changed when pinctrl driver is ready*/
+		sprd,ngpios = <16>;
+		interrupt-controller;
+		#interrupt-cells = <2>;
+		interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>;
+	};
+

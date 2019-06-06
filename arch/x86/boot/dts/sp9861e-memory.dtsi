@@ -1,0 +1,58 @@
+/*
+ * Spreadtrum SP9861e board common memory DTS file
+ *
+ * Copyright (C) 2016, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+/ {
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		audio_reserved: audio-mem@13000000 {
+			reg = <0x0 0x13000000 0x0 0x300000>;
+		};
+
+		smem_reserved: sipc-mem@13300000 {
+			reg = <0x0 0x13300000 0x0 0x600000>;
+		};
+
+		ddr_reserved: ddr-bist@14a00000 {
+			reg = <0x0 0x14a00000 0x0 0x80000>;
+		};
+
+		/* camera multi-layer mode capture */
+		mm_reserved: multimediabuffer@15000000 {
+			reg = <0x0 0x15000000 0x0 0x14000000>;
+		};
+
+		/* used for iq capture, will be removed in normal mode */
+		iq_reserved: iq-mem@28900000 {
+			compatible = "sprd,iq-mem";
+			reg = <0x0 0x28900000 0 0x8000000>;
+		};
+
+		camera_reserved: camera-mem@29000000 {
+			reg = <0x0 0x29000000 0x0 0x2b00000>;
+		};
+
+		cp_reserved: cp-modem@40000000 {
+			reg = <0x0 0x40000000 0x0 0x7800000>;
+		};
+
+		/* if changed ,uboot dts also need change */
+		fb_reserved: fb@5af00000 {
+			reg = <0x0 0x5af00000 0x0 0x1800000>;
+		};
+
+		overlay_reserved: overlaybuffer@5c700000 {
+			reg = <0x0 0x5c700000 0x0 0x3000000>;
+		};
+
+		io_mmu_reserved: iommu-mem@5f700000 {
+			reg = <0x0 0x5f700000 0x0 0x600000>;
+		};
+	};
+};

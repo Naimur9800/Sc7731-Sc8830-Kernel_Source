@@ -1,0 +1,44 @@
+/*
+ * Spreadtrum SP9861e board common VMM memory DTS file
+ *
+ * Copyright (C) 2016, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+/ {
+	reserved-memory {
+		tos_shm_reserved: sh-mem@13900000{
+			reg = <0x0 0x13900000 0x0 0x01000000>;
+		};
+
+		vmm_shm_reserved: vmm-shm@14900000 {
+			reg = <0x0 0x14900000 0x0 0x00100000>;
+		};
+
+		future_se_reserved: future-semem@47800000 {
+			reg = <0x0 0x47800000 0x0 0x00800000>;
+		};
+
+		vmm_reserved: vmm-mem@48000000 {
+			reg = <0x0 0x48000000 0x0 0x00800000>;
+			no-map;
+		};
+
+		tos_reserved: tos-mem@48800000{
+			reg = <0x0 0x48800000 0x0 0x06000000>;
+			no-map;
+		};
+
+		/*mem-reserved adaptive for 0-4G*/
+		mirror_memory_reserved: mirror-mem@1,00000000 {
+			reg = <0x1 0x00000000 0x0 0x00100000>;
+		};
+	};
+
+	sprd-sysdump {
+		memory-region-se = <&tos_reserved>;
+		memory-region-re = <&cp_reserved>, <&smem_reserved>,
+				<&cm4_dump>, <&tos_shm_reserved>,
+				<&vmm_reserved>;
+	};
+};

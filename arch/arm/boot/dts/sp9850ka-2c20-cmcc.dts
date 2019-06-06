@@ -1,0 +1,32 @@
+/*
+ * Spreadtrum SP9850KA 2C20 CMCC board DTS file
+ *
+ * Copyright (C) 2016-2017, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+#include "sp9850ka-2c20-native.dts"
+
+/ {
+	model = "Spreadtrum SP9850KA-2C20-CMCC Board";
+	reserved-memory {
+		/delete-node/ sml-mem@94000000;
+		/delete-node/ tos-mem@94100000;
+		/delete-node/ sh-mem@98000000;
+	};
+};
+
+&i2c4 {
+	status = "okay";
+	sec-nfc@27{
+		compatible = "samsung,sec-nfc";
+		reg = <0x27>;
+		clock-names = "clk_26m","source","enable";
+		clocks = <&clk_aux1>,<&ext_26m>,
+			 <&clk_aon_apb_gates1 3>;
+		sec-nfc,ven-gpio = <&ap_gpio 92 0>;
+		sec-nfc,firm-gpio = <&ap_gpio 138 0>;
+		sec-nfc,irq-gpio = <&ap_gpio 137 0>;
+		sec-nfc,clk_req-gpio = <&ap_gpio 90 0>;
+	};
+};

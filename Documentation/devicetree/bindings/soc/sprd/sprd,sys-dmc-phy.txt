@@ -1,0 +1,23 @@
+Spreadtrum DDR CAPACITY DRV
+
+Required properties:
+- compatible:should be "sprd,sys-dmc-phy".
+- reg: Address range of dmc registers.
+- sprd,sizel_off: Low 32bit address of DDR CAPACITY.
+- sprd,sizeh_off: High 32bit address of DDR CAPACITY.
+
+Example:
+
+	pub {
+		compatible = "simple-bus";
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		dmc_controller: syscon@30000000 {
+			compatible = "sprd,sys-dmc-phy", "syscon";
+			reg = <0x30000000 0x400>;
+			sprd,sizel_off = <0x1b4>;
+			sprd,sizeh_off = <0x1b8>;
+		};
+	};

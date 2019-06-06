@@ -1,0 +1,72 @@
+/ { lcds {
+	lcd_gc9305_spi_qvga: lcd9305@9305 {
+
+		panel-name = "lcd_gc9305_spi_qvga";
+		if-type = <4>;
+		spi_bus_num = <1>;
+		spi_cs = <0>;
+		bpp = <16>;
+		fps = <33>;
+		spi_mode = <3>; /* SPI_CPHA 0x01 SPI_CPOL 0x02 */
+		spi_cd_gpio = <138>;
+		spi_te_gpio = <51>;
+		spi_pol_mode = <0>;
+		spi_endian = <0>;
+		spi_freq = <48000000>;
+		hactive = <240>;
+		vactive = <320>;
+
+		power-on-sequence = <
+					50  1  5
+					50  0  5
+					50  1  20
+					>;
+		power-off-sequence = <
+					50  0  20
+					>;
+
+		init-data = [
+			ff  00  00  01  fe
+			ff  00  00  01  ef
+			ff  00  00  02  35  00
+			ff  00  00  02  36  48
+			ff  00  00  02  3a  05
+			ff  00  00  03  a4  44  44
+			ff  00  00  03  a5  42  42
+			ff  00  00  03  aa  88  88
+			ff  00  00  03  e8  11  0b
+			ff  00  00  03  e3  01  10
+			ff  00  00  02  ff  61
+			ff  00  00  02  ac  00
+			ff  00  00  02  ae  2b
+			ff  00  00  02  af  67
+			ff  00  00  03  a6  2a  2a
+			ff  00  00  03  a7  2b  2b
+			ff  00  00  03  a8  18  18
+			ff  00  00  03  a9  2a  2a
+			ff  00  00  07  f0  02  02  00  00  01  06
+			ff  00  00  07  f1  01  00  00  00  04  0c
+			ff  00  00  07  f2  07  06  2f  03  03  43
+			ff  00  00  07  f3  0f  0c  3c  07  06  4e
+			ff  00  00  07  f4  0b  16  16  19  1a  0f
+			ff  00  00  07  f5  0a  17  14  1b  1c  0f
+			ff  78  00  01  11
+			ff  20  00  01  29
+			];
+		sleep-in = [
+			ff 78 00 01 28
+			ff 78 00 01 10
+			];
+		sleep-out = [
+			ff 78 00 01 11
+			ff 64 00 01 29
+			];
+		enable-te = [
+			ff 00 00 02 35 00
+			];
+		disable-te = [
+			ff 00 00 01 34
+			];
+	};
+};};
+

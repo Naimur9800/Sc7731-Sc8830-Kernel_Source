@@ -1,0 +1,37 @@
+/ { lcds {
+	lcd_dummy_spi: lcdffff@0 {
+
+		panel-name = "lcd_dummy_spi";
+		if-type = <4>;
+		spi_bus_num = <1>;
+		spi_cs = <0>;
+		bpp = <16>;
+		fps = <33>;
+		spi_mode = <3>; /* SPI_CPHA 0x01 SPI_CPOL 0x02 */
+		spi_pol_mode = <0>;
+		spi_te_gpio = <51>;
+		spi_endian = <0>;
+		spi_freq = <48000000>;
+		hactive = <240>;
+		vactive = <320>;
+
+		power-on-sequence = <
+					50  1  5
+					50  0  5
+					50  1  20
+					>;
+		power-off-sequence = <
+					50  0  20
+					>;
+		sleep-in = [
+			ff 0A 00 01 28
+			ff 78 00 01 10
+			];
+
+		sleep-out = [
+			ff 78 00 01 11
+			ff 64 00 01 29
+			];
+	};
+};};
+

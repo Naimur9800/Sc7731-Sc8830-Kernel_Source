@@ -1,0 +1,58 @@
+Spreadtrum regulators
+Required Properties:
+- compatible: Should be one of:
+  - "sprd,sc2723-regulator" for olders SoCs like sc9838,sc9830
+  - "sprd,sc2731-regulator" for newer SoCs like sc9001, sc9850
+  - "sprd,sc2721-regulator" for newer SoCs like sc9833
+
+Optional nodes:
+-regulators:Must contain a sub-node per regulator from the list below.
+
+	    Each sub-node should contain the constraints and initialization information for that
+	    regulator.See regulator.txt for a description of standard properties for these sub-nodes.
+	    Additional custom properties are listed below.
+
+Optional sub-node properties:
+	    sprd,hide-offset - chip hide offset voltage
+	    sprd,default-on - chip auto power-on
+	    sprd,default-microvolt - the voltage ldo/dcdc reset value
+            sprd,step-microvolt - the minimum adjustment voltage
+
+
+Example:
+power-controller@810 {
+		compatible = "sprd,sc2723-regulator";
+                reg = <0x810>,
+                      <0x8c0>,
+                      <0x8f4>,
+                      <0xa00>,
+                      <0xa1c>,
+                      <0x8f4>;
+
+	regulators {
+	        #address-cells = <1>;
+	        #size-cells = <0>;
+
+		vddarm: dcdc@1 {
+                        reg = <1>;
+			regulator-name = "vddarm";
+			regulator-min-microvolt = <600000>;
+			regulator-max-microvolt = <3125000>;
+			sprd,step-microvolt = <3125>;
+			sprd,default-microvolt = <900000>;
+			sprd,hide-offset = <1000>; /* kernel hide_offset =  hide-offset - 1000 */
+			sprd,default-on;
+		};
+
+		vddusb: ldo@25 {
+                        reg = <25>;
+			regulator-name = "vddusb";
+			regulator-min-microvolt = <1200000>;
+			regulator-max-microvolt = <3760000>;
+			sprd,step-microvolt = <10000>;
+			sprd,default-microvolt = <3300000>;
+			sprd,hide-offset = <1000>; /* kernel hide_offset =  hide-offset - 1000 */
+		};
+
+	}
+}

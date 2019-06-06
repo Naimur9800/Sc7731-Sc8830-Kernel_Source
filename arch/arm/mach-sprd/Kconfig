@@ -1,0 +1,67 @@
+config ARCH_SPRD
+	bool "Spreadtrum SoC Familes"
+	select CPU_V7
+	select HAVE_SMP
+	select ARM_GIC
+	select HAVE_SCHED_CLOCK
+	select LOCAL_TIMERS if SMP
+	select VFP
+	select VFPv3
+	select NEON
+	select GENERIC_TIME
+	select USE_OF
+	select CLKSRC_MMIO
+	select CLKSRC_OF
+	select COMMON_CLK
+	select ARCH_HAS_CPUFREQ
+	select ARM_HAS_SG_CHAIN
+	select HAVE_FUTEX_CMPXCHG if MMU && FUTEX
+	select REGMAP
+	select MFD_SYSCON
+	select CLKSRC_SPRD
+	select PINCTRL
+	help
+	  Surpport Spreadtrum's arm based systems containing the shark, sharkl,
+	  tshark, pike series.
+
+menu "Spreadtrum Shark Family"
+
+config SC9830
+	bool "Spreadtrum SC9830(SharkL) Soc Support"
+	depends on ARCH_SPRD
+	help
+	  This enables Spreadtrum SC9830 Soc and compatible support.
+	  You only need to enable this, if you want to support
+	  SC9830 Soc.
+
+config SC9833
+	bool "Spreadtrum SC9833(SharkL) Soc Support"
+	depends on ARCH_SPRD
+	help
+	  This enables Spreadtrum SC9830 Soc and compatible support.
+	  You only need to enable this, if you want to support
+	  SC9833 Soc.
+
+config SOC_PIKE2
+	bool "Spreadtrum PIKE2 Soc Support"
+	depends on ARCH_SPRD
+	help
+	  This enables Spreadtrum PIKE2 Soc and compatible support.
+	  You only need to enable this, if you want to support
+	  PIKE2 Soc.
+
+config SOC_SHARKLE
+	bool "Spreadtrum SharklE Soc Support"
+	depends on ARCH_SPRD
+	help
+	  This enables Spreadtrum SharklE(32bits) Soc and compatible support.
+	  You only need to enable this, if you want to support
+	  SharklE Soc.
+
+config SOC_SHARKL3
+	bool "Spreadtrum Sharkl3 Soc Support"
+	depends on ARCH_SPRD
+	help
+	  This enables Spreadtrum Sharkl3(32bits) Soc and compatible support.
+	  You only need to enable this, if you want to support Sharkl3 Soc.
+endmenu

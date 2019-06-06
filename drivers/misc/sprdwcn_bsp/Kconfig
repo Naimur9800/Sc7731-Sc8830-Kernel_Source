@@ -1,0 +1,8 @@
+#
+# Spreadtrum WCN subsystem configuration
+#
+menu "Spreadtrum WCN subsystem"
+
+source "drivers/misc/sprdwcn_bsp/sc23xx/Kconfig"
+source "drivers/misc/sprdwcn_bsp/sc2342/Kconfig"
+endmenu

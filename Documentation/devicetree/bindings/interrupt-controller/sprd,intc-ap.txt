@@ -1,0 +1,31 @@
+Spreadtrum AP SoC interrupt controllers
+
+Each Spreadtrum AP SoC contains 5 custom interrupt controllers which are used
+to extend the ARM gic. When system is in the low power state, we can select and
+enable the corresponding interrupt source by configuring these custom interrupt
+controllers to wake up the system.
+
+Required properties:
+- compatible: shall be one of follows:
+	-"sprd,sc7731-extn-intc" for soc sc7731
+	-"sprd,sc9836-extn-intc" for soc sc9836
+	-"sprd,sc9838-extn-intc" for soc sc9838
+- reg: Physical base address(es) of interrupt registers length of memory mapped
+  region.
+  index 0 : the base address of sprd intc0
+  index 1 : the base address of sprd intc1
+  index 2 : the base address of sprd intc2
+  index 3 : the base address of sprd intc3
+  index 4 : the base address of sprd aon intc
+- interrupt-controller: Identifies the node as an interrupt controller.
+
+Example:
+	ap_gic_extn: interrupt-controller@71400000 {
+		compatible = "sprd,sc9838-extn-intc";
+		interrupt-controller;
+		reg =   <0 0x71400000 0 0x1000>,
+			<0 0x71500000 0 0x1000>,
+			<0 0x71600000 0 0x1000>,
+			<0 0x71700000 0 0x1000>,
+			<0 0x40200000 0 0x1000>;
+	}

@@ -1,0 +1,21 @@
+#
+# Spreadtrum SC2332 FM drivers
+#
+config FM_SPRD2332
+	tristate "FMRadio driver"
+	depends on MARLIN2_SOC
+	help
+	  This enables the FM driver for marlin2 devices.
+
+	  Say Y here to compile support for SPRD's SC2332 driver
+	  into the kernel or say M to compile it as module.
+
+config RADIO_SC2332
+	tristate "FMRadio driver sdio Support"
+	depends on FM_SPRD2332
+	default n
+	---help---
+	  Say Y to enable built-in FM controller in the
+	  Spreadtrum SC2332 based System-on-Chip devices.
+
+

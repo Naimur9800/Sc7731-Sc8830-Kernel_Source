@@ -1,0 +1,28 @@
+* The sprd sdio power sequence provider
+
+The purpose of the driver provider is to supports sprd wcn chip
+
+Required properties:
+- compatible : contains "mmc-pwrseq-sprd-sdio".
+
+Optional properties:
+- rstn-gpios : contains a list of GPIO specifiers. The reset GPIOs are asserted
+	at initialization and prior we start the power up procedure of the card.
+	They will be de-asserted right after the power has been provided to the
+	card.
+- chip-en-gpios The chip-en GPIOs are asserted when power up chip.
+- clocks : Must contain an entry for the entry in clock-names.
+  See ../clocks/clock-bindings.txt for details.
+- clock-names : Must include the following entry:
+  "ext_clock" (External clock provided to the card).
+
+Example:
+	sdio_pwrseq: sdio-pwrseq {
+		compatible = "mmc-pwrseq-sprd-sdio";
+		rstn-gpios = <&ap_gpio 111 0>;
+		chip-en-gpios = <&ap_gpio 112 0>;
+		clock-names = "clk_32k","source","enable";
+		clocks = <&clk_aux0>,<&ext_32k>,
+			 <&clk_aon_apb_gates1 2>;
+		post-power-on-delay-ms = <20>;
+	};

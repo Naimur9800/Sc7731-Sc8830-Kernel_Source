@@ -1,0 +1,14 @@
+Spreadtrum iq bindings
+
+Required properties:
+- compatible: must be "sprd,iq".
+- sprd,region: the memory of the associated iq data.
+- sprd,mapping-offs: ap/cp mapping.
+
+Example:
+
+sprd-iq {
+	compatible = "sprd,iq";
+	sprd,region = <&iq_reserved>;
+	sprd,mapping-offs = <0x80000000>;
+};

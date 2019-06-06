@@ -1,0 +1,43 @@
+
+config DISP_R1P0
+	depends on ADF
+	bool "Enable disp r1p0 driver for spreadtrum"
+	help
+	  This driver implements disp r1p0 driver to enable spreadtrum
+	  disp r1p0 support.
+
+config DISP_LITE_R2P0
+	depends on ADF
+	bool "Enable disp lite r2p0 driver for spreadtrum"
+	help
+	This driver implements disp lite r2p0 driver to enable spreadtrum
+	disp lite r2p0 support.
+#/*zte add for lcd common function begin */
+config ZTE_LCD_COMMON_FUNCTION
+        bool "Support for ZTE lcd common function"
+        default n
+config ZTE_LCD_BACKLIGHT_LEVEL_CURVE
+        depends on ZTE_LCD_COMMON_FUNCTION
+        bool "Support for ZTE lcd backlight curve"
+config ZTE_LCD_VDDIO_ALWAYS_ON
+        depends on ZTE_LCD_COMMON_FUNCTION
+        bool "Support for ZTE lcd vddio always on"
+config ZTE_LCD_REG_DEBUG
+        depends on ZTE_LCD_COMMON_FUNCTION
+        bool "Support lcd register debug in root version"
+config ZTE_LCD_DCSBL_CABC_GRADIENT
+        depends on ZTE_LCD_COMMON_FUNCTION
+        bool "Support for ZTE dcs bl cabc gradient effect"
+config ZTE_LCD_CABC3_EXTREME_POWER_SAVE
+        depends on ZTE_LCD_COMMON_FUNCTION
+        bool "Support for ZTE extreme power save modem cabc"
+config ZTE_LCD_ESD_ERROR_CTRL
+        bool "Support for lcd esd check error ctrl"
+        default n
+config ZTE_LCD_DELAY_OPEN_BL
+	depends on ZTE_LCD_COMMON_FUNCTION
+	bool "Support for ZTE lcd delay open bl"
+config ZTE_LCD_DISABLE_SSC
+	depends on ZTE_LCD_COMMON_FUNCTION
+	bool "Support for ZTE disable SPRD ssc func in panel dtsi"
+#/*zte add for lcd common function end */

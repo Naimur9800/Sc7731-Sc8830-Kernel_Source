@@ -1,0 +1,47 @@
+/ { lcds {
+	lcd_dummy_rgb: lcdffff@0 {
+
+		work-mode = <1>;
+		if-type = <1>;
+		bpp = <24>;
+		lane-number = <4>;
+
+		fps = <60>;
+		panel-name = "lcd_dummy_fhd";
+
+		power-on-sequence = <
+					50  1  20
+					50  0  20
+					50  1  120
+					>;
+		power-off-sequence = <
+					50  0  20
+					>;
+
+		init-data = [
+			15 78 00 02 11 00
+			15 00 00 02 29 00
+
+			];
+		sleep-in =  [
+			15 00 00 02 28 00
+			15 78 00 02 10 00
+			];
+		sleep-out = [
+			15 78 00 02 11 00
+			15 00 00 02 29 00
+			];
+
+		display-timings {
+			clock-frequency = <1000000>;
+			hactive = <1080>;
+			vactive = <1920>;
+			hback-porch = <160>;
+			hfront-porch = <120>;
+			vback-porch = <200>;
+			vfront-porch = <160>;
+			hsync-len = <25>;
+			vsync-len = <30>;
+		};
+	};
+}; };

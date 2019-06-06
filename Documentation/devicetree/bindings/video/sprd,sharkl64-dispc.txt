@@ -1,0 +1,131 @@
+DT Binding for Spreadtrum Display controller(DISPC) of Sharkl64
+===============================================================
+
+This document specify the Spreadtrum Display controller and its subsystem bindings.
+It read data from the memory and output it to DSI0 controller. which in turn
+transfer data to LCD Panel through MIPI interface.
+In-case of RGB/MCU Panel, DISPC transfer data to LCD Panel through parallel
+interface ports.
+
+Required properties:
+--------------------
+  - compatible: it should be compatible with one of the following:
+			"sprd,sc9838-dispc"; /* for Sharkl64 SoCs */
+			"sprd,fpga-dispc" /* for development purpose */
+  - reg: physical base address and length of the registers set for the device.
+  - interrupts: contain DISPC interrupts.
+  - clocks: a list of phandles as per clock specifiers mentioned in the clock-names.
+  - clock-names: name of clock include dispc, dbi, dpi and dispc_emc clock entries.
+  - clock-src: should contain the frequency of the clock.
+  - memory-region: phandle to a node describing FB node, see document [2]
+  - ports: contains a endpoint node which is connected to dispc node.
+		#address-cells: should be 1
+		#size-cells: should be 0
+  - sprd,default-fps: specifies the default frequency for lcd to display frames.
+
+Optional properties:
+--------------------
+  - rgb-if-timings: specify the timing information of the RGB interface incase of
+		RGB Panel, see document [3] for more information.
+  - mcu-if-timings: specify the timing information of the MCU interface incase of
+		MCU Panel, see document [3] for more information.
+  - sprd,fb_triple_framebuffer: Specify this property to enable triple frame
+		buffer else it use normal buffering.  It is of boolean type.
+  - sprd,input-data-type: Specify the inpput data type. Use 32 for ABGR888 or
+		16 for BGR565, default set to 32.
+  - sprd,light-sleep: Specify this property to enable light sleep,
+		default it is disabled.
+  - sprd,pll_type: specify the pll type from 0 or 2, default set to 2.
+
+[1]: Documentation/devicetree/bindings/media/video-interfaces.txt
+[2]: Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
+[3]: Documentation/devicetree/bindings/video/display-timing.txt
+
+Aliases:
+--------
+An alias should be created for the display, it can be used to assign the
+style of each display. If no alias is defined, a random number is used
+for display.
+
+Example:
+--------
+SOC specific entries --->>
+
+dispc0: dispc@20800000 {
+	compatible = "sprd,sc9838-dispc";
+	reg = <0 0x20800000 0 0x1000>;
+	interrupts = <GIC_SPI 46 IRQ_TYPE_NONE>;
+	clock-names = "dispc_clk_parent",
+		"dispc_dbi_clk_parent",
+		"dispc_dpi_clk_parent",
+		"dispc_emc_clk_parent",
+		"dispc_clk",
+		"dispc_dbi_clk",
+		"dispc_dpi_clk",
+		"dispc_emc_clk";
+	clocks = <&clk_twpll_256m_def>,
+		<&clk_twpll_256m_def>,
+		<&clk_twpll_384m_def>,
+		<&clk_aon_apb>,
+		<&clk_dispc0>,
+		<&clk_dispc0_dbi>,
+		<&clk_dispc0_dpi>,
+		<&clk_aon_apb_gate1>;
+	status = "disabled";
+	port {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		dispc0_1: endpoint@0 {
+			reg = <0>;
+			remote-endpoint = <&dsi0_in>;
+		};
+	};
+};
+
+This is the board specific description of Shark64 platform, it may contain lcd
+connected to DISPC using RGB/MCU(Parallel interface). Or it may communication with
+the display controller using DSI(Serial interface).
+	DISPC <-(RGB or MCU)-> LCD	Or
+	DISPC <--> DSI <--> LCD
+
+Board specific DT entry:
+/ {
+	aliases {
+		...
+		dispc0 = &dispc0;
+	};
+}
+
+&dispc0 {
+	status  = "okay";
+	compatible = "sprd,sc9838-dispc";
+	memory-region = <&fb_reserved>;
+	sprd,dpi-clk = <384000000>;
+	sprd,default-fps = <60>;
+	sprd,fb_triple_framebuffer;
+	sprd,input-data-type = <32>;
+	sprd,light-sleep;
+	sprd,pll_type = <2>;
+};
+
+This node will describe the DT binding when LCD is using RGB or MCU(Parallel
+interface) to communicate with DISPC.
+DISPC <-(RGB or MCU)-> LCD
+
+See document [4] for more information about LCD DT node configuration.
+[4]: Documentation/devicetree/bindings/video/sprd,panel.txt
+
+&i2c0 {
+	...
+	lcd0: panel@0x0 {
+		compatible = "sprd,lcd-lvds-panel";
+		reg = <0x0>;
+		vlcdio-supply = <&vdd28>;
+		vlcdcore-supply = <&vdd18>;
+		port {
+			panel_in: endpoint {
+			remote-endpoint = <&dispc0_1>;
+			};
+		};
+	};
+};

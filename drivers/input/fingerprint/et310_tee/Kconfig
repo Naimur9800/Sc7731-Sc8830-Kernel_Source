@@ -1,0 +1,8 @@
+if INPUT_FINGERPRINT
+config ET310_FINGERPRINT_TEE
+        tristate "Et310 int driver"
+        help
+          Say Y here to use et310 fingerprint int driver.
+
+          If unsure, say N
+endif

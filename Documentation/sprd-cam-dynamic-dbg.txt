@@ -1,0 +1,155 @@
+Sprd camera dynamic debug using sysfs
+
+1. Introduction
+
+Dynamic debug on isp/dcam is convenient to control the isp/dcam's debug.
+Currently we only support the mechanism in SharkLE.
+
+Using file /sys/sprd_image/dcam_dbg to control dcam debug, it is a premise
+of other dcam related control.
+
+Using file /sys/sprd_image/isp_dbg to control isp debug, it is a premise
+of other isp related control.
+
+When /sys/sprd_image/isp_dbg is on, we can dump fmcu cmd queue into
+kernel log, using file sys/sprd_image/isp_fmcu_dbg.
+
+When /sys/sprd_image/isp_dbg is on, we can dump isp hw/page regs into
+kernel log, using file sys/sprd_image/isp_dump_cfg. But only can dump
+dump 3 sections of isp-regs, and default 0x200(512) words for each
+section. Also the default size of each can be changed dynamicly.
+
+Using file /sys/sprd_image/isp_sblk/... to control the isp sub_block's
+work/bypass, not involving path related blocks, like fetch, store,
+.etc. The control Function to bypass or work some sub_blocks of isp before
+starting isp pipeline, and can not reflect the actual real-time situation
+of the hardware regs of isp, lookat is better to read real-time state.
+We can control each sub-block bypass/work conveniently to see the effect
+of each block.
+
+2. User API
+
+  void isp_dbg_reg_trace(struct isp_pipe_dev *dev);
+   - To dump isp hw/page regs. It is useful when called this function in
+     intterrupt service routine, to dump the regs before isp reset.
+
+  void isp_dbg_bypass_sblk(struct isp_pipe_dev *dev);
+   - To control the "bypass" or "work". It should be called before
+     starting isp pipeline.
+
+  void isp_dbg_dump_fmcu_cmd_q(struct isp_pipe_dev *dev);
+   - To dump isp fmcu cmd queue. It can be called after fmcu's parameter
+     configuration ready and before FMCU_START.
+
+3. Usage
+
+  echo on/off > sys/sprd_image/isp_dbg
+   - To enable isp debug function. It is a premise of other isp related
+     debug functions.
+
+  echo <lim>, <s1> <e1> <s2> <e2> <s3> <e3> > sys/sprd_image/isp_dump_cfg
+   - To dump 3 sections of isp-regs.
+     @lim: unsigned hexadecimal integer,
+  	The limit(max word) size of data to be dumped into kernel log.
+     @s*: unsigned hexadecimal integer,
+	Start addr of section* to do dump regs.
+     @e*: unsigned hexadecimal integer,
+         End addr of section* to do dump regs.
+     Note: If you only need to dump one or two section(s),
+     make sure other ranges be 0.
+
+     e.g.
+      Only dump 2 sections, max dump size: 0x100 words:
+       	echo 0x100, 0x0 0x40 0xc100 0xc140 0 0 > isp_dump_cfg
+
+  echo <cmd> > sys/sprd_image/isp_fmcu_dbg
+   - To dump isp fmcu cmd queue.
+     @cmd: enable or disable to dump fmcu cmd queue.
+     	Only support on and off
+
+     e.g.
+      enable to dump fmcu cmd queue:
+      	echo on > sys/sprd_image/isp_fmcu_dbg
+
+      disable to dump fmcu cmd queue:
+        echo off > sys/sprd_image/isp_fmcu_dbg
+
+  echo <cmd> sys/sprd_image/isp_sblk/<sblk_file>
+   - To control the isp sub_block's work/bypass.
+     @cmd: bypass or work the specified sub-block.
+	Only support on and off.
+
+  echo <cmd> > sys/sprd_image/isp_sblk/all
+   - To control all isp sub_block's work/bypass.
+     @cmd: bypass or work all the sub-blocks.
+	Only support on and off.
+
+  echo on/off > sys/sprd_image/dcam_dbg
+   - To enable dcam debug function. It is a premise of other dcam related
+     debug functions.
+
+4. Important structs
+
+/**
+ * struct isp_sub_blk_base - a description of each sub-block
+ * @name: the sub-block's name
+ * @base_addr: the isp sub-block's hw reg base addr.
+ */
+struct isp_sub_blk_base {
+	const char *name;
+	unsigned long base_addr;
+};
+
+/**
+ * isp_sblk_base[] - a table to save isp sub-block's description,
+ * not including path related blocks, like fetch, store, dispatch, .etc.
+ * New adding sub_block should before the "all" item.
+ */
+static struct isp_sub_blk_base isp_sblk_base[] __aligned(8) = {
+	/* RAW RGB */
+	{"raw_pgg",	ISP_PGG_PARAM},
+	...
+
+	/* FULL RGB */
+	...
+
+	/* YUV */
+	...
+
+	{"all",	0},
+};
+
+/**
+ * struct isp_dbg_info - this struct describes control for isp related
+ *			 debug function,
+ * @dbg_on:
+ * @fmcu_dbg_on:
+ * @dump2log_max_word_size: this value used to record the max word size
+ *	to dump the isp regs, and the remainings will
+ *	be collected by another thread, now in todo list.
+ * @dump_range[6]: start and end addr for each section, total 3 sections
+ * @sblk_maps[3]: used to map sub-blocks of isp, each bit for one isp
+ *	sub-block.
+ * @sblk_cnt: record the num of isp sub-block count, listed in the table
+ *	isp_sblk_base[], will be used by isp_drv.c
+ * @sblk_base: the base address of each isp sub-block
+ */
+struct isp_dbg_info {
+	bool dbg_on;
+	bool fmcu_dbg_on;
+	unsigned int dump2log_max_word_size;
+	unsigned int dump_range[6];
+	unsigned int sblk_maps[3];
+	unsigned int sblk_cnt;
+	struct isp_sub_blk_base *sblk_base;
+};
+
+/**
+ * struct camera_dev_dbg_info - a struct for camera debug function,
+ * @dcam_dbg: save struct dcam_dbg_info
+ * @isp_dbg: save struct isp_dbg_info
+ */
+struct camera_dev_dbg_info {
+	struct dcam_dbg_info dcam_dbg;
+	struct isp_dbg_info isp_dbg;
+};

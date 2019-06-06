@@ -1,0 +1,16 @@
+1. lsm6dsl dts config
++       lsm6dsl@6b {
++               compatible = "st,lsm6dsl";
++               reg = <0x6b>;
++               /*
++                  interrupt-parent = <&ap_gpio>;
++                  interrupts = <26 IRQ_TYPE_EDGE_RISING>;
++                */
++       };
+
+2. lsm6dsl defconfig
++# CONFIG_SENSORS_BMA2X2 is not set
++CONFIG_INPUT_LSM6DSL=y
++CONFIG_INPUT_LSM6DSL_I2C=y
++CONFIG_INPUT_LSM6DSL_SPI=y
+

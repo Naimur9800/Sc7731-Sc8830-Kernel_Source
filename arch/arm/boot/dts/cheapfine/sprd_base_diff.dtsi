@@ -1,0 +1,17 @@
+/*
+ * this file is ued to change sprd dtsi which can't be changed by overlay
+ * such as /delete-node/ /delete-property/ and alises
+ */
+#include "zte_lcd_lianchuang_otm8019a_ctc_4p95_480p.dtsi"
+#include "zte_lcd_lead_otm8019a_ctc_4p95_480p.dtsi"
+#include "zte_lcd_easyquick_st7701_hsd_4p95_480p.dtsi"
+
+&panel_if {
+	panel-drivers = <
+		&lcd_lianchuang_otm8019a_ctc_4p95_480p
+		&lcd_lead_otm8019a_ctc_4p95_480p
+		&lcd_easyquick_st7701_hsd_4p95_480p
+	>;
+};
+
+

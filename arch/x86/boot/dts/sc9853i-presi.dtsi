@@ -1,0 +1,283 @@
+/*
+ * Spreadtrum isharkl2 pre-silicon SoC DTS file
+ *
+ * Copyright (C) 2015, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#include "iwhale2.dtsi"
+#include "sc9853-modem.dtsi"
+#include "sc9853-clocks-fpga.dtsi"
+
+/{
+	soc {
+		hdlcd:hdlcd@d3200000 {
+			compatible = "sprd,x86-hdlcd-isharkl2";
+			reg = <0x0 0xd3200000 0x0 0x1000>; /* use dispc1 of isharkl2 */
+			interrupts = <DISPC0_IRQ 2>; /* use dispc0 of isharkl2 */
+			clocks = <&ext_26m>;
+			clock-names = "pxlclk";
+			memory-region = <&fb_reserved>;
+			sprd,syscon-lpc-ahb = <&lpc_ahb_controller>;
+			sprd,syscon-dispc-ahb = <&dispc_ahb_controller>;
+			sprd,syscon-aon-pwu-apb = <&aon_pwu_apb_controller>;
+			sprd,syscon-aon-apb = <&aon_apb_controller>;
+			sprd,syscon-ap-apb = <&ap_apb_controller>;
+			sprd,syscon-ap-cam-clk = <&ap_cam_clk_controller>;
+		};
+
+		soc-pm {
+			sprd,sys-aon-pwu-apb = <&aon_pwu_apb_controller>; /* 0xE42B0000 */
+		};
+
+		gpu@d0000000 {
+			compatible = "sprd,mali-midgard";
+			reg = <0x0 0xd0000000 0x0 0x4000>;
+			sprd,syscon-aon-apb = <&aon_apb_controller>;
+			sprd,syscon-ap-apb = <&ap_apb_controller>;
+			interrupts = <GPU_IRQ 2>,
+				<GPU_IRQ 2>,
+				<GPU_IRQ 2>;
+			interrupt-names="JOB",
+				"MMU",
+				"GPU";
+		};
+
+		ap-ahb {
+			usb2: usb2@e2500000 {
+				compatible  = "sprd,usb-v2.0";
+				reg = <0 0xe2500000 0 0x1000>;
+				interrupts = <USB2_IRQ 2>;
+				/* TODO:
+				 * vbus-gpios = <&pmic_eic 0 0>;
+				 * usb-supply = <&vddusb>;
+				 * sprd,tune-value = <0x0005af33>;
+				 */
+				sprd,syscon-ap-ahb = <&ap_ahb_controller>;
+				sprd,syscon-aon-apb = <&aon_apb_controller>;
+				/* TODO:
+				 * phys = <&usbphy>;
+				 */
+			};
+
+			sdio3: sdio@c0c00000 {
+				compatible  = "sprd,sdhc-r8";
+				reg = <0 0xc0c00000 0 0x100000>;
+				interrupts = <SDIO3_IRQ 2>;
+
+				/*
+				* TODO: The clock phandle will be changed after
+				* clock module is ok
+				*/
+				clock-names = "sdio","source","source2","enable","ckg_eb","noc_source";
+				clocks = <&clk_emmc_2x>,<&clk_twpll_384m>,<&ext_26m>,
+				       <&clk_ap_ahb_gates 10>,<&clk_top_cgm_reg1 9>,<&clk_top_cgm_reg1 29>;
+				/*
+				clock-names = "sdio","source","enable","ckg_eb";
+				clocks = <&clk_emmc_2x>, <&clk_lpll0_409m6>, <&clk_ap_ahb_gates 10>,
+					<&clk_top_cgm_reg1 9>;
+				*/
+				status = "disabled";
+			};
+
+			sdio0: sdio@c0900000 {
+				compatible  = "sprd,sdhc-r8";
+				reg = <0 0xc0900000 0 0x100000>;
+				interrupts = <SDIO0_IRQ 2>;
+
+				/*
+				* TODO: The clock phandle will be changed after
+				* clock module is ok
+
+				clock-names = "sdio", "source","enable","ckg_eb";
+				clocks = <&clk_sdio0_2x>, <&clk_lpll0_409m6>, <&clk_ap_ahb_gates 7>,
+					<&clk_top_cgm_reg1 2>;
+				*/
+				status = "disabled";
+			};
+
+			sdio1: sdio@c0a00000 {
+				compatible  = "sprd,sdhc-r8";
+				reg = <0 0xc0a00000 0 0x100000>;
+				interrupts = <SDIO1_IRQ 2>;
+
+				/*
+				* TODO: The clock phandle will be changed after
+				* clock module is ok
+
+				clock-names = "sdio", "source","enable","ckg_eb";
+				clocks = <&clk_sdio1_2x>, <&clk_lpll0_409m6>, <&clk_ap_ahb_gates 8>,
+					<&clk_top_cgm_reg1 4>;
+				*/
+				status = "disabled";
+			};
+
+			sdio2: sdio@c0b00000 {
+				compatible  = "sprd,sdhc-r8";
+				reg = <0 0xc0b00000 0 0x100000>;
+				interrupts = <SDIO2_IRQ 2>;
+
+				/*
+				* TODO: The clock phandle will be changed after
+				* clock module is ok
+
+				clock-names = "sdio", "source","enable","ckg_eb";
+				clocks = <&clk_sdio2_2x>, <&clk_lpll0_409m6>, <&clk_ap_ahb_gates 9>,
+					<&clk_top_cgm_reg1 6>;
+				*/
+				status = "disabled";
+			};
+
+			dispc0: dispc@d3200000 {
+				compatible = "sprd,display-controller";
+				reg = <0 0xd3200000 0 0x1000>;
+				dev-id = <0>;
+				sprd,dpi_clk_div = <1>;
+				interrupts = <DISPC0_IRQ 0>;
+				clock-src = <384000000 256000000 153600000>;
+				status = "disabled";
+
+				sprd,ip = "dpu-r1p0";
+				sprd,soc = "isharkl2";
+
+				/* output port */
+				port {
+					dispc0_out: endpoint@0 {
+						remote-endpoint = <&dsi0_in>;
+					};
+				};
+			};
+
+			dsi0: dsi@d3900000 {
+				compatible = "sprd,dsi-controller";
+				#address-cells = <1>;
+				#size-cells = <0>;
+				dev-id = <0>;
+				reg = <0 0xd3900000 0 0x1000>;
+
+				interrupts = <DSI0_IRQ 0>,
+					   <DSI0_PLL_IRQ 0>;
+				status = "disabled";
+
+				sprd,ip = "synps,dwc-mipi-dsi-host";
+				sprd,soc = "isharkl2";
+
+				/* output port */
+				port@0 {
+					reg = <0>;
+					dsi0_out: endpoint {
+						remote-endpoint = <&dphy0_in>;
+					};
+				};
+
+				/* input port */
+				port@1 {
+					reg = <1>;
+					dsi0_in: endpoint {
+						remote-endpoint = <&dispc0_out>;
+					};
+				};
+			};
+
+			dphy0: dphy@0 {
+				compatible = "sprd,mipi-dsi-phy";
+				#address-cells = <1>;
+				#size-cells = <0>;
+				reg = <0 0xd3900000 0 0x1000>,
+				 <0 0xe41b0000 0 0x1000>,
+				 <0 0xe41f8000 0 0x1000>;
+				status = "disabled";
+
+				sprd,ip = "intel,ip733mdsitop";
+				sprd,soc = "isharkl2";
+
+				/* output port */
+				port@0 {
+					reg = <0>;
+					dphy0_out: endpoint {
+						remote-endpoint = <&panel_in>;
+					};
+				};
+
+				/* input port*/
+				port@1 {
+					reg = <1>;
+					dphy0_in: endpoint {
+						remote-endpoint = <&dsi0_out>;
+					};
+				};
+			};
+		};
+
+		aon {
+			aon_dma: dma-controller@e4600000 {
+				compatible = "sprd,aon-dma-v3.0";
+				reg = <0 0xe4600000 0 0x10000>;
+				interrupts = <DMA_AON_IRQ 2>;
+				#dma-cells = <1>;
+				#dma-channels = <32>;
+				sprd,full-type-offset = <0>;
+				sprd,syscon-dma-glb = <&aon_apb_controller>;
+				clock-names = "enable";
+				clocks = <&clk_aon_apb_gate2 4>;
+			};
+
+			bm-djtag@e4340000 {
+				compatible  = "sprd,bm-djtag-isharkl2";
+				reg = <0 0xe4340000 0 0x10000>;
+				interrupts = <DJTAG_IRQ 2>;
+				sprd,syscon-aon-glb = <&aon_apb_controller>;
+				sprd,syscon-ap-glb = <&ap_ahb_controller>;
+				hwlocks = <&hwslock1 10>;
+				hwlock-names = "djtag";
+			};
+		};
+
+		pub {
+			bm_perf: bm-perf@c0020000{
+				compatible = "sprd,bm-perf-isharkl2";
+				reg =	<0 0xc0020000 0 0x60000>,
+					<0 0 0 0>,
+					<0 0xe44D0000 0 0x10000>,
+					<0 0xc0010000 0 0x4>,
+					<0 0 0 0>;
+				reg-names = "pub0","pub1","timer",
+						"pub0_glb","pub1_glb";
+				interrupts = <PUB0_AXI_BM_IRQ 2>;
+				sprd,syscon-aon-glb =  <&aon_apb_controller>;
+			};
+		};
+
+		mm {
+			vsp: video-codec@D1200000{
+				compatible = "sprd,isharkl2-vsp";
+				reg = <0 0xd1200000 0 0xc000>;
+				interrupts = <VSP_IRQ 2>;
+				sprd,syscon-pmu-apb = <&aon_pwu_apb_controller>;
+				sprd,syscon-aon-apb = <&aon_apb_controller>;
+				sprd,syscon-mm-ahb = <&vsp_sys_ahb_controller>;
+				/*
+				 * clock-names = "clk_mm_eb",
+				 *		"clk_axi_gate_vsp",
+				 *		"clk_vsp_ckg",
+				 *		"clk_ahb_gate_vsp_eb",
+				 *		"clk_ahb_vsp",
+				 *		"ahb_parent_clk",
+				 *		"ahb_parent_df_clk",
+				 *		"clk_vsp";
+				 * clocks = <&clk_aon_apb_gates1 28>,
+				 *		<&clk_vsp_axi_gates 0>,
+				 *		<&clk_ahb_vsp_gates 1>,
+				 *		<&clk_ahb_vsp_gates 0>,
+				 *		<&clk_ahb_vsp>,
+				 *		<&clk_twpll_153m6>,
+				 *		<&clk_twpll_96m>,
+				 *		<&clk_vsp>;
+				 * iommus = <&iommu_vsp>;
+				 */
+				status = "disabled";
+			};
+		};
+	};
+};

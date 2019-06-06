@@ -1,0 +1,50 @@
+/*
+ * Spreadtrum isharkl2 VMM FPGA board DTS file
+ *
+ * Copyright (C) 2015, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#define CONFIG_MOBILEVISOR
+#include "sp9853i-fpga.dts"
+
+/* VMM add-on */
+
+/ {
+	chosen {
+		bootargs = "earlycon maxcpus=1 no_timer_check tsc=reliable idle=poll console=ttyS0,115200n8 androidboot.hardware=sp9853i pit_freq=114729000 mobilevisor mce=off";
+	};
+
+	reserved-memory {
+		tos_shm_reserved: sh-mem@13900000 {
+			reg = <0x0 0x13900000 0x0 0x1000000>;
+		};
+
+		vmm_shm_reserved: vmm-shm@14900000 {
+			reg = <0x0 0x14900000 0x0 0x100000>;
+		};
+	};
+
+	#include "irq-hirq.dtsi"
+	mobilevisor {
+		compatible = "intel,mobilevisor";
+		interrupt-parent = <&hirq>;
+	};
+};
+
+&adf {
+	status = "disabled";
+};
+
+&dispc0 {
+	status = "disabled";
+};
+
+&hdlcd {
+	status = "disabled";
+};
+
+&panel_if {
+	status = "disabled";
+};

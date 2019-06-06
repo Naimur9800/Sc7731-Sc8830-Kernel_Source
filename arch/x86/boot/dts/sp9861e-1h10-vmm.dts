@@ -1,0 +1,29 @@
+/*
+ * Spreadtrum sp9861e-vmm board DTS file
+ *
+ * Copyright (C) 2015, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#define CONFIG_MOBILEVISOR
+#include "sp9861e-1h10.dts"
+#include "sp9861e-memory-vmm.dtsi"
+
+/* VMM add-on */
+
+/ {
+	model = "Spreadtrum sp9861e-vmm SoC (x86 based)";
+
+	compatible = "sprd,sp9861e_1h10-vmm";
+
+	chosen {
+		bootargs = "earlycon maxcpus=8 irq_affinity=0xf mobilevisor console=ttyS1,115200n8 androidboot.hardware=sp9861e_1h10 loglevel=1 code_bytes=128";
+	};
+
+	#include "irq-hirq.dtsi"
+	mobilevisor {
+		compatible = "intel,mobilevisor";
+		interrupt-parent = <&hirq>;
+	};
+};

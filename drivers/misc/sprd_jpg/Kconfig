@@ -1,0 +1,8 @@
+config SPRD_JPG
+	tristate "SPRD jpg driver"
+
+config SPRD_JPG1
+	tristate "SPRD jpg1 driver"
+	---help---
+	 if has JPG1 device, this can be set to Y;
+	 if chip doesn't have this device, it must be N.

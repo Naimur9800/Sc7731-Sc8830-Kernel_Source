@@ -1,0 +1,26 @@
+* Spreadtrum ISP
+
+Required properties:
+- compatible: Should be "sprd,isp-r1p0".
+- reg: physical base address of the controller and length of memory mapped region.
+- interrupts: isp interrupt specifier.
+- clocks: The freq of source clk connected to isp.
+- clock-names: List of clock input name strings sorted in the same
+  order as the clocks property.  Consumers drivers will use clock-names to
+  match clock input names with clocks specifiers.
+- sprd,sys-mm-ahb: mm-ahb bus node, used to get isp status
+
+Optional properties:
+-
+
+Examples:
+         isp: isp@60a00000 {
+             compatible  = "sprd,isp-r1p0";
+             reg = <0x60a00000 0x100000>;
+             interrupts = <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>;
+             clocks = <&clk_aon_apb_gates0 25>,<&clk_isp>,<&clk_twpll_307m2>,
+                 <&clk_mm_axi_gate 4>, <&clk_mm_ahb_gate 2>;
+             clock-names = "clk_mm_i","clk_isp","clk_isp_parent",
+                 "isp_axi_eb","isp_eb";
+             sprd,sys-mm-ahb = <&mm_ahb_controller>;
+         };

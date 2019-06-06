@@ -1,0 +1,22 @@
+Spreadtrum divider clock driver.
+
+Spreadtrum divider clock only supports simple indexed divider.
+
+Required properties:
+
+- compatible : should be "sprd,divider-clock"
+
+- sprd,div-msk : The divider clock's register has some bits used for
+		 dividering it's parent clock. The property is the mask
+		 of these bits.
+
+Example:
+
+	clk_ca7_big_axi: clk_ca7_big_axi {
+		compatible = "sprd,divider-clock";
+		#clock-cells = <0>;
+		reg = <0 0x20e00038 0 0x4>;
+		sprd,div-msk = <0x700>;
+		clocks = <&clk_big_mcu>;
+		clock-output-names = "clk_ca7_big_axi";
+	};

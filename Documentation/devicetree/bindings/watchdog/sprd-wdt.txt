@@ -1,0 +1,21 @@
+* Spreadtrum's Watchdog Timer Controller
+
+Required Properties:
+
+- compatible : should be one among the following.
+	(a) "sprd,shark-wdt" for SC9838 and previous SoCs
+	(b) "sprd,whale-wdt" for SC9001 and later Socs
+- reg        :  base physical address of the controller and length of memory mapped region.
+- interrupts : interrupt number to the cpu.
+- sprd,wdt-enable  : reference to syscon node.
+- sprd,wdt-phandle : reference to pmic node.
+
+Example:
+
+        sprd_wdt: watchdog@40310000 {
+		compatible = "sprd,whale-wdt";
+		reg = <0 0x40310000 0 0x1000>;
+		interrupts = <GIC_SPI 124 IRQ_TYPE_LEVEL_HIGH>;
+		sprd,wdt-enable  = <&aon_apb_controller>;
+		sprd,wdt-phandle = <&pmic_wdt>;
+	};

@@ -1,0 +1,69 @@
+Spreadtrum Generic Panel Binding file
+-------------------------------------
+In Spreadtrum Board Configurations, Generic LCD Panel framework
+supports multiple LCD panels integration, dynamically at runtime.
+Each LCD panel have its specific DTSI file.
+
+The panel data, that is common to all LCD panels,
+should be specified under LCD panel node exist in Board file(DTS).
+
+Panel driver read panel's data from their respective DT nodes
+defined in their DTSI files and communicate(send/receive data)
+with Panel. Panel node, corresponding to which communication succeed,
+is set and attach with SOC.
+
+-------------------
+Required Properties
+-------------------
+
+-compatible	:
+		"sprd,lcd-mipi-panel" - for mipi panel driver
+		"sprd,lcd-lvds-panel" - for lvds panel driver
+		"sprd,lcd-rgb-panel" - for rgb panel driver
+		"sprd,lcd-mcu-panel" - for mcu panel driver
+
+-vlcdio-supply	: LCD I/O power supply regulators
+-vlcdcore-supply: LCD core power supply regulators
+-sprd,lcd-panels: Phandle list of LCD panels nodes
+		(contains panel configuration data).
+
+---------------
+Required Nodes
+---------------
+
+-port :
+-remote-endpoint : remote end point of panel node, through
+		which panel communicates(send/receive) with DISPC or DSI.
+
+Example:
+--------
+lcd0: panel@0 {
+	compatible	= "sprd,lcd-mipi-panel";
+
+	vlcdio-supply	= <&vdd28>;
+	vlcdcore-supply	= <&vdd18>;
+	sprd,lcd-panels	= <&lcd_ssd2075_mipi>,<&lcd_hx8394a_mipi>;
+
+	port {
+		panel_in: endpoint {
+			remote-endpoint = <&dsi0_out>;
+		};
+	};
+};
+
+DSI node
+---------
+&dsi0{
+	...
+	ports {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		port@1 {
+			reg = <1>;
+			dsi0_out: endpoint {
+				remote-endpoint = <&panel_in>;
+			};
+		};
+	};
+	...
+};

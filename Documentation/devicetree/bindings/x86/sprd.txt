@@ -1,0 +1,13 @@
+Spreadtrum i.XXX Platforms Device Tree Bindings
+
+iwhale2 vdk board:
+Required root node properties:
+  - compatible = "sprd,iwhale2-vdk"
+
+iwhale2 fpga board:
+Required root node properties:
+  - compatible = "sprd,iwhale2-fpga"
+
+iwhale2 zebu board:
+Required root node properties:
+  - compatible = "sprd,iwhale2-zebu"

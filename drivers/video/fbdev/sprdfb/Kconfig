@@ -1,0 +1,36 @@
+if FB
+config FB_SPRD
+	boolean "Spreadtrum frame buffer support "
+	depends on FB
+	select FB_CFB_FILLRECT
+	select FB_CFB_COPYAREA
+	select FB_CFB_IMAGEBLIT
+	help
+		Frame buffer driver for Spreadtrum boards.
+
+config SPRD_FB_SIZE
+	int "MB size for frame buffer, should larger or equal lcd_w*lcd_h*4*2"
+	range 1 16
+	default 8
+	depends on FB_SPRD
+
+config FB_LCD_OVERLAY_SUPPORT
+	boolean "support lcd overlay"
+	default n
+
+config FB_VSYNC_SUPPORT
+	boolean "support wait for vsync io"
+	default y
+
+config FB_ESD_SUPPORT
+       boolean "support esd check"
+       default n
+
+config FB_DYNAMIC_CLK_SUPPORT
+	boolean "support close clk dynamically"
+	default n
+
+config FB_DYNAMIC_FREQ_SCALING
+	boolean "support change mipi clk/fps/dpi clk dynamically"
+	default y
+endif

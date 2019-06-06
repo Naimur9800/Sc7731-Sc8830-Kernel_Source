@@ -1,0 +1,129 @@
+Binding for SPRD BATTERY
+
+Required properties:
+compatible                     should be "sprd,sprd-battery"
+charger-det-gpios              charger plugin eic gpio
+battery-det-gpios              vbat detect eic gpio
+io-channels                    adc channel id
+io-channel-names               adc channel name
+chg-end-vol                    charge end voltage (mv)
+chg-end-vol-check              voltage to check if charge full (mv)
+chg-bat-safety-vol             safety voltage for battery when charging (mv)
+adp-cdp-cur                    charge current for cdp (ma)
+adp-dcp-cur                    charge current for dcp (ma)
+adp-sdp-cur                    charge current for sdp (ma)
+ovp-stop                       over voltage protect : stop charge voltage (mv)
+ovp-restart                    over voltage protect : restart charge voltage (mv)
+chg-timeout                    charge timeout (s)
+chg-rechg-timeout              recharge timeout (s)
+chg-end-cur                    charge terminal current (ma)
+chg-polling-time               charge status check period (s)
+cap-one-per-time               the min time one percent capcity changed (s)
+chg-full-condition             charge full decided by 0:vol and cur;
+                               1:status and cur;2:ext ic
+fgu-mode                       fgu work in 1:voltage mode; 0:mixed mode
+only-vol-mode                  get battery cap mode 0: fgu and voltage mixed mode 1:only voltage mode
+alm-soc                        alarm level
+alm-vol                        alarm voltage (mv)
+soft-vbat-uvlo                 vbat voltage is lower then soft-vbat-uvlo,shut down (mv)
+rint                           battery internal resistor (mohn)
+cnom                           battery capacity
+rsense-real                    real sensing resistor (mohn)
+rsense-spec                    sensing resistor in spec (mohn)
+relax-current                  when bat current lower then this ,we can get a ocv value (ma)
+fgu-cal-ajust                  fgu calibration offset
+ocv-tab-vol                    ocv table (mv)
+ocv-tab-cap                    battery level table corresponding to the ocv table
+charge-vol-tab                 only val mode charge ocv table(mv)
+charge-vol-tab-cap	           battery level table corresponding to the charge ocv table
+discharge-vol-tab	           only val mode discharge ocv table(mv)
+discharge-vol-tab-cap	       battery level table corresponding to the discharge ocv table
+
+
+Optional properties:
+
+temp-support                   1:support get battery temperature; 0:not support
+temp-comp-res                  compensation resistor for read temperature
+temp-tab-val                   the voltage of ntc resistor table (mv)
+temp-tab-temp                  temperature table corresponding to temp-tab-val
+                               (temperature + 1000,750 = 1000 + (-250))
+
+jeita-temp-tab                 temperature table to change charge cur and cccv
+jeita-temp-recovery-tab        temperature recovery table to recovery charge cur and cccv
+jeita-cur-tab                  charge current table (ma)
+jeita-cccv-tab                 charge cccv piont table (mv)
+
+cnom-temp-tab                  cnom - temperature table
+rint-temp-tab                  rint - temperature table
+Examples:
+
+battery {
+	compatible = "sprd,sprd-battery";
+	charger-det-gpios = <&pmic_eic 0 0>;
+	battery-det-gpios = <&pmic_eic 9 0>;
+	io-channels = <&pmic_adc 1>,<&pmic_adc 10>,
+			<&pmic_adc 12>,<&pmic_adc 16>;
+	io-channel-names = "adc_temp","adc_vbat",
+			"adc_vchg","adc_isense";
+	chg-end-vol = <4200>;
+	chg-end-vol-check = <4190>;
+	chg-bat-safety-vol = <4280>;
+	rechg-vol = <4131>;
+	adp-cdp-cur = <700>;
+	adp-dcp-cur = <700>;
+	adp-sdp-cur = <450>;
+	ovp-stop = <6500>;
+	ovp-restart = <5800>;
+	chg-timeout = <21600>;
+	chg-rechg-timeout = <5400>;
+	chg-end-cur = <80>;
+	chg-polling-time = <30>;
+	chg-polling-time-fast = <1>;
+	cap-one-per-time = <30>;
+	chg-full-condition = <0>;
+	temp-support = <0>;
+	temp-comp-res = <30>;
+	temp-tab-val = <1084 1072 1055 1033 1008 977
+			938 897 850 798 742 686
+			628 571 513 459 410 362 318>;
+	temp-tab-temp = <750 800 850 900 950 1000
+			1050 1100 1150 1200 1250 1300
+			1350 1400 1450 1500 1550 1600 1650>;
+	jeita-temp-tab = <900 1000 1100 1450 1500 3000>;
+	jeita-temp-recovery-tab = <870 970 1070 1420 1470 3000>;
+	jeita-cur-tab = <0 100 500 1000 700 0>;
+	jeita-cccv-tab = <4200 4200 4350 4350 4350 4350>;
+	fgu-mode = <0>;
+	alm-soc = <5>;
+	alm-vol = <3600>;
+	soft-vbat-uvlo = <3100>;
+	rint = <250>;
+	cnom = <1900>;
+	rsense-real = <215>;
+	rsense-spec = <200>;
+	relax-current = <50>;
+	fgu-cal-ajust = <0>;
+	ocv-tab-vol = <4185 4113 4066 4022 3983 3949 3917
+			3889 3864 3835 3805 3787 3777 3773
+			3770 3765 3752 3724 3680 3605 3400>;
+	ocv-tab-cap = <100 95 90 85 80 75 70 65 60 55
+			50 45 40 35 30 25 20 15 10 5 0>;
+	charge-vol-tab = <4180 4130 4100 4060 4030 4000 3959
+			3930 3904 3880 3860 3840 3830 3810
+			3790 3780 3730 3690 3565 3510 3400>;
+	charge-vol-tab-cap = <100 95 90	85 80 75 70
+			65 60 55 50 45 40 35 30 25 20 15 10 5 0>;
+	discharge-vol-tab = <4150 4100 4050 4020 4000 3970 3940
+			3910 3880 3850 3820 3790 3770 3755
+			3750 3715 3680 3650 3600 3510 3400>;
+	discharge-vol-tab-cap = <100 95 90 85 80 75 70
+			65 60 55 50 45 40 35 30 25 20 15 10 5 0>;
+	cnom-temp-tab = <1020 1800
+			1010 1300
+			1000 1070
+			990  1000>;
+	rint-temp-tab = <1020 200
+			1010 450
+			1000 650
+			990  1100>;
+};

@@ -1,0 +1,19 @@
+* SPREADTRUM Real Time Clock controller bindings
+
+This binding supports the following chip: sc2723t
+
+Required properties:
+- compatible: should be: "sprd,sc2723t-rtc",
+- reg: physical base address offset of the controller
+- interrupt-parent: rtc alarm parent's interrupt
+- interrupts: rtc alarm interrupt
+
+Example:
+
+rtc@80 {
+	compatible = "sprd,sc2723t-rtc";
+	interrupt-parent = <&pmic_intc>;
+	interrupts = <2>;
+	reg = <0x80>;
+};
+

@@ -1,0 +1,64 @@
+Spreadtrum DMA Controller
+
+Required properties:
+- compatible: "sprd,ap-dma-v1.0".
+	There are different DMA IP versions for different Spreadtrum SoC families.
+	So we use specified IP to compatible different SoC.
+	e.g. ap-dma-v0.0(sharkl);aon-dma-v0.0(sharkl);ap-dma-v1.0(whale);agcp-dma-v1.0(whale);
+	ap-dma-v2.0(whale2);agcp-dma-v2.0(whale2).
+	Required properties:
+	compatible: should be one of following:
+		"sprd,ap-dma-v0.0" - compatible with ports present on sharkl SoC,
+		"sprd,aon-dma-v0.0" - compatible with ports present on sharkl SoC,
+		"sprd,ap-dma-v1.0" - compatible with ports present on whale SoC,
+		"sprd,agcp-dma-v1.0" - compatible with ports present on whale SoC,
+		"sprd,ap-dma-v2.0" - compatible with ports present on whale2 SoC,
+		"sprd,agcp-dma-v2.0" - compatible with ports present on whale2 SoC.
+- reg: Address range of the DMAC registers.
+- dma-channels: Number of channels supported by hardware.
+- #dma-cells: must be <1>.
+- sprd,aon-offset: The AON dma controller channel number offset.
+- sprd,full-type-offset: The full type channel number offset for AP/AGCP or AON dma.
+- sprd,syscon-dma-glb: DMA glb reg base.
+- clock-names: DMA clock enable/disabe name.
+- clocks: DMA clock enable/disable bit.
+
+Optional properties:
+- interrupt: Should contain the DMAC interrupt number.
+	There are some DMAC do not need to request interrupts, because these interrupts
+	could be handled by others subsys.
+
+Example:
+
+	dma: dma-controller@20100000 {
+		compatible = "sprd,ap-dma-v1.0";
+		reg = <0 0x20100000 0 0x4000>,	/* ap reg */
+		      <0 0x40100000 0 0x4000>;	/* aon reg */
+		interrupts = <0 50 0x0>,		/* ap int */
+			     <0 70 0x0>;		/* aon int */
+		#dma-channels = <64>;
+		#dma-cells = <1>;
+		sprd,aon-offset = <33>;
+		sprd,full-type-offset = <25 25>;	/* ap & aon */
+		sprd,syscon-dma-glb = <&ap_ahb_controller>;
+		clock-names = "enable";
+		clocks = <&clk_ap_ahb_gates 5>;
+
+	};
+
+DMA clients must use the format described in the dma.txt file, using a two cell
+specifier for each channel.
+
+Example:
+
+	uart0: serial@70000000 {
+		compatible = "sprd,sc9836-uart",
+			     "sprd,sc9838-uart";
+		reg = <0 0x70000000 0 0x100>;
+		interrupts = <GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>;
+		clocks = <&ext_26m>;
+		status = "disabled";
+		dmas = <&dma 0>,
+		       <&dma 1>;
+		dma-names = "rx", "tx";
+	};

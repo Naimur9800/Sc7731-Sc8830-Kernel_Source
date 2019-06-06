@@ -1,0 +1,17 @@
+Spreadtrum Debug Sysdump bindings
+
+Required properties:
+- memory-region: a list of phandles to memory and other useful reserved node,
+	such as mm_reserved node, overlay_reserved node.
+
+Optional properties:
+- iomem: a list of phandles to the sepcific node, which is added by owner
+	according to whether module registers is need save by sysdump.
+
+Example:
+
+sprd-sysdump {
+		memory-region = <&{/memory@80000000}>,<&mm_reserved>,
+		 <&overlay_reserved>;
+		iomem = <&isp>,<&vsp>;
+};

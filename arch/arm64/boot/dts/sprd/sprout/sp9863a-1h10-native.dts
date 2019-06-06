@@ -1,0 +1,243 @@
+/*****************************************
+Do not modify dts file, please modify according dtsi file
+******************************************/
+
+#include "../sp9863a-1h10-native.dts"
+#include "sprd_base_diff.dtsi"
+
+&battery {
+	io-channels = <&pmic_adc 7>,<&pmic_adc 10>,
+			<&pmic_adc 36>;
+	io-channel-names = "adc_temp","adc_vbat",
+			"adc_vchg";
+	battery-adapt-support = <0>;
+	battery-adapt-fun = <0>;
+	adp-cdp-cur = <2000>;
+	adp-dcp-cur = <2000>;
+	adp-sdp-cur = <550>;
+	adp-unknown-cur = <550>;
+	adp-dcp-cur-limit = <1500>;
+	chg-end-vol = <4400>;
+	chg-end-vol-check = <4380>;
+	chg-bat-safety-vol = <4480>;
+	rechg-vol = <4330>;
+	chg-polling-time = <60>;
+	rsense-real = <99>;
+	rint = <254>;
+	cnom = <3062>;
+	ocv-tab-vol = <4362 4303 4246 4191 4137 4085 4038
+			3992 3945 3890 3857 3832 3812 3795
+			3779 3759 3739 3714 3686 3672 3500>;
+	ocv-tab-cap = <100  95   90   85   80   75   70
+			65   60   55   50   45   40   35
+			30   25   20   15   10   5    0>;
+
+	temp-support = <1>;
+	temp-comp-res = <6>;
+	temp-tab-val = <1124 1104 1079 1047 1010 967
+			917 861 801 738 672 607
+			543 482 425 372 325 282 243>;
+	/* temperature + 1000,750 = 1000 + (-250)*/
+	temp-tab-temp = <750 800 850 900 950 1000
+			 1050 1100 1150 1200 1250 1300
+			 1350 1400 1450 1500 1550 1600 1650>;
+	jeita-temp-tab = <1000 1050 1100 1450 1550>;
+	jeita-temp-recovery-tab = <1030 1080 1130 1420 1520>;
+	jeita-cur-tab = <0 300 900 0x7FFF 1000 0>;
+	jeita-cccv-tab = <4400 4400 4400 4400 4100 4100>;
+	batt_full_design_capacity = <3200>;
+};
+
+/ {
+	zte_misc: zte_misc {
+		status = "okay";
+		compatible = "zte-misc";
+	};
+
+	charger_policy_service {
+		compatible = "zte,charger-policy-service";
+		status="okay";
+		policy,enable = <1>;
+		policy,expired-mode-enable = <1>;
+		policy,retry-times = <10>;
+		policy,timeout-seconds = <64800>;/* 18 hours */
+		policy,max-capacity = <70>;
+		policy,min-capacity = <50>;
+		policy,bms-phy-name = "battery";
+		policy,battery-phy-name = "battery";
+	};
+};
+
+&usb {
+	sprd,cable-detection-method = "gpios";
+	sprd,vbus-gpios = <&pmic_eic 0 0>;
+	sprd,usb-id-gpios = <&ap_eic 4 0>;
+};
+
+&mipi_csi_phy0_s1 {
+	/delete-node/ port;
+};
+
+&mipi_csi_phy2 {
+	/delete-node/ port;
+};
+
+&mipi_csi_phy0_m {
+	/delete-node/ port;
+};
+
+&mipi_csi_phy0_s {
+	/delete-node/ port;
+};
+&mipi_csi_phy2 {
+	status = "okay";
+	sprd,phyid = <2>;
+	sprd,csi = <&csi1>;
+	status = "okay";
+	port {
+		phy2_out: endpoint {
+			remote-enpoint = <&sensor_main_2>;
+		};
+	};
+};
+
+&mipi_csi_phy0 {
+	status = "okay";
+	sprd,phyid = <0>;
+	sprd,csi = <&csi0>;
+	status = "okay";
+	port {
+		phy0_out: endpoint {
+			remote-enpoint = <&sensor_sub_0>;
+		};
+	};
+};
+
+
+&i2c1 {
+	/delete-node/ sensor-sub2@2a;
+};
+
+&i2c1 {
+	/delete-node/ sensor-sub@20;
+};
+
+&i2c1 {
+	status = "okay";
+	clock-frequency = <400000>;
+
+	sensor_sub: sensor-sub@20 {
+		compatible = "sprd,sensor-sub";
+		reg = <0x20>;
+		clock-names = "clk_src","sensor_eb",
+			"clk_96m","clk_76m8",
+			"clk_48m","clk_26m";
+		clocks = <&clk_sensor1>, <&clk_mckg_gates 6>,
+			<&clk_twpll_96m>,<&clk_twpll_76m8>,
+			<&clk_twpll_48m>,<&ext_26m>;
+		vddio-supply = <&vddcamio>;
+		vddcammot-supply = <&vddcammot>;
+		avdd-gpios=<&ap_gpio 32 0>;
+		dvdd-gpios=<&ap_gpio 33 0>;
+		reset-gpios = <&ap_gpio 41 0>;
+		power-down-gpios = <&ap_gpio 40 0>;
+		host = "dcam0";
+		port {
+			sensor_sub_0: endpoint {
+				remote-endpoint = <&phy0_out>;
+			};
+		};
+	};
+};
+
+&i2c1 {
+	/delete-node/ sensor-main2@6c;
+};
+
+&i2c1 {
+	sensor_main2: sensor-main2@6C {
+		compatible = "sprd,sensor-main2";
+		reg = <0x6C>;
+		clock-names = "clk_src","sensor_eb",
+			"clk_96m","clk_76m8",
+			"clk_48m","clk_26m";
+		clocks = <&clk_sensor1>, <&clk_mckg_gates 6>,
+			<&clk_twpll_96m>,<&clk_twpll_76m8>,
+			<&clk_twpll_48m>,<&ext_26m>;
+		vddio-supply = <&vddcamio>;
+		vddcama-supply = <&vddcama>;
+		vddcamd-supply = <&vddcamd>;
+		vddcammot-supply = <&vddcammot>;
+		/*avdd-gpios=<&ap_gpio 140 0>;*/
+		reset-gpios = <&ap_gpio 45 0>;
+		power-down-gpios = <&ap_gpio 47 0>;
+		host = "dcam1";
+		port {
+			sensor_main_2: endpoint {
+				remote-endpoint = <&phy2_out>;
+			};
+		};
+	};
+};
+
+
+
+&i2c0 {
+	/delete-node/ sensor-main@20;
+};
+
+&i2c0 {
+	status = "okay";
+	clock-frequency = <400000>;
+
+	sensor_main: sensor-main@20 {
+		compatible = "sprd,sensor-main";
+		reg = <0x20>;
+		clock-names = "clk_src","sensor_eb",
+			"clk_96m","clk_76m8",
+			"clk_48m","clk_26m";
+		clocks = <&clk_sensor0>, <&clk_mckg_gates 5>,
+			<&clk_twpll_96m>,<&clk_twpll_76m8>,
+			<&clk_twpll_48m>,<&ext_26m>;
+		vddio-supply = <&vddcamio>;
+		vddcamd-supply = <&vddcamd>;
+		vddcammot-supply = <&vddcammot>;
+		avdd-gpios=<&ap_gpio 87 0>;
+		reset-gpios = <&ap_gpio 44 0>;
+		power-down-gpios = <&ap_gpio 46 0>;
+		host = "dcam0";
+		port {
+			sensor_main_0: endpoint {
+				remote-endpoint = <&phy1_out>;
+			};
+		};
+	};
+};
+
+&i2c4 {
+	/delete-node/ flash-ic@63;
+};
+
+&i2c4 {
+	bq2560x_chg: charger@6b {
+		compatible = "ti,bq2560x_chg";
+		reg = <0x6b>;
+		vbus-det-gpios = <&pmic_eic 0 0>;
+	};
+
+	flash_ic: flash-ic@63 {
+		compatible = "sprd,flash-aw3648";
+		reg = <0x63>;
+		sprd,flash-ic = <3648>;
+		sprd,torch = <1>;
+		sprd,preflash = <1>;
+		sprd,highlight = <1>;
+		sprd,torch-level = <10>;
+		sprd,preflash-level = <15>;
+		sprd,highlight-level = <40>;
+		sprd,lvfm-enable = <1>;
+		flash-chip-en-gpios = <&ap_gpio 89 0>;
+		flash-en-gpios = <&ap_gpio 76 0>;
+		flash-sync-gpios = <&ap_gpio 141 0>;
+	};
+};

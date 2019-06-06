@@ -1,0 +1,17 @@
+Binding for cpufreqhw regulators
+virtual i2c device for sprd cpu hw dvfs.
+
+Required properties:
+  - compatible: one of "sprd,cpufreqhw-regulator-sharkl3"
+  - reg: I2C address
+
+Optional properties:
+
+Example:
+
+       /*virtual i2c device for cpu hw dvfs*/
+       cpufreqhw@61 {
+               compatible = "sprd,cpufreqhw-regulator-sharkl3";
+               reg = <0x61>;
+       };
+

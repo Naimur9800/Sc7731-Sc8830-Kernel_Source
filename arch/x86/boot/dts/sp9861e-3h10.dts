@@ -1,0 +1,529 @@
+/*
+ * Spreadtrum iwhale2 fpga board sp9861e_3h10 DTS file
+ *
+ * Copyright (C) 2017, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+/dts-v1/;
+
+#ifdef CONFIG_MOBILEVISOR
+#include "irq-vmm.h"
+#include "bia-vmm.dtsi"
+#else
+#include "irq-hw-sc9861.h"
+#include "bia.dtsi"
+/* Only set the perf data on native versin */
+#include "bia-perf.dtsi"
+#endif
+
+#include "sc9861.dtsi"
+#include "sc9861-modem.dtsi"
+#include "sp9861-common.dtsi"
+#include "sprd-sound.dtsi"
+#include "sp9861e-memory.dtsi"
+
+/ {
+	model = "Spreadtrum SC9861E-3H10 (x86 based)";
+
+	compatible = "sprd,sp9861e_3h10-native";
+
+	sprd,sc-id = <9868 1 0x20000>;
+
+	aliases {
+		serial0 = &uart0;
+		serial1 = &uart1;
+		serial2 = &uart2;
+		serial3 = &uart3;
+		i2c0 = &i2c0;
+		i2c1 = &i2c1;
+		i2c3 = &i2c3;
+		i2c4 = &i2c4;
+		i2c5 = &i2c5;
+		thm-sensor7 = &pmic_thermal;
+		thm-sensor8 = &chg_temp;
+		thm-sensor9 = &pa_temp;
+		thm-sensor10 = &board_temp;
+	};
+
+	chosen {
+		stdout-path = &uart1;
+		bootargs = "earlycon maxcpus=8 irq_affinity=0xf console=ttyS1,115200n8 androidboot.hardware=sp9861e_3h10 loglevel=1 code_bytes=128";
+	};
+
+	sysdump-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		cm4_dump: cm4_iram@e6040000 {
+			reg = <0x0 0xe6040000 0x0 0x40000>;
+		};
+	};
+
+	sprd-sysdump {
+		magic-addr = <0x0 0x3b800000>;
+		version = <0xa1>;
+		memory-region-re = <&cp_reserved>, <&smem_reserved>,
+				   <&audio_reserved>, <&cm4_dump>;
+	};
+
+	ion {
+		compatible = "sprd,ion";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		heap@0 {
+			reg = <0>;
+			label = "system";
+			type = <0>;
+		};
+
+		heap@1 {
+			reg = <1>;
+			label = "carveout_mm";
+			type = <2>;
+			memory-region = <&mm_reserved>;
+		};
+
+		heap@2 {
+			reg = <2>;
+			label = "carveout_overlay";
+			type = <2>;
+			memory-region = <&overlay_reserved>;
+		};
+
+		heap@3 {
+			reg = <3>;
+			label = "carveout_fb";
+			type = <2>;
+			memory-region = <&fb_reserved>;
+		};
+
+		heap@4 {
+			reg = <4>;
+			label = "carveout_camera";
+			type = <2>;
+			memory-region = <&camera_reserved>;
+		};
+	};
+
+	sprd-iq {
+		compatible = "sprd,iq";
+		sprd,region = <&iq_reserved>;
+		sprd,mapping-offs = <0x80000000>;
+	};
+
+	chg_temp:chg-tsensor@8 {
+		compatible = "sprd,board-thermal";
+		#thermal-sensor-cells = <1>;
+		io-channels = <&pmic_adc 3>;
+		io-channel-names = "adc_temp";
+		temp-tab-size = <16>;
+		temp-tab-val = <1126 1085 1025 955 841 731 590 480
+				362 283 208 161 119 93 69 55>;
+		temp-tab-temp = <656 791 901 991 1100 1190 1299 1390
+				1500 1589 1699 1789 1897 1988 2099 2189>;
+	};
+
+	pa_temp:pa-tsensor@9 {
+		compatible = "sprd,board-thermal";
+		#thermal-sensor-cells = <1>;
+		io-channels = <&pmic_adc 5>;
+		io-channel-names = "adc_temp";
+		temp-tab-size = <16>;
+		temp-tab-val = <1126 1085 1025 955 841 731 590 480
+				362 283 208 161 119 93 69 55>;
+		temp-tab-temp = <656 791 901 991 1100 1190 1299 1390
+				1500 1589 1699 1789 1897 1988 2099 2189>;
+	};
+
+	board_temp:bd-tsensor@10 {
+		compatible = "sprd,board-thermal";
+		#thermal-sensor-cells = <1>;
+		io-channels = <&pmic_adc 7>;
+		io-channel-names = "adc_temp";
+		temp-tab-size = <16>;
+		temp-tab-val = <1126 1085 1025 955 841 731 590 480
+				362 283 208 161 119 93 69 55>;
+		temp-tab-temp = <656 791 901 991 1100 1190 1299 1390
+				1500 1589 1699 1789 1897 1988 2099 2189>;
+	};
+
+	sprd-wlan {
+		compatible = "sprd,sc2332";
+	};
+
+	flash-sc2731 {
+		compatible = "sprd,flash-sc2731";
+		sprd,pmic-flash = <&pmic_flash>;
+		flash0-gpios = <&ap_gpio 161 0>;
+		flash1-gpios = <&ap_gpio 24 0>;
+	};
+
+	sprd-marlin2 {
+		compatible = "sprd,marlin2";
+		m2-to-ap-coexist-gpios = <&ap_gpio 119 0>;
+		m2-wakeup-ap-gpios = <&ap_gpio 83 0>;
+		permit-ap-send-gpios = <&ap_gpio 84 0>;
+		rstn-gpios = <&ap_gpio 111 0>;
+		chip-en-gpios = <&ap_gpio 86 0>;
+		m2-to-ap-irq-gpios = <&ap_gpio 113 0>;
+		vddwcn-supply = <&dcdcrf>;
+		vdd_marlin2_1v2-supply = <&vddsram>;
+		clock-names = "clk_32k","source","enable";
+		clocks = <&clk_aux0>,<&ext_32k>,
+			 <&clk_aon_apb_gates1 2>;
+		sdhci-name = <&sdio1>;
+		common_chip_en;
+		power-ctl-disabled;
+	};
+
+	sprd-ge2 {
+		compatible = "sprd,ge2";
+		vddwcn-supply = <&dcdcrf>;
+		clock-names = "clk_32k","source","enable";
+		clocks = <&clk_aux0>,<&ext_32k>,
+			 <&clk_aon_apb_gates1 2>;
+		chip-en-gpios = <&ap_gpio 86 0>;
+	};
+
+	audio-mem-mgr {
+		memory-region = <&audio_reserved>;
+	};
+
+	scene-frequency {
+		compatible = "sprd,dfs";
+		sprd-scene = "exit", "lcdon", "lcdoff", "camlow", "camhigh";
+		sprd-freq = <368 368 368 622 933>;
+		overflow = <5592000 14720000 19904000 74640000>;
+		underflow = <0 3276800 12440000 17167200>;
+		timer = <10>;
+	};
+
+	et310 {
+		compatible = "egistec,et310";
+		label = "fingerprint keys";
+		fpint-gpios = <&ap_eic_async 15 0>;
+		fpreset-gpios = <&ap_gpio 173 0>;
+		fppwr-gpios = <&ap_gpio 66 0>;
+	};
+};
+
+&usb3 {
+	status = "okay";
+	sprd,power-collapse-on-cable-disconnect;
+
+	/* usb cable detection method may be one of the three:
+	 * "typec","gpios","none"
+	 */
+	sprd,cable-detection-method = "typec";
+	extcon = <&extcon_usb>;
+	dwc3@e2500000 {
+		/* super-speed, high-speed, full-speed and etc. */
+		maximum-speed = "high-speed";
+	};
+};
+
+&intelphy {
+	status = "okay";
+	/* 0x5533286e - USB3_PHY_TSMC_28nm; 0x5533166e - USB3_PHY_TMSC_16nm */
+	revision = <0x5533166e>;
+	vdd-supply = <&vddusb33>;
+	phy-ldo-supply = <&ldo_0p84>;
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&uart1 {
+	status = "okay";
+};
+
+&uart2 {
+	status = "okay";
+};
+
+&uart3 {
+	status = "okay";
+};
+
+&i2c0 {
+	status = "okay";
+	clock-frequency = <400000>;
+
+	sensor_sub: sensor-sub@3c {
+		compatible = "sprd,sensor-sub";
+		reg = <0x3c>;
+		clock-names = "clk_src","sensor_eb",
+			"clk_96m","clk_76m8",
+			"clk_48m","clk_26m";
+		clocks = <&clk_sensor0>,<&clk_cam_ahb_gates 21>,
+			<&clk_twpll_96m>,<&clk_twpll_76m8>,
+			<&clk_twpll_48m>,<&ext_26m>;
+		vddio-supply = <&vddcamio>;
+		vddcama-supply = <&vddcama1>;
+		vddcamd-supply = <&vddcamd1>;
+		vddcammot-supply = <&vddcammot>;
+		reset-gpios = <&ap_gpio 123 0>;
+		power-down-gpios = <&ap_gpio 124 0>;
+		host = "dcam1";
+		port {
+			sensor_sub_0: endpoint {
+				remote-endpoint = <&phy0_out>;
+			};
+		};
+	};
+};
+
+&i2c1 {
+	status = "okay";
+	adaptive-touchscreen@38 {
+		compatible = "adaptive-touchscreen";
+		reg = <0x38>;
+		gpios = <&ap_gpio 137 0
+			&ap_gpio 136 0>;
+		controller = "focaltech,FT5436";
+		virtualkeys = <580 60 1320 60 45
+				172 360 1320 60 45
+				158 600 1320 60 45>;
+	};
+};
+
+&i2c3 {
+	status = "okay";
+	clock-frequency = <400000>;
+
+	fairchild_fan53555: dcdc@60{
+		compatible = "fairchild,fairchild_fan53555";
+		reg = <0x60>;
+		fan53555: dcdc {
+			regulator-name = "fairchild_fan53555";
+			sprd,default-microvolt = <1050000>;
+			regulator-step-microvolt = <10000>;
+			regulator-min-microvolt = <600000>;
+			regulator-max-microvolt = <1230000>;
+			enable-gpios = <&ap_gpio 163 0>;
+		};
+	};
+
+	sprd_2701_chg: charger@6b {
+		compatible = "sprd,2701-chg";
+		reg = <0x6b>;
+		chg-fault-gpios = <&ap_gpio 34 0>;
+		battery-det-gpios = <&pmic_eic 9 0>;
+	};
+};
+
+&i2c5 {
+	status = "okay";
+	clock-frequency = <400000>;
+
+	sensor_main: sensor-main@3c {
+		compatible = "sprd,sensor-main";
+		reg = <0x3c>;
+		clock-names = "clk_src","sensor_eb",
+			"clk_96m","clk_76m8",
+			"clk_48m","clk_26m";
+		clocks = <&clk_sensor1>,<&clk_cam_ahb_gates 22>,
+			<&clk_twpll_96m>,<&clk_twpll_76m8>,
+			<&clk_twpll_48m>,<&ext_26m>;
+		vddio-supply = <&vddcamio>;
+		vddcama-supply = <&vddcama0>;
+		vddcamd-supply = <&vddcamd0>;
+		vddcammot-supply = <&vddcammot>;
+		reset-gpios = <&ap_gpio 157 0>;
+		power-down-gpios = <&ap_gpio 125 0>;
+		host = "dcam0";
+		port {
+			sensor_main_0: endpoint {
+				remote-endpoint = <&phy1_out>;
+			};
+		};
+	};
+};
+
+&spi0 {
+	clocks = <&clk_spi0>,<&clk_twpll_192m>,<&clk_ap_apb_gates 5>;
+	status = "okay";
+};
+
+&battery {
+	adp-cdp-cur = <1200>;
+	adp-dcp-cur = <1500>;
+	adp-sdp-cur = <512>;
+	adp-unknown-cur = <512>;
+	chg-end-vol = <4350>;
+	chg-end-vol-check = <4330>;
+	chg-bat-safety-vol = <4430>;
+	rechg-vol = <4270>;
+	temp-support = <1>;
+	temp-comp-res = <6>;
+	temp-tab-val = <1158 1054 949 845 746 653
+			568  491  424 364 312 268
+			229  197  169 145 125 107
+			93>;
+	/* temperature + 1000,750 = 1000 + (-250)*/
+	temp-tab-temp = <750 800  850  900  950  1000
+			1050 1100 1150 1200 1250 1300
+			1350 1400 1450 1500 1550 1600
+			1650>;
+	rsense-real = <100>;
+	rint = <414>;
+	cnom = <2807>;
+	ocv-tab-vol = <4320 4256 4200 4147 4098 4053 4004
+			3962 3909 3870 3842 3820 3802 3787
+			3776 3763 3743 3712 3689 3669 3400>;
+	ocv-tab-cap = <100  95   90   85   80   75   70
+			65   60   55   50   45   40   35
+			30   25   20   15   10   5    0>;
+};
+
+&pmic_typec {
+	ext-ldo-sw = <1>;
+	pinctrl-names = "ldo_pin_sw","ldo_ctl_md";
+	pinctrl-0 = <&gio_ldo_pin_sw>;
+	pinctrl-1 = <&gio_ldo_ctl_md>;
+	ldo-gpios = <&ap_gpio 151 0>;
+	status = "okay";
+};
+
+&pmic_fgu {
+	ocv-type = <1>;
+};
+
+&pmic_fchg {
+	status = "okay";
+};
+
+&dispc0 {
+	clock-src = <512000000 256000000 256000000>;
+	clock-names =   "clk_dispc_core_parent",
+			"clk_dispc_dpi_parent",
+			"clk_dispc_core",
+			"clk_dispc_dpi",
+			"clk_dispc_ahb_eb",
+			"clk_dispc_mmu_ahb_eb",
+			"clk_dispc_ckg_ahb_eb",
+			"clk_dispc_mtx_ahb_eb",
+			"clk_disp_mtx_ahb_eb",
+			"clk_sys_mtx_ahb_eb",
+			"clk_disp_emc_apb_eb",
+			"clk_disp_apb_eb";
+
+	clocks =        <&clk_twpll_512m>,
+			<&clk_twpll_256m>,
+			<&clk_dispc0>,
+			<&clk_dispc0_dpi>,
+			<&clk_dahb_gates 0>,
+			<&clk_dahb_gates 2>,
+			<&clk_dahb_gates 9>,
+			<&clk_dahb_gates 16>,
+			<&clk_dahb_gates 17>,
+			<&clk_dahb_gates 18>,
+			<&clk_aon_apb_gates1 11>,
+			<&clk_aon_apb_gates1 30>;
+};
+
+&mipi_csi_phy0 {
+	status = "okay";
+
+	sprd,csi = <&csi1>;
+	port {
+		phy0_out: endpoint {
+			remote-endpoint = <&sensor_sub_0>;
+		};
+	};
+};
+
+&mipi_csi_phy1 {
+	status = "okay";
+
+	sprd,csi = <&csi0>;
+	port {
+		phy1_out: endpoint {
+			remote-endpoint = <&sensor_main_0>;
+		};
+	};
+};
+
+&sdio0 {
+	cd-gpios = <&ap_gpio 27 1>;
+};
+
+&bm_perf {
+	sprd,doubleddr = <0>;
+};
+
+&sprd_audio_codec_ana {
+	status = "okay";
+	hp-use-inter-pa = <1>;
+	fixed-sample-rate = <48000 48000 48000>; /* DA, AD, AD1 */
+	digital-codec = <&sprd_audio_codec_dig>;
+};
+
+&sound_vbc_r3p0_sprd_codec {
+	status = "okay";
+};
+
+&sprd_headset {
+	status = "okay";
+};
+
+&iommu_vsp {
+	status = "okay";
+};
+
+&iommu_gsp {
+	status = "okay";
+};
+
+&iommupf_dispc {
+	status = "okay";
+};
+
+&iommupf_cpp_jpg {
+	status = "okay";
+};
+
+&iommupf_dcam {
+	status = "okay";
+};
+
+&dcam {
+	status = "okay";
+};
+
+&isp {
+	status = "okay";
+};
+
+&cpp {
+	status = "okay";
+};
+
+&pmic_bltc_rgb {
+	status = "okay";
+};
+
+&dcam2isp {
+	status = "okay";
+};
+
+&vddarm0 {
+	supply = <&vddarm0>;
+};
+
+&vddarm1 {
+	supply = <&vddarm1>;
+};
+
+&chg_temp {
+	status = "disabled";
+};
+
+&pa_temp {
+	status = "disabled";
+};

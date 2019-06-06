@@ -1,0 +1,27 @@
+Spreadtrum hardware spinlock controller binding
+
+Required properties:
+- compatible: Should be "sprd,hwspinlock-r2p0", it's similar to that on sc9838 SoC family.
+- reg: Offset and length of hardware spinlock controller register space.
+- hwlocks-base: Assign a base id to register the hwspinlock controller.
+- hwlocks-num: The number of the hardware spinlock.
+- resets: The resets property is related to reset source.
+- reset-names: Its purpose is to constrain resets property.
+- clock-names: Clock-names should be "enable" specified in hwspinlock driver.
+	       Its purpose is to constrain clocks property.
+- clocks: The freq of apb clk connected to hwspinlock module.
+- sprd,axi-id: Setting this property to make HWSPINLCOK record AXI ID. If no,
+	       the HWSPINLOCK will record the USERID as default.
+
+Example:
+	hwslock1: hwspinlock@40060000{
+		compatible  = "sprd,hwspinlock-r2p0";
+		reg = <0 0x40060000 0 0x1000>;
+		#hwlock-cells = <1>;
+		hwlocks-base = <0>;
+		hwlocks-num = <32>;
+		resets = <&aon_rst 24>;
+		reset-names = "hwspinlock1";
+		clock-names = "enable";
+		clocks = <&clk_aon_apb_gates0 22>;
+	};

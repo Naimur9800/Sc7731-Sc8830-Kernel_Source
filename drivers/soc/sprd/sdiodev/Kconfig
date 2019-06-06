@@ -1,0 +1,11 @@
+menu "Sdiodev Modules"
+config SDIODEV
+    tristate "Spreadtrum SDIO device support"
+    help
+	For marlin sdio related interface
+	It used to communicate with some modules
+	eg.wifi,sprd_download,fm
+	Insmod this module before other sdio dev modules
+	If unsure, say N
+
+endmenu

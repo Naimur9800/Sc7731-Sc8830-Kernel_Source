@@ -1,0 +1,14 @@
+Spreadtrum sleep config bindings
+
+Required properties:
+- compatible: should be one of:
+	 "sprd,sys-ap-intc"
+	 "sprd,sys-aon-intc"
+	 "sprd,sys-aon-iram0"
+- reg: address range of controller registers.
+
+Example:
+	intc0_controller: syscon@71400000 {
+		compatible = "sprd,sys-ap-intc", "syscon";
+		reg = <0x71400000 0x1000>;
+	};

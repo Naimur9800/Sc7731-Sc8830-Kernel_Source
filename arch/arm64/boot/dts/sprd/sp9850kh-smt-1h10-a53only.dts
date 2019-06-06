@@ -1,0 +1,32 @@
+/*
+ * Spreadtrum SP9850KH board DTS file
+ *
+ * Copyright (C) 2017, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#include "sp9850kh-smt-1h10.dts"
+
+/ {
+	model = "Spreadtrum SP9850KHsmt 1h10 A53-only Board";
+
+	chosen {
+		bootargs = "earlycon=sprd_serial,0x70100000,115200n8 console=ttyS1,115200n8 loglevel=1 androidboot.hardware=sp9850kh_1h10 memblock=debug bootmem_debug=1 maxcpus=2";
+
+	};
+	soc{
+		/delete-node/ funnel-big@11002000;
+		/delete-node/ tmc-etf-big@11004000;
+		funnel-cpu@11005000 {
+			ports {
+				/delete-node/ port@2 ;
+			};
+		};
+		/delete-node/ etm_big_c0_thd0@11840000;
+		/delete-node/ etm_big_c0_thd1@11940000;
+		/delete-node/ etm_big_c1_thd0@11a40000;
+		/delete-node/ etm_big_c1_thd1@11b40000;
+	};
+};
+

@@ -1,0 +1,56 @@
+Spreadtrum cooling device
+
+The Spreadtrum cooling devices can be bound to thermal zone trip points.
+When a trip point reached, the bound cpufreq cooling device turns active
+to set CPU frequency low to cool down the CPU.
+
+Required properties:
+- compatible :    Should be "sprd,cpu-cooling"
+- policy : 	  used to describe cooling devices thermal policy,
+		  set IPA if policy filled,
+		  other policy if it is empty
+- sprd,efuse-block :
+		  Efuse block number is used to indicate that in order to
+		  get thermal information which efuse block should read.
+- #cooling-cells: Used to provide cooling device specific information
+		  while referring to it. Must be at least 2, in order
+		  to specify minimum and maximum cooling state used
+		  in the reference. The first cell is the minimum
+		  cooling state requested and the second cell is
+		  the maximum cooling state requested in the reference.
+		  See Cooling device maps section below for more details
+		  on how consumers refer to cooling devices.
+Optional properties:
+- sprd,leak-core: coefficient of core leakage power.
+- sprd,leak-cluster:
+		  coefficient of cluster leakage power.
+- sprd,temp-scale:For temperature scale calculation.
+- sprd,volt-scale:For voltage scale calculation.
+- sprd,hotplug-period:
+		  Periods to wait before hotplugging CPUs.
+- sprd,core-base:
+		  base of core leakage power.
+- sprd,cluster-base:
+		  base of cluster leakage power.
+- sprd,dynamic-core:
+		  coefficient of core dynamic power.
+- sprd,dynamic-cluster:
+		  coefficient of cluster dynamic power.
+
+Example:
+
+cooling-devices {
+	policy = "ipa";
+	cooling_device0: cooling-device0 {
+		compatible = "sprd,cpu-cooling";
+		#cooling-cells = <2>; /* min followed by max */
+		sprd,efuse-block = <7>;
+		sprd,leak-core = <2 85 1869>;
+	};
+	cooling_device1: cooling-device1 {
+		compatible = "sprd,cpu-cooling";
+		#cooling-cells = <2>; /* min followed by max */
+		sprd,efuse-block = <7>;
+		sprd,temp-scale = <825 (-117000) 6080000 (-81850000)>;
+	};
+};

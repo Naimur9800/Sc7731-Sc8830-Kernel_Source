@@ -1,0 +1,112 @@
+/*
+ * Spreadtrum iwhale2 fpga board DTS file
+ *
+ * Copyright (C) 2015, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+/dts-v1/;
+#include "irq-hw-sc9861.h"
+#include "bia.dtsi"
+#include "sc9861.dtsi"
+
+/ {
+	model = "Spreadtrum iwhale2 SoC (x86 based)";
+
+	compatible = "sprd,iwhale2-fpga";
+
+	sprd,sc-id = <9868 1 0x20000>;
+
+	aliases {
+		serial0 = &uart0;
+		serial1 = &uart1;
+		serial2 = &uart2;
+		serial3 = &uart3;
+	};
+
+	chosen {
+		stdout-path = &uart0;
+		bootargs = "earlycon maxcpus=1 no_timer_check tsc=reliable idle=halt console=ttyS0,115200n8 androidboot.hardware=sp9861 pit_freq=114729000";
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		fb_reserved: fb@27500000{
+			reg = <0x0 0x27500000 0x0 0xb00000>; /* fb */
+		};
+	};
+
+	ion {
+		compatible = "sprd,ion";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		heap@0 {
+			reg = <0>;
+			label = "system";
+			type = <0>;
+		};
+
+		heap@3 {
+			reg = <3>;
+			label = "carveout_fb";
+			type = <2>;
+			memory-region = <&fb_reserved>;
+		};
+	};
+};
+
+&usb3 {
+	status = "okay";
+	/* cable-detection-method: "ext_ic"/"gpios"/"none" */
+	sprd,cable-detection-method = "none";
+	dwc3@e2500000 {
+		/* maximum-speed: "super-speed"/"high-speed"/"full-speed" */
+		maximum-speed = "high-speed";
+	};
+};
+
+&ssphy {
+	status = "okay";
+	/* revision: "0x5533286e" - USB3_PHY_TSMC_28nm;
+	"0x5533166e" - USB3_PHY_TMSC_16nm */
+	revision = <0x5533166e>;
+	sprd,phy-tune1 = <0x919f9dec>;
+	sprd,phy-tune2 = <0x0f0560fe>;
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&uart1 {
+	status = "okay";
+};
+
+&uart2 {
+	status = "okay";
+};
+
+&uart3 {
+	status = "okay";
+};
+
+&sdio3 {
+	bus-width = <1>;
+	non-removable;
+	sprd,name = "emmc";
+	status = "okay";
+};
+
+&bm_perf {
+	sprd,doubleddr = <0>;
+};
+
+&hdlcd {
+       reg = <0x0 0xd3200000 0x0 0x1000>; /* use dispc1 */
+       interrupts = <DISPC1_IRQ 2>; /* use dispc1 */
+};

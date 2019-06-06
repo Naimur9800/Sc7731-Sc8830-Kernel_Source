@@ -1,0 +1,25 @@
+* IMG Rogue GPU
+* It has common properties with mali, as decribed in spradtrum,gpu.txt.
+
+Required properties:
+    - compatible : "sprd,rogue" for rogue IP present in iwhale2 etc. SoC
+
+Optional properties:
+    - operating-points : It's the DVFS optional frequence range of GPU which depends on Linux Kernel. example:
+        384000 means the clock source frequence is 384000 kHz,
+        840000 is current voltage is 0.84v.
+
+Example:
+    gpu@60000000 {
+        compatible = "sprd,rogue";
+        ...
+
+        operating-points = <
+                     /* kHz    uV */
+                     384000    840000
+                     512000    1050000
+                     700000    1050000
+                     >;
+
+        ...
+    };

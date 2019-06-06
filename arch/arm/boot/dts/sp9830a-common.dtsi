@@ -1,0 +1,509 @@
+/*
+ * Spreadtrum SC9830 common nodes for all SP9830A phones DTSI file
+ *
+ * Copyright (C) 2016, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+/dts-v1/;
+
+#include "sc9830.dtsi"
+#include "sc2723.dtsi"
+#include "sprd-battery.dtsi"
+
+#include "lcd/lcd_dummy_mipi.dtsi"
+#include "lcd/lcd_otm8019a_mipi_fwvga.dtsi"
+
+/* temporarily modem/audio dt, to be removed later */
+#include "sc9830-staging.dtsi"
+
+/ {
+	aliases {
+		serial0 = &uart0;
+		serial1 = &uart1;
+		serial2 = &uart2;
+		serial3 = &uart3;
+		i2c0 = &i2c0;
+		i2c1 = &i2c1;
+		i2c2 = &i2c2;
+		i2c3 = &i2c3;
+		i2c4 = &i2c4;
+		sensor0 = &cpu_sensor;
+		sensor1 = &gpu_sensor;
+	};
+
+	ion {
+		compatible = "sprd,ion";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		heap@0 {
+			reg = <0>;
+			label = "system";
+			type = <0>;
+		};
+
+		heap@1 {
+			reg = <1>;
+			label = "carveout_mm";
+			type = <2>;
+			memory-region = <&mm_reserved>;
+		};
+
+		heap@2 {
+			reg = <2>;
+			label = "carveout_overlay";
+			type = <2>;
+			memory-region = <&overlay_reserved>;
+		};
+
+		heap@3 {
+			reg = <3>;
+			label = "carveout_fb";
+			type = <2>;
+			memory-region = <&fb_reserved>;
+		};
+	};
+
+	sprd_evt_r3p0 {
+		compatible  = "sprd,evt-r3p0";
+		sprd,evtlist = <&aon_timer0  &apt0_timer0
+				&apt1_timer0 &apt2_timer0>;
+		sprd,clksrc = <&aon_timer1>;
+	};
+
+	sprd-sysdump {
+		memory-region = <&memory>,<&smem_reserved>,
+			 <&mm_reserved>;
+		iomem = <&dispc0>;
+	};
+
+	gpio-keys {
+		compatible = "gpio-keys";
+		input-name = "sprd-gpio-keys";
+		status = "okay";
+
+		key-volumedown {
+			label = "Volume Down Key";
+			linux,code = <114>;
+			gpios = <&ap_gpio 124 1>;
+			debounce-interval = <2>;
+			gpio-key,wakeup;
+			gpio-key,level-trigger;
+		};
+
+		key-volumeup {
+			label = "Volume Up Key";
+			linux,code = <115>;
+			gpios = <&ap_gpio 125 1>;
+			debounce-interval = <2>;
+			gpio-key,wakeup;
+			gpio-key,level-trigger;
+		};
+
+		key-power {
+			label = "Power Key";
+			linux,code = <116>;
+			gpios = <&pmic_eic 2 0>;
+			gpio-key,wakeup;
+			gpio-key,level-trigger;
+		};
+	};
+
+	sprd_backlight {
+		compatible = "pwm-backlight";
+		pwms = <&pwms 2 5000000>;
+		pwm-names = "backlight";
+		brightness_max = <256>;
+		brightness-levels=<
+			 10  10  10  10  10  10  10  10  10  10
+			 10  11  12  13  14  15  16  17  18  19
+			 20  21  22  23  24  25  26  27  28  29
+			 30  31  32  33  34  35  36  37  38  39
+			 40  41  42  43  44  45  46  47  48  49
+			 50  51  52  53  54  55  56  57  58  59
+			 60  61  62  63  64  65  66  67  68  69
+			 70  71  72  73  74  75  76  77  78  79
+			 80  81  82  83  84  85  86  87  88  89
+			 90  91  92  93  94  95  96  97  98  99
+			100 101 102 103 104 105 106 107 108 109
+			110 111 112 113 114 115 116 117 118 119
+			120 121 122 123 124 125 126 127 128 129
+			130 131 132 133 134 135 136 137 138 139
+			140 141 142 143 144 145 146 147 148 149
+			150 151 152 153 154 155 156 157 158 159
+			160 161 162 163 164 165 166 167 168 169
+			170 171 172 173 174 175 176 177 178 179
+			180 181 182 183 184 185 186 187 188 189
+			190 191 192 193 194 195 196 197 198 199
+			200 201 202 203 204 205 206 207 208 209
+			210 211 212 213 214 215 216 217 218 219
+			220 221 222 223 224 225 226 227 228 229
+			230 231 232 233 234 235 236 237 238 239
+			240 241 242 243 244 245 246 247 248 249
+			250 251 252 253 254 255
+			>;
+		default-brightness-level = <127>;
+	};
+
+	sprd-marlin {
+		compatible = "sprd,marlin";
+		bt-wakeup-ap-gpios = <&ap_gpio 97 0>;
+		ap-wakeup-cp-gpios = <&ap_gpio 132 0>;
+		wifi-wakeup-ap-gpios = <&ap_gpio 133 0>;
+		cp-reset-gpios = <&ap_gpio 122 0>;
+		vddwcn-supply = <&vddcon>;
+		vddwifipa-supply = <&vddwifipa>;
+		clock-names = "clk_32k","source","enable";
+		clocks = <&clk_aux0>,<&ext_32k>,
+			 <&clk_aon_apb_gates1 2>;
+		sdhci-name = <&sdio1>;
+	};
+
+	thermal-zones {
+
+		cpu_thm: cpu_thm {
+			polling-delay-passive = <0>;
+			polling-delay = <0>;
+			thermal-sensors = <&ap_thm  0>;
+		};
+
+		gpu_thm: gpu_thm {
+			polling-delay-passive = <0>;
+			polling-delay = <0>;
+			thermal-sensors = <&ap_thm  1>;
+		};
+	};
+
+	cooling-devices {
+		cpu-cooling {
+			compatible = "sprd,cpu-cooling";
+			id = <0>;
+			efuse-block = <7>;
+		};
+	};
+};
+
+&iommu_gsp {
+	status = "okay";
+};
+
+&iommu_mm {
+	status = "okay";
+};
+
+&jpg {
+       status = "okay";
+};
+
+&vsp {
+       status = "okay";
+};
+
+&dcam {
+	status = "okay";
+};
+
+&isp {
+	status = "okay";
+};
+
+&csi {
+	status = "okay";
+};
+
+&mipi_csi_phy {
+	status = "okay";
+};
+
+&i2c0 {
+	status = "okay";
+
+	sensor_sub: sensor-sub@21 {
+		compatible = "sprd,sensor-sub";
+		reg = <0x21>;
+		clock-names = "clk_src","ccir_eb";
+		clocks  = <&clk_ccir>, <&clk_mm_ahb_gate 1>;
+		vddio-supply = <&vddcamio>;
+		vddcama-supply = <&vddcama>;
+		vddcamd-supply = <&vddcamd>;
+		vddcammot-supply = <&vddcammot>;
+		reset-gpios = <&ap_gpio 44 0>;
+		power-down-gpios = <&ap_gpio 46 0>;
+	};
+
+	sensor_main: sensor-main@3c {
+		compatible = "sprd,sensor-main";
+		reg = <0x3c>;
+		clock-names = "clk_src", "sensor_eb";
+		clocks = <&clk_sensor>, <&clk_mm_axi_gate 2>;
+		vddio-supply = <&vddcamio>;
+		vddcama-supply = <&vddcama>;
+		vddcamd-supply = <&vddcamd>;
+		vddcammot-supply = <&vddcammot>;
+		reset-gpios = <&ap_gpio 45 0>;
+		power-down-gpios = <&ap_gpio 47 0>;
+
+		port {
+			sensor_main_1: endpoint {
+				remote-endpoint = <&csi_out>;
+			};
+		};
+	};
+};
+
+&csi {
+	status = "okay";
+
+	port {
+		csi_out: endpoint {
+			remote-endpoint = <&sensor_main_1>;
+		};
+	};
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&uart1 {
+	status = "okay";
+};
+
+&uart2 {
+	status = "okay";
+};
+
+&uart3 {
+	status = "okay";
+};
+
+&i2c0 {
+	status = "okay";
+};
+
+&i2c1 {
+	status = "okay";
+};
+
+&i2c2 {
+	status = "okay";
+	lis3dh_acc@18{
+		compatible = "st,lis3dh_acc";
+		reg = <0x18>;
+		gpios = <&ap_gpio 139 1>;
+		poll_interval = <10>;
+		min_interval = <1>;
+		g_range = <0>;
+		axis_map_x = <0>;
+		axis_map_y = <1>;
+		axis_map_z = <2>;
+		negate_x = <1>;
+		negate_y = <1>;
+		negate_z = <0>;
+	};
+	epl2182_pls@49{
+		compatible = "elan,epl2182_pls";
+		reg = <0x49>;
+		gpios = <&ap_gpio 140 1>;
+	};
+};
+
+&i2c3 {
+	status = "okay";
+
+	adaptive-touchscreen@26 {
+		compatible = "adaptive-touchscreen";
+		reg = <0x26>;
+		gpios = <&ap_gpio 145 0
+			&ap_gpio 144 0>;
+		controller = "mstar,MSG21XXA";
+	};
+};
+
+&i2c4 {
+	status = "okay";
+};
+
+&ap_gic_extn {
+	compatible = "sprd,sc9836-extn-intc";
+};
+
+
+
+&sdio0 {
+	sprd,delay = <0x03 0x03 0x03>;
+	vmmc-supply = <&vddsdcore>;
+	voltage-ranges = <3000 3000>;
+	bus-width = <4>;
+	non-removable;
+	sprd,name = "sdio_sd";
+	status = "okay";
+};
+
+&sdio1 {
+	sprd,delay = <0x03 0x03 0x03>;
+	voltage-ranges = <2900 3200>;
+	bus-width = <4>;
+	sprd,name = "sdio_wifi";
+	status = "okay";
+};
+
+&sdio3 {
+	sprd,delay = <0x3e 0xa 0xa>;
+	vmmc-supply = <&vddemmccore>;
+	vqmmc-supply = <&vddgen0>;
+	voltage-ranges = <3000 3000>;
+	bus-width = <8>;
+	non-removable;
+	sprd,name = "sdio_emmc";
+	status = "okay";
+};
+
+&apt1_timer1 {
+	status = "okay";
+	compatible = "sprd,chg-timer";
+};
+
+&battery {
+	charger-det-gpios = <&pmic_eic 0 0>;
+	battery-det-gpios = <&pmic_eic 9 0>;
+	io-channels = <&pmic_adc 1>,<&pmic_adc 10>,
+			<&pmic_adc 12>,<&pmic_adc 16>;
+	io-channel-names = "adc_temp","adc_vbat",
+			"adc_vchg","adc_isense";
+	status = "okay";
+};
+
+&soc {
+	ap-ahb {
+		dispc0:dispc0@20800000 {
+			compatible = "sprd,sc9838-dispc";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0x20800000 0x1000>;
+			dev-id = <0>;
+			sprd,dpi_clk_div = <7>;
+			interrupts = <GIC_SPI 46 IRQ_TYPE_NONE>;
+			clock-src = <256000000 256000000 384000000>;
+			clock-names =   "dispc_clk_parent",
+					"dispc_dbi_clk_parent",
+					"dispc_dpi_clk_parent",
+					"dispc_emc_clk_parent",
+					"dispc_clk",
+					"dispc_dbi_clk",
+					"dispc_dpi_clk",
+					"dispc_emc_clk";
+			clocks = <&clk_twpll_256m>,
+				<&clk_twpll_256m>,
+				<&clk_twpll_384m>,
+				<&clk_aon_apb>,
+				<&clk_dispc0>,
+				<&clk_dispc0_dbi>,
+				<&clk_dispc0_dpi>,
+				<&clk_aon_apb_gates1 11>;
+			status = "disable";
+
+			port@0 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				reg = <0>;
+				dispc_out:endpoint@0{
+					reg = <0>;
+					remote-endpoint = <&dsi_in>;
+				};
+			};
+		};
+
+		dsi_phy:dsi_phy {
+			compatible = "sprd,mipi-video-phy";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			#phy-cells = <1>;
+			status = "okay";
+
+			port@0 {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				reg = <0>;
+
+				dphy_out: endpoint@0{
+					reg = <1>;
+					remote-endpoint = <&panel_drivers>;
+				};
+
+				dphy_in: endpoint@1{
+					reg = <0>;
+					remote-endpoint = <&dsi_out>;
+				};
+			};
+		};
+
+		lcds:lcds@0 {
+			panel-drivers = <
+				&lcd_otm8019a_mipi_wvga
+				&lcd_dummy_mipi_hd
+			>;
+			port {
+				panel_drivers:endpoint {
+					remote-endpoint = <&dphy_out>;
+				};
+			};
+		};
+
+		dsi0:dsi@21800000 {
+			compatible = "sprd,dsi0";
+			#address-cells = <1>;
+			#size-cells = <0>;
+			#phy-cells = <1>;
+			dev-id = <0>;
+			reg = <0x21800000 0x1000>;
+			interrupts = <GIC_SPI 48 IRQ_TYPE_NONE>,
+				<GIC_SPI 49 IRQ_TYPE_NONE>,
+				<GIC_SPI 47 IRQ_TYPE_NONE>;
+			phy-names = "dsi_phy";
+			phys = <&dsi_phy 1>;
+
+			port{
+				dsi_out: endpoint@0{
+					remote-endpoint = <&dphy_in>;
+				};
+				dsi_in: endpoint@1{
+					remote-endpoint = <&dispc_out>;
+				};
+			};
+		};
+
+		sprd_panel_if:panel-if {
+				compatible = "sprd,sc9830-panel-if";
+				sprd,syscon-ap-ahb = <&ap_ahb_controller>;
+				sprd,syscon-pmu-apb = <&pmu_apb_controller>;
+				sprd,syscon-aon-apb = <&aon_apb_controller>;
+				sprd,syscon-mm-apb = <&mm_ahb_controller>;
+				sprd,syscon-ap-apb = <&ap_apb_controller>;
+
+				pinctrl-0 = <&lcm_rstn_label>;
+				pinctrl-names = "lcm_rstn";
+
+				intf-nums = <1>;
+				panel-if0 {
+					type = <2>;
+					sprd,dsi = <&dsi0>;
+					panel-if-type = <0>;
+				};
+		};
+
+		display_adf:adf-display {
+			compatible = "sprd,sc9830-adf";
+			status = "okay";
+			sprd,display-mode = <3>;
+			sprd,dispc = <&dispc0>;
+			sprd,syscon-ap-ahb = <&ap_ahb_controller>;
+			sprd,syscon-pmu-apb = <&pmu_apb_controller>;
+			sprd,syscon-aon-apb = <&aon_apb_controller>;
+			sprd,syscon-mm-apb = <&mm_ahb_controller>;
+			sprd,syscon-ap-apb = <&ap_apb_controller>;
+		};
+	};
+};

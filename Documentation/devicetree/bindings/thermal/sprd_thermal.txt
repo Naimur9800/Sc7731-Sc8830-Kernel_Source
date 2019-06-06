@@ -1,0 +1,30 @@
+* Spreadtrum thermal
+
+The Spreadtrum thermal support read temp and strategy(Optional)
+Thermal node properties:
+Required properties:
+		compatible : should be these followings.
+			     "sprd,ap-thermal";
+			     "sprd,sc2723-thermal";
+			     "sprd,virt-thermal";
+		k-po: the proportional term constant during temperature
+		      overshoot periods (current temperature is above
+		      "desired temperature" trip point).
+		k-pu: the proportional term constant during temperature
+		      undershoot periods (current temperature below
+		      "desired temperature" trip point).
+		k-i: configures the PID loop's integral term constant
+		k-d: configures the PID loop's derivative term constant
+		cutoff: When the temperature error is below `integral_cutoff`,
+		        errors are accumulated in the integral term
+
+Example:
+virt_sensor: virt-sensor@11 {
+		compatible = "sprd,virt-thermal";
+		#thermal-sensor-cells = <1>;
+		sensor-names = "cpu-thm";
+		k-po = <128>;
+		k-pu = <256>;
+		k-i = <2>;
+		cutoff = <10000>;
+		};

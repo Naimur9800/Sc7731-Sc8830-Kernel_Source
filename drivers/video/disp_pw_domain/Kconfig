@@ -1,0 +1,11 @@
+config DISP_PW_DOMAIN_ON
+	bool "SPRD display power domain driver for whale2"
+	help
+	  This driver enable display power domain driver for spreadtrum.
+
+config DISP_PM_DOMAIN_SHARKL3
+	bool "SPRD display PM Generic Domain for SharkL3"
+	select PM_GENERIC_DOMAINS if PM
+	help
+	  When you select this feature, it will enable the pm generic
+	  power domain for SharkL3 display module.

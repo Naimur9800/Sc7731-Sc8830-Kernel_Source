@@ -1,0 +1,27 @@
+Spreadtrum swcnblk bindings
+
+Required properties:
+- compatible: must be "sprd,swcnblk".
+- sprd,name: the name of the associated swcnblk device.
+- sprd,dst: communication with the processor ID.
+- sprd,channel: the channel of the associated sblock.
+- sprd,tx-blksize: the size of the tx-block buffer for sending data.
+- sprd,tx-blknum: the number of the tx-block buffers.
+- sprd,rx-blksize: the size of the rx-block buffer for receiving data.
+- sprd,rx-blknum: the size of the rx-block buffers.
+- sprd,basemem: the sblock addr alloc from the basemem.
+- sprd,alignsize: the size of the block buffer align.
+
+Example:
+
+wcn_wifi_data0 {
+	compatible = "sprd,swcnblk";
+	sprd,name = "wcn_wifi_data0";
+	sprd,dst = <3>;
+	sprd,channel = <8>;
+	sprd,tx-blksize = <1664>;
+	sprd,tx-blknum = <64>;
+	sprd,rx-blksize = <1664>;
+	sprd,rx-blknum = <128>;
+	sprd,alignsize = <4096>;
+};

@@ -1,0 +1,109 @@
+M: baolin.wang@spreadtrum.com
+L: KRG
+F: driver/mfd/*
+F: drivers/clk/*
+F: drivers/spi/*
+F: driver/tty/serial/*
+F: drivers/spi/*
+F: drivers/i2c/*
+F: drivers/usb/gadget/*
+F: drivers/usb/phy/*
+F: drivers/gpio/*
+F: drivers/pinctrl/*
+F: drivers/watchdog/*
+F: drivers/regulator/*
+F: drivers/rtc/*
+F: drivers/dma/*
+F: drivers/hwspinlock/*
+F: driver/power/*
+F: drivers/soc/sprd/debug/*
+F: drivers/iio/*
+F: drivers/thermal/*
+F: drivers/misc/sprd_otp/*
+F: crypto/*
+F: drivers/mmc/*
+F: drivers/clocksource/*
+F: kernel/time/*
+F: sound/soc/sprd/*
+F: drivers/misc/sprd_audio/*
+F: drivers/misc/mcdt/*
+F: sound/soc/codecs/*
+
+M: billows.wu@spreadtrum.com
+L: KRG
+F: fs/*
+F: drivers/mmc/*
+F: kernel/power/
+F: drivers/soc/sprd/pm*
+F: kernel/sched/*
+F: driver/misc/sprd_wcn/*
+
+M: chunyan.zhang@spreadtrum.com
+L: KRG
+F: driver/hwtracing/coresight/
+F: drivers/hwtracing/stm/
+F: drivers/clk/
+F: general sprd upstreaming code
+
+M: janet.liu@spreadtrum.com
+L: KRG
+F: arch/x86/*
+F: arch/arm/*
+F: arch/arm64/*
+F: drivers/soc/sprd/debug/*
+F: fs/*
+F: init/*
+F: kernel/*
+
+M: jassmine.meng@spreadtrum.com
+drivers/base/power/runtime.c
+drivers/base/power/domain.c
+drivers/thermal/
+
+M: joseph.cai@spreadtrum.com
+L: KRG
+F: drivers/input/
+F: drivers/leds/
+F: drivers/misc/*vibra*
+F: misc/sprd_camera/
+F: kernel/irq/
+F: drivers/irqchip/
+F: kernel/sched/
+F: kernel/locking/
+F: drivers/staging/sprd_modem/
+
+M: leon.he@spreadtrum.com
+L: KRG
+F: drivers/video/adf/sprd/
+F: drivers/phy/
+F: drivers/base/power/runtime.c (pm-runtime)
+F: drivers/base/power/domain.c (power domain)
+
+M: orson.zhai@spreadtrum.com
+L: KRG
+F: arch/*/boot/dts/*
+F: arch/*/configs/sprd*defconfig
+F: all others
+
+M: xiang.bao@spreadtrum.com
+L: KRG
+F: drivers/misc/sprd_camera/*
+F: drivers/soc/sprd/iommu/*
+
+
+M: yexiong.liu@spreadtrum.com
+L: KRG
+F: kernel/power/*
+F: drivers/base/power/*
+F: drivers/cpuidle/*
+F: drivers/cpufreq/*
+F: driver/devfreq/*
+F: drivers/cpuhotplug/*
+F: drivers/soc/sprd/pm*
+F: drivers/misc/sprd_camera/
+
+M: ming.ling@spreadtrum.com
+L: PRO
+F: drivers/staging/android/ion/
+F: mm/
+F: arch/*/boot/dts/*memory*.dtsi

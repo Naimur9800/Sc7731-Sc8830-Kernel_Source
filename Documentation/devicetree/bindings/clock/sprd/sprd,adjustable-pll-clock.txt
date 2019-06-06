@@ -1,0 +1,20 @@
+Spreadtrum adjust pll clock driver.
+
+Spreadtrum platform have some adjustable pll clock, this is used for sprd
+adjustable pll clock driver.
+
+Required properties:
+
+- compatible : shall be: "sprd,iwhale2-adjustable-pll-clock" or
+			 "sprd,sc9838-adjustable-pll-clock"
+
+Example:
+
+	clk_mpll: clk@402e0044 {
+		compatible = "sprd,sc9838-adjustable-pll-clock";
+		#clock-cells = <0>;
+		reg = <0 0x402e0044 0 0x4>,
+		      <0 0x402e0048 0 0x4>;
+		clocks = <&clk_mpll_gate>;
+		clock-output-names = "clk_mpll";
+	};

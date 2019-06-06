@@ -1,0 +1,169 @@
+/*****************************************
+Do not modify dts file, please modify according dtsi file
+******************************************/
+#include "../sp7731e-1h10-native-fp.dts"
+#include "sprd_base_diff.dtsi"
+
+/ {
+	zte_misc: zte_misc {
+		status = "okay";
+		compatible = "zte-misc";
+	};
+
+	charger_policy_service {
+		compatible = "zte,charger-policy-service";
+		status="okay";
+		policy,enable = <1>;
+		policy,expired-mode-enable = <1>;
+		policy,retry-times = <10>;
+		policy,timeout-seconds = <64800>;/* 18 hours */
+		policy,max-capacity = <70>;
+		policy,min-capacity = <50>;
+		policy,bms-phy-name = "battery";
+		policy,battery-phy-name = "battery";
+	};
+};
+
+&i2c2 {
+	clock-frequency = <400000>;
+	status = "okay";
+
+	/delete-node/ adaptive-touchscreen@38;
+
+	focaltech@38 {
+		compatible = "focaltech,fts";
+		reg = <0x38>;
+		focaltech,reset-gpio = <&ap_gpio 63 0>;
+		focaltech,irq-gpio = <&ap_gpio 64 0x2008>;
+		focaltech,display-coords = <0 0 480 800>;
+		focaltech,max-touch-number = <2>;
+	};
+	tlsc6x_ts@2e {
+		compatible = "tlsc6x,tlsc6x_ts";
+		reg = <0x2e>;
+		gpios = <&ap_gpio 63 0
+			&ap_gpio 64 0>;
+		vdd_name = "vdd28";
+		TP_MAX_X = <480>;
+		TP_MAX_Y = <960>;
+	};
+};
+
+&i2c1{
+	clock-frequency = <400000>;
+	status = "okay";
+
+	mc3xxx@4c{
+		compatible = "mcube,mc3xxx";
+		reg = <0x4c>;
+		gpios = <&ap_gpio 54 0>;
+		poll_interval = <10>;
+		min_interval = <1>;
+		g_range = <0>;
+		axis_maps_x = <0>;
+		axis_maps_y = <1>;
+		axis_maps_z = <2>;
+		negate_x = <1>;
+		negate_y = <1>;
+		negate_z = <0>;
+	};
+	stk8baxx_acc@18{
+		compatible = "stk,stk8baxx";
+		reg = <0x18>;
+		stk,direction = <1>;
+	};
+
+	kionix_acc@0E{
+		compatible = "Kionix,accel";
+		reg = <0x0E>;
+		poll_interval = <10>;
+		min_interval = <10>;
+		g_range = <0>;
+		accel_res = <0>;
+		accel_irq_use_drdy = <0>;
+		accel_direction = <3>;
+		gpios = <&ap_gpio 54 0>;
+	};
+
+	n2dm-acc@8{
+		compatible = "ST,n2dm_acc";
+		reg = <0x08>;
+		poll_interval = <10>;
+		min_interval = <10>;
+		g_range = <0>;
+		axis_map_x = <0>;
+		axis_map_y = <1>;
+		axis_map_z = <2>;
+		negate_x = <1>;
+		negate_y = <0>;
+		negate_z = <0>;
+	};
+};
+
+/*****************************************
+cam setting
+******************************************/
+&i2c0 {
+	/delete-node/ sensor-main@3c;
+	/delete-node/ sensor-sub@21;
+};
+
+&i2c0 {
+	sensor_main: sensor-main@3c {
+		compatible = "sprd,sensor-main";
+		reg = <0x3c>;
+		clock-names = "clk_src", "sensor_eb",
+			"clk_96m", "clk_76m8",
+			"clk_48m", "clk_26m";
+		clocks  = <&clk_sensor0>,
+			<&clk_mm_ckg_gates 1>,
+			<&clk_twpll_96m>,
+			<&clk_twpll_76m8>,
+			<&clk_twpll_48m>,
+			<&ext_26m>;
+		vddio-supply = <&vddcamio>;
+		vddcama-supply = <&vddcama>;
+		vddcamd-supply = <&vddcamd>;
+		vddcammot-supply = <&vddcammot>;
+		reset-gpios = <&ap_gpio 37 0>;
+		power-down-gpios = <&ap_gpio 38 0>;
+		host = "dcam0";
+		port {
+			sensor_main_0: endpoint {
+				remote-endpoint = <&phy0_out_main>;
+			};
+		};
+	};
+
+	sensor_sub: sensor-sub@21 {
+		compatible = "sprd,sensor-sub";
+		reg = <0x21>;
+		clock-names = "clk_src","sensor_eb",
+			"clk_96m", "clk_76m8",
+			"clk_48m", "clk_26m";
+		clocks = <&clk_sensor0>,
+			<&clk_mm_ckg_gates 1>,
+			<&clk_twpll_96m>,
+			<&clk_twpll_76m8>,
+			<&clk_twpll_48m>,
+			<&ext_26m>;
+		vddio-supply = <&vddcamio>;
+		vddcama-supply = <&vddcama>;
+		vddcamd-supply = <&vddcamd>;
+		vddcammot-supply = <&vddcammot>;
+		reset-gpios = <&ap_gpio 46 0>;
+		power-down-gpios = <&ap_gpio 39 0>;
+		host = "dcam0";
+		port {
+			sensor_sub_0: endpoint {
+				remote-endpoint = <&phy0_out_sub>;
+			};
+		};
+	};
+};
+
+&pmic_flash{
+	compatible = "sprd,sc2720-flash";
+	reg=<0x1f4>;
+};
+

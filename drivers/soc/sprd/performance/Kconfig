@@ -1,0 +1,14 @@
+config SPRD_PERFORMANCE
+	bool "Spreadtrum Performance support"
+	depends on SPRD_DEBUG
+	help
+	  For whale,whale2,or iwhal2.It used to
+	  calculate the bandwidth of each subsystem
+	  to access the memory.
+	  If unsure, say N
+
+config SPRD_PTM
+	bool "Spreadtrum Performance Trace Monitor Support"
+	depends on SPRD_DEBUG
+	help
+	  Say Y here to support ptm support.

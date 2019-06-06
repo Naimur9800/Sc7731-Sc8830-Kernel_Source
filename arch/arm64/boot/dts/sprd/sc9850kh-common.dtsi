@@ -1,0 +1,170 @@
+/*
+ * Spreadtrum sc9850kh chip common DTS file
+ *
+ * Copyright (C) 2016, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#include <dt-bindings/pinctrl/sc9833_pinctrl.h>
+
+/ {
+
+	gic: interrupt-controller@12001000 {
+		compatible = "arm,cortex-a15-gic", "arm,gic-400";
+		reg = <0 0x12001000 0 0x1000>,
+		      <0 0x12002000 0 0x2000>,
+		      <0 0x12004000 0 0x2000>,
+		      <0 0x12006000 0 0x2000>;
+		#interrupt-cells = <3>;
+		interrupt-controller;
+		interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(8)
+					| IRQ_TYPE_LEVEL_HIGH)>;
+	};
+
+	psci {
+		compatible = "arm,psci-0.2";
+		method = "smc";
+	};
+
+	arch_timer: timer {
+		compatible = "arm,armv8-timer";
+		interrupts = <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(8)
+					 | IRQ_TYPE_LEVEL_LOW)>,
+			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(8)
+					 | IRQ_TYPE_LEVEL_LOW)>;
+		clock-frequency = <26000000>;
+	};
+
+	pmu {
+		compatible = "arm,armv8-pmuv3";
+		interrupts = <GIC_SPI 142 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 143 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 150 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 151 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 166 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 167 IRQ_TYPE_LEVEL_HIGH>;
+	};
+
+};
+
+&uart0 {
+	clocks = <&clk_uart0>, <&ext_26m>,
+		<&clk_ap_apb_gates 13>;
+};
+
+&uart1 {
+	clocks = <&clk_uart1>, <&ext_26m>,
+		<&clk_ap_apb_gates 14>;
+};
+
+&uart2 {
+	clocks = <&clk_uart2>, <&ext_26m>,
+		<&clk_ap_apb_gates 15>;
+};
+
+&uart3 {
+	clocks = <&clk_uart3>, <&ext_26m>,
+		<&clk_ap_apb_gates 16>;
+};
+
+&i2c0 {
+	clocks = <&clk_i2c0>, <&ext_26m>,
+		<&clk_ap_apb_gates 8>;
+};
+
+&i2c1 {
+	clocks = <&clk_i2c1>, <&ext_26m>,
+		<&clk_ap_apb_gates 9>;
+};
+
+&i2c2 {
+	clocks = <&clk_i2c2>, <&ext_26m>,
+		<&clk_ap_apb_gates 10>;
+};
+
+&i2c3 {
+	clocks = <&clk_i2c3>, <&ext_26m>,
+		<&clk_ap_apb_gates 11>;
+};
+
+&i2c4 {
+	clocks = <&clk_i2c4>, <&ext_26m>,
+		<&clk_ap_apb_gates 12>;
+};
+
+&spi0 {
+	clocks = <&clk_spi0>, <&ext_26m>,
+		<&clk_ap_apb_gates 5>;
+};
+
+&spi1 {
+	clocks = <&clk_spi1>, <&ext_26m>,
+		<&clk_ap_apb_gates 6>;
+};
+
+&spi2 {
+	clocks = <&clk_spi2>, <&ext_26m>,
+		<&clk_ap_apb_gates 7>;
+};
+
+&pwms {
+	clock-names = "sprd_pwm_clk_parent", "clk_pwm";
+	clocks = <&ext_26m>, <&clk_pwm0>;
+};
+
+&hwslock1 {
+	clocks = <&clk_aon_apb_gates0 22>;
+};
+
+&pin_controller {
+	vio_sd0_ms_0: regctrl0 {
+		pins = <VSD0_MS 0x0>;
+	};
+	vio_sd0_ms_1: regctrl1 {
+		pins = <VSD0_MS 0x1>;
+	};
+	/* for sys iis0 */
+	ap_iis0_0: reg3-iis0-0 {
+		pins = <IIS0_SYS_SEL 0x0>;
+	};
+	pubcp_iis0_0: reg3-iis0-4 {
+		pins = <IIS0_SYS_SEL 0x4>;
+	};
+	tgdsp_iis0_0: reg3-iis0-5 {
+		pins = <IIS0_SYS_SEL 0x5>;
+	};
+	vbc_iis1_0: reg3-iis0-9 {
+		pins = <IIS0_SYS_SEL 0x9>;
+	};
+	vbc_iis2_0: reg3-iis0-a {
+		pins = <IIS0_SYS_SEL 0xa>;
+	};
+	vbc_iis3_0: reg3-iis0-b {
+		pins = <IIS0_SYS_SEL 0xb>;
+	};
+	/* for sys iis2 */
+	ap_iis0_2: reg3-iis2-0 {
+		pins = <IIS2_SYS_SEL 0x0>;
+	};
+	pubcp_iis0_2: reg3-iis2-4 {
+		pins = <IIS2_SYS_SEL 0x4>;
+	};
+	tgdsp_iis0_2: reg3-iis2-5 {
+		pins = <IIS2_SYS_SEL 0x5>;
+	};
+	vbc_iis1_2: reg3-iis2-9 {
+		pins = <IIS2_SYS_SEL 0x9>;
+	};
+	vbc_iis2_2: reg3-iis2-a {
+		pins = <IIS2_SYS_SEL 0xa>;
+	};
+	vbc_iis3_2: reg3-iis2-b {
+		pins = <IIS2_SYS_SEL 0xb>;
+	};
+};
+
+&sprd_wdt {
+	sprd,wdt-phandle = <&pmic_wdt>;
+	clocks = <&clk_aon_apb_gates1 8>, <&clk_aon_apb_rtc_gates 9>;
+};

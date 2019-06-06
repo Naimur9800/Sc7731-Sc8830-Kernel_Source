@@ -1,0 +1,14 @@
+if MOBILEVISOR
+
+menu "Mobilevisor feature support"
+
+config MOBILEVISOR_32BIT_WA
+        tristate "WA to force 32bit address in VMM api"
+        default y
+        help
+          Hence VMM host is still in 32bit mode, add this
+		  WA to force all data pass to VMM are in 32bit address.
+
+endmenu
+
+endif

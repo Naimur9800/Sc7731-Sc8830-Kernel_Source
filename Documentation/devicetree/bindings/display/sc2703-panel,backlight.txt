@@ -1,0 +1,137 @@
+Spreadtrum Communications SC2703 Panel, WLED(Backlight) bindings
+
+Required properties for AMOLED mode:
+- compatible: should be "sprd,sc2703-bllcd"
+
+Required properties for TFT mode:
+- compatible: Same as above
+- reg: I2C slave address, 0x4B.
+- sprd,wled-mode: Wled operation modes,
+	it is able to chosse one of below five modes.
+	Whole modes can be turned on by PWM(GPIO) input
+	if you don't add the 'sprd,wled-enable-by-i2c' property.
+	the 'sprd,wled-enable-by-i2c' means that it is turned on by i2c access.
+
+	1. "bypass-mode" : Controlled by external PWM(duty) directly
+			based on fixed wled_idac_code_o, PWM output by input PWM.
+			* The external PWM input is controlled by sc2703 wled driver.
+
+	2. "direct-mode" : Controlled by Internal PWM or wled_idac_code_o.
+			In this case, user has to fix either of them.
+			Also please make sure that WLED_PWM input pin is low!
+
+			i) Required properties in the case brightness is controlled
+			   by wled_idac_code_o
+				sprd,level-ctrl-by="idac-control"
+				sprd,pwm-out-freq-hz = <xxxxx>;
+				sprd,pwm-out-duty = <xx>;
+
+			ii) Required properties in the case brightness is controlled
+			    by pwm duty
+				sprd,level-ctrl-by="pwm-control"
+				sprd,pwm-out-freq-hz = <xxxxx>;
+				sprd,wled-idac-microamp = <xxxx>
+
+	3. "duty-det-pwm-mode" : Controlled by external PWM(duty) based on fixed
+			wled_idac_code_o, output by internal PWM register
+			* Required properties(in below Optional peoperties)
+				- 'sprd,wled-idac-microamp'
+				- 'pwms'
+	4. "duty-det-analog-mode" : Controlled by external PWM(duty) based on fixed
+			wled_idac_code_o, always high PWM(duty) output
+			* Required properties(in below Optional peoperties)
+				- 'sprd,wled-idac-microamp'
+				- 'pwms'
+	5. "duty-det-mixed-mode" : Combination of "duty-det-pwm"/"duty-det-analog"
+			fix PWM_IN_DUTY_THRESHOLD(sprd,pwm-in-duty-thresh) below
+			* Required properties(in below Optional peoperties)
+				- 'sprd,wled-idac-microamp'
+				- 'pwms'
+	6. "ext-r-sink-mode" : Controlled by external PWM(duty) based on the
+			VDAC_FUL_SCALE_EXT_R accordingly
+			(sprd,vdac-ful-scale-ext-r) below, external R-Sink mode.
+			* Required properties(in below Optional peoperties)
+				- 'sprd,wled-idac-microamp'
+				- 'pwms'
+
+	For further information,
+	please see the data sheet(Wled Operation Modes) further details.
+
+Optional properties:
+- sprd,wled-enable-by-i2c: wled enable by i2c access for turning on/off
+			instead of GPIO control.
+- sprd,lcd-enable-gpio: LCD enable by extern GPIO control instead of
+			i2c access control for turning on and off.
+- sprd,level-ctrl-by: In case of direct mode. user must select
+			either "idac-control or "pwm-control"
+			please refer above "direct mode"
+- sprd,pwm-out-freq-hz : PWM out frequency for direct-mode, duty-det-pwm
+			and duty-det-mixed mode.
+			20000 Hz <= Range <= 34000 Hz
+- sprd,pwm-out-duty : PWM out duty, range is from 0(0%) to 255(100%) for
+			direct-mode, duty-det-pwm and duty-det-mixed mode.
+- sprd,wled-idac-microamp : For WLED IDAC current target,
+			range 160 ~ 40960 uA.
+- sprd,pwm-in-duty-thresh : For duty-det-mixed mode. Range 0 ~ 255.
+- sprd,max-brightness:
+	To determine the max brightness when use external PWM,
+	it means the mode is one of below 5 modes
+	(by-pass, duty-det-pwm, duty-det-analog, duty-det-mixed mode,
+	ext-r-sink)
+	if set to 100, then host use the brightness range: 0 ~ 100.
+	this property can be set up to 0xFFFF as maximum.
+	So for the direct mode(Not external PWM mode), this will be set to
+		20480 for controlling by idac-control
+		255 for controlling by pwm-control
+- sprd,idac-ramp-disable: WLED IDAC ramp disable
+- sprd,vdac-code-microvolt: Full-scale VDAC code for WLED in ext_r_rmode,
+			range from 0 to 1600000 uV
+- sprd,vdac-sel-microvolt: VDAC target for WLED boost,
+			range from 0 to 1600000 uV
+- irq
+
+======
+
+Example for one of pwm modes(1,3,4,5 and 6 in sprd,wled-mode above):
+
+	panel: sc2703-display@4b{
+		compatible = "sprd,sc2703-bllcd";
+		reg = <0x4b>;
+		interrupt-parent = <&gpio6>;
+		interrupts = <11 IRQ_TYPE_LEVEL_LOW>;
+		pwms = <&pwm1 0 40000 0>;
+		pwm-names = "sprd-wled";
+		sprd,wled-mode = "duty-det-mixed-mode";
+		sprd,pwm-out-duty = <255>;
+		sprd,wled-idac-microamp = <20480>;
+		sprd,pwm-in-duty-thresh = <20>;
+		sprd,max-brightness = <2047>;
+		lcd-enable-gpio = <&gpio6 14 1>;
+	};
+
+	sc2703-disp@4b {
+		compatible = "sprd,sc2703-disp";
+		reg = <0x4b>;
+
+		lcd_vdd: lcd-regulator {
+			compatible = "sprd,sc2703-lcd-regulator";
+			regulator-name = "sc2703-lcd";
+			regulator-boot-on;
+		};
+
+		sc2703-backlight {
+			compatible = "sprd,sc2703-backlight";
+
+			pwms = <&pwms 0 30000>;
+			pwm-names = "wled-pwm";
+			sprd,wled-mode = "duty-det-mixed-mode";
+			sprd,level-ctrl-by = "pwm-control";
+			sprd,pwm-out-freq-hz = <30000>;
+			sprd,pwm-duty = <80>;
+			sprd,wled-idac-microamp = <20480>;
+			sprd,pwm-in-duty-thresh = <20>;
+			sprd,max-brightness = <255>;
+			sprd,vdac-code-microvolt = <1500000>;
+			sprd,vdac-sel-microvolt = <1000000>;
+		};
+	};

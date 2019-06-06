@@ -1,0 +1,22 @@
+Sansa crypto engine driver
+
+Required properties:
+
+- compatible  : should be "dx,cc63p"
+- reg         : specifies base physical address and size of the registers map
+- interrupts  : interrupt number
+- clock-names : list of device clock input names; should contain one entry
+		"enable"
+- clocks      : list of clock phandle and specifier pairs for all clocks
+		listed in clock-names property
+- status      : Should be "okay" or "disabled" for enabled/disabled.
+
+Example:
+	crypto@50100000 {
+		compatible = "dx,cc63p";
+		reg = <0x50100000 0x1000>;
+		interrupts = <GIC_SPI 21 IRQ_TYPE_LEVEL_HIGH>;
+		clock-names = "enable";
+		clocks = <&clk_ap_ahb_gates 11>;
+		status = "disabled";
+	};

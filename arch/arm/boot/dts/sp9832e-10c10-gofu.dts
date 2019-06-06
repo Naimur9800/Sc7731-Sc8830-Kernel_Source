@@ -1,0 +1,64 @@
+/*
+ * Spreadtrum SP9832E 1H10 GO FULL board DTS file
+ *
+ * Copyright (C) 2016-2017, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+#include "sp9832e-10c10-go.dts"
+
+/ {
+	model = "Spreadtrum SP9832E-10C10-GOFU Board";
+	reserved_memory: reserved-memory {
+		/* cp_reserved = cp region + debug region */
+		/* debug region: not reserved in normal mode, it */
+		/* will be proccessed in u-boot */
+		cp_reserved: cp-modem@89600000 {
+			reg = <0x89600000 0x03f80000>;
+			/* This prop specifies the size of debug region */
+			/* in the cp tail */
+			sprd,cpdbg-size = <0x280000>;
+		};
+
+		tos_reserved: tos-mem@94020000{
+			reg = <0x94020000 0x01fe0000>;
+		};
+
+		/* if changed ,uboot dts also need change */
+		fb_reserved: fb@9c100000{
+			reg = <0x9c100000 0xe10000>;
+		};
+	};
+
+	sunwave-fp {
+		compatible = "sunwave,fingerprint";
+		sunwave,reset-gpio = <&ap_gpio 131 0 >;
+		sunwave,irq-gpio = <&ap_eic_async 13 0 >;
+	};
+};
+
+&lcd_ili9881c_mipi_hd {
+	low-res-simu = <1>;
+	simu-width = <720>;
+	simu-height = <1280>;
+};
+
+&i2c3 {
+	status = "okay";
+	adaptive-touchscreen@38 {
+		compatible = "adaptive-touchscreen";
+		reg = <0x38>;
+		gpios = <&ap_gpio 145 0
+			&ap_gpio 144 0>;
+		controller = "focaltech,FT5436";
+		virtualkeys = <580 60 1320 60 45
+				172 360 1320 60 45
+				158 600 1320 60 45>;
+		surface-width = <720>;
+		surface-height = <1280>;
+		private-data {
+		a8 = /bits/ 8 <0x5A>;
+		};
+	};
+};
+

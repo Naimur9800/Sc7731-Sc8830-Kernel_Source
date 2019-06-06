@@ -1,0 +1,53 @@
+/*
+ * Spreadtrum sharkl3 sp9863a board DTS file
+ *
+ * Copyright (C) 2018, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+/dts-v1/;
+/plugin/;
+
+/ {
+	/*
+	* When create a new node, we should use the key word __overlay__,
+	* otherwise u-boot can not analyze it.
+	*/
+
+	fragment {
+		target-path = "/";
+		__overlay__ {
+			sprd_overlay {
+				compatible = "sprd,overlay";
+				string = "spreadtrum overlay test!";
+			};
+			goodix_fp{
+				compatible = "goodix,fingerprint";
+				fp-gpio-reset = <&ap_gpio 131 0x00>;
+				fp-gpio-irq = <&ap_gpio 130 0x00>;
+				fp-gpio-pwr = <&ap_gpio 138 0x00>;
+			};
+
+			flash_lcd: flash-lcd {
+				compatible = "sprd,lcd-flash";
+				sprd,dispc = <&dispc0>;
+				sprd,backlight = <&pwm_backlight>;
+				status = "okay";
+			};
+		};
+	};
+};
+
+/*
+ * Sample code. Google strongly recommends you do not use fragment@x and
+ * syntax __overlay__, and instead use the reference syntax
+ */
+&memory {
+	compatible = "sprd,memory-dtbo";
+};
+
+&ddr_dfs {
+	sprd-scene = "boost", "lcdon", "lcdoff", "camlow",
+			"camhigh", "camveryhigh";
+	sprd-freq = <933 311 233 400 622 933>;
+};

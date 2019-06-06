@@ -1,0 +1,58 @@
+/*
+ * Spreadtrum Pike2 ZEBU FPGA DTS file
+ *
+ * Copyright (C) 2015-2016, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#include "sc7731e-fpga.dtsi"
+#include "sp7731e-fpga-common.dtsi"
+
+/ {
+	model = "Spreadtrum Pike2 FPGA Board";
+
+	compatible = "sprd,sp7731e-fpga", "sprd,pike2";
+
+	sprd,sc-id = <7731 1 0x20000>;
+
+	memory: memory@80000000 {
+		device_type = "memory";
+		reg = <0x80000000 0x40000000>;
+	};
+
+	chosen {
+		bootargs = "earlycon=sprd_serial,0x70000000,115200n8 loglevel=8 console=ttyS0,115200n8 init=/init root=/dev/ram0 rw androidboot.hardware=sp7731e_fpga";
+		linux,initrd-start = <0x85500000>;
+		linux,initrd-end = <0x855a3212>;
+	};
+
+	ipi: interrupt-controller {
+		compatible = "android,CustomIPI";
+		#interrupt-cells = <1>;
+		interrupt-controller;
+	};
+
+	trusty {
+		compatible = "android,trusty-smc-v1";
+
+		irq {
+			compatible = "android,trusty-irq-v1";
+			interrupt-templates = <&ipi 0>,
+						<&gic 1 GIC_PPI 0>,
+						<&gic 1 GIC_SPI 0>;
+			interrupt-ranges = < 0  15 0>,
+						<16  31 1>,
+						<32 223 2>;
+		};
+
+		virtio {
+			compatible = "android,trusty-virtio-v1";
+		};
+
+		log {
+			compatible = "android,trusty-log-v1";
+		};
+	};
+};
+

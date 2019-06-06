@@ -1,0 +1,33 @@
+Spreadtrum composite clock driver.
+
+Required properties:
+
+- compatible : should be "sprd,composite-clock".
+
+- sprd,mux-msk : Composite clocks which have multiple clock sources must
+		 have this property. And there must has a register which
+		 contains some bits can be used to select parent. This
+		 property stands for these bits' mask.
+
+- sprd,div-msk : Composite clocks which have divider function must have
+		 this property. And a register will be used for dividering
+		 the source clock. This property stands for these bits' mask.
+
+- sprd,gate-msk : Composite clocks which have gate function must have
+		  this property. If having this property, there must have
+		  a register can be used for gating the clock. Gating the
+		  clock only need one bit. This property can used for mask
+		  the gate bit.
+
+Example:
+
+	clk_sensor: clk@60e00024 {
+		compatible = "sprd,composite-clock";
+		#clock-cells = <0>;
+		reg = <0 0x60e00024 0 0x4>;
+		clocks = <&ext_26m>, <&clk_twpll_48m_def>,
+			 <&clk_twpll_76m8_def>, <&clk_twpll_96m_def>;
+		clock-output-names = "clk_sensor";
+		sprd,mux-msk = <0x3>;
+		sprd,div-msk = <0x700>;
+	};

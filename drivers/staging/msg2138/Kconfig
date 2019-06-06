@@ -1,0 +1,8 @@
+config TOUCHSCREEN_MSG2138
+	tristate "MSG213 touchscreen driver"
+	depends on I2C
+	---help---
+	  Say Y here if you have a MSG2138 based touchscreen controller.
+	  If unsure, say N.
+	  To compile this driver as a module, choose M here: the module
+	  will be called msg2138.o

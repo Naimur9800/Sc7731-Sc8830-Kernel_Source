@@ -1,0 +1,377 @@
+/*
+ * Spreadtrum Pike2 SP7731e DTS file
+ *
+ * Copyright (C) 2016-2017, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#include "sc7731e.dtsi"
+#include "sp7731e-common.dtsi"
+
+/ {
+	model = "Spreadtrum Pike2 SC7731e 14c10 Board";
+
+	compatible = "sprd,sp7731e-14c10", "sprd,sc7731e";
+
+	sprd,sc-id = <7731 1 0x20000>;
+
+	memory: memory@80000000 {
+		device_type = "memory";
+		reg = <0x80000000 0x40000000>;
+	};
+
+	chosen {
+		bootargs = "earlycon=sprd_serial,0x70000000,115200n8 loglevel=8 console=ttyS0,115200n8 init=/init root=/dev/ram0 rw androidboot.hardware=sp7731e_14c10";
+		linux,initrd-start = <0x85500000>;
+		linux,initrd-end = <0x855a3212>;
+	};
+
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		fb_reserved: fb@9e564000{
+			reg = <0x9e564000 0x00e10000>;
+		};
+
+		overlay_reserved: overlaybuffer@9f374000{
+			reg = <0x9f374000 0x00a8c000>;
+		};
+
+		mm_reserved: multimediabuffer@a0000000 {
+			reg = <0xa0000000 0x0f000000>;
+		};
+	};
+
+	ion {
+		compatible = "sprd,ion";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		heap@0 {
+			reg = <0>;
+			label = "system";
+			type = <0>;
+		};
+
+		heap@1 {
+			reg = <1>;
+			label = "carveout_mm";
+			type = <2>;
+			memory-region = <&mm_reserved>;
+		};
+
+		heap@2 {
+			reg = <2>;
+			label = "carveout_overlay";
+			type = <2>;
+			memory-region = <&overlay_reserved>;
+		};
+
+		heap@3 {
+			reg = <3>;
+			label = "carveout_fb";
+			type = <2>;
+			memory-region = <&fb_reserved>;
+		};
+	};
+
+	ipi: interrupt-controller {
+		compatible = "android,CustomIPI";
+		#interrupt-cells = <1>;
+		interrupt-controller;
+	};
+
+	trusty {
+		compatible = "android,trusty-smc-v1";
+
+		irq {
+			compatible = "android,trusty-irq-v1";
+			interrupt-templates = <&ipi 0>,
+						<&gic 1 GIC_PPI 0>,
+						<&gic 1 GIC_SPI 0>;
+			interrupt-ranges = < 0  15 0>,
+						<16  31 1>,
+						<32 223 2>;
+		};
+
+		virtio {
+			compatible = "android,trusty-virtio-v1";
+		};
+
+		log {
+			compatible = "android,trusty-log-v1";
+		};
+	};
+
+	sprd-cm4-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		cm4_dump: cm4_iram@50800000 {
+			reg = <0x50800000 0x10000>;
+		};
+	};
+
+	sprd-sysdump {
+		memory-region = <&memory>;
+		memory-region-re = <&cp_reserved>, <&smem_reserved>,
+				 <&wcn_reserved>, <&cm4_dump>;
+	};
+
+	sprd_scale {
+		compatible = "sprd,sprd_scale";
+	};
+
+	sprd_rotation {
+		compatible = "sprd,sprd_rotation";
+		sprd,cam-ahb-syscon = <&mm_ahb_controller>;
+	};
+
+	gpio-keys {
+		compatible = "gpio-keys";
+		input-name = "sprd-gpio-keys";
+		status = "okay";
+
+		key-volumedown {
+			label = "Volume Down Key";
+			linux,code = <114>;
+			gpios = <&ap_eic 2 1>;
+			debounce-interval = <2>;
+			gpio-key,wakeup;
+			gpio-key,level-trigger;
+		};
+
+		key-volumeup {
+			label = "Volume Up Key";
+			linux,code = <115>;
+			gpios = <&pmic_eic 9 0>;
+			debounce-interval = <2>;
+			gpio-key,wakeup;
+			gpio-key,level-trigger;
+		};
+
+		key-power {
+			label = "Power Key";
+			linux,code = <116>;
+			gpios = <&pmic_eic 1 1>;
+			debounce-interval = <2>;
+			gpio-key,wakeup;
+			gpio-key,level-trigger;
+		};
+	};
+};
+
+&pmic_kpled {
+	brightness_max = <128>;
+	brightness_min = <0>;
+	status = "okay";
+};
+
+&pmic_bltc_rgb {
+	status = "okay";
+};
+
+&iommu_dcam {
+	status = "disabled";
+};
+
+&iommu_isp {
+	status = "disabled";
+};
+
+&iommu_vsp {
+	status = "okay";
+};
+
+&dcam {
+	status = "okay";
+};
+
+&isp {
+	status = "okay";
+};
+
+&csi0 {
+	status = "okay";
+};
+
+&iommu_dispc {
+	status = "okay";
+};
+
+&iommu_gsp {
+	status = "okay";
+};
+
+&i2c0 {
+	status = "okay";
+	clock-frequency = <400000>;
+
+	sensor_main: sensor-main@3c {
+		compatible = "sprd,sensor-main";
+		reg = <0x3c>;
+		clock-names = "clk_src", "sensor_eb",
+			"clk_96m", "clk_76m8",
+			"clk_48m", "clk_26m";
+		clocks  = <&clk_sensor0>,
+			<&clk_mm_ckg_gates 1>,
+			<&clk_twpll_96m>,
+			<&clk_twpll_76m8>,
+			<&clk_twpll_48m>,
+			<&ext_26m>;
+		vddio-supply = <&vddcamio>;
+		vddcama-supply = <&vddcama>;
+		vddcamd-supply = <&vddcamd>;
+		vddcammot-supply = <&vddcammot>;
+		reset-gpios = <&ap_gpio 37 0>;
+		power-down-gpios = <&ap_gpio 38 0>;
+		host = "dcam0";
+		port {
+			sensor_main_0: endpoint {
+				remote-endpoint = <&phy0_out_main>;
+			};
+		};
+	};
+
+	sensor_sub: sensor-sub@21 {
+		compatible = "sprd,sensor-sub";
+		reg = <0x21>;
+		clock-names = "clk_src","sensor_eb",
+			"clk_96m", "clk_76m8",
+			"clk_48m", "clk_26m";
+		clocks = <&clk_sensor0>,
+			<&clk_mm_ckg_gates 1>,
+			<&clk_twpll_96m>,
+			<&clk_twpll_76m8>,
+			<&clk_twpll_48m>,
+			<&ext_26m>;
+		vddio-supply = <&vddcamio>;
+		vddcama-supply = <&vddcama>;
+		vddcamd-supply = <&vddcamd>;
+		vddcammot-supply = <&vddcammot>;
+		reset-gpios = <&ap_gpio 46 0>;
+		power-down-gpios = <&ap_gpio 39 0>;
+		host = "dcam0";
+		port {
+			sensor_sub_0: endpoint {
+				remote-endpoint = <&phy0_out_sub>;
+			};
+		};
+	};
+};
+
+&i2c1 {
+	status = "okay";
+
+	accelerometer@19 {
+		compatible = "st,lis2dh", "st,lis2dh12";
+		reg = <0x19>;
+	};
+
+	proximity-sensor@23 {
+		compatible = "LITEON,ltr_558als";
+		reg = <0x23>;
+		gpios = <&ap_gpio 56 0>;
+		/*
+		 *low sensitve(def):1500,250,220,1800,1600,1;
+		 *have no sensitve=<> as def.
+		 * High sensitve:1000,40,35,1200,1000,48
+		 */
+		sensitive = <1000 40 35
+					1200 1000 48>;
+		luxcorrection = <2330>;
+	};
+};
+
+&i2c2 {
+	status = "okay";
+	adaptive-touchscreen@38 {
+		compatible = "adaptive-touchscreen";
+		reg = <0x38>;
+		gpios = <&ap_gpio 63 0
+			&ap_gpio 64 0>;
+		controller = "focaltech,FT5436";
+		virtualkeys = <580 60 1320 60 45
+			172 360 1320 60 45
+			158 600 1320 60 45>;
+		private-data {
+			a8 = /bits/ 8 <0x5A>;
+		};
+	};
+};
+
+&mipi_csi_phy0 {
+	status = "okay";
+	sprd,phycfg = <0x00>;
+	sprd,csi = <&csi0>;
+	port {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		phy0_out_main: endpoint@0 {
+			reg = <0>;
+			remote-endpoint = <&sensor_main_0>;
+		};
+		phy0_out_sub: endpoint@1 {
+			reg = <1>;
+			remote-endpoint = <&sensor_sub_0>;
+		};
+	};
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&uart1 {
+	status = "okay";
+};
+
+&hsphy {
+	vdd-supply = <&vddusb33>;
+	sprd,efuse-blk-id = <41>;
+	sprd,efuse-backup = <1>;
+};
+
+&usb {
+	sprd,cable-detection-method = "typec";
+	sprd,vbus-gpios = <&pmic_eic 0 0>;
+};
+
+&pmic_typec {
+	status = "okay";
+};
+
+&sdio0 {
+	cd-gpios = <&ap_gpio 78 1>;
+};
+
+&battery {
+	adp-cdp-cur = <700>;
+	adp-dcp-cur = <1000>;
+	adp-sdp-cur = <450>;
+	chg-end-vol = <4350>;
+	chg-end-vol-check = <4330>;
+	chg-bat-safety-vol = <4430>;
+	rechg-vol = <4270>;
+	rsense-real = <200>;
+	rint = <320>;
+	cnom = <2780>;
+	ocv-tab-vol = <4340 4243 4185 4132 4083 4037 3996
+			3959 3921 3876 3842 3818 3800 3786
+			3776 3768 3753 3731 3696 3663 3400>;
+	ocv-tab-cap = <100  95   90   85   80   75   70
+			65   60   55   50   45   40   35
+			30   25   20   15   10   5    0>;
+};
+
+&pmic_charger {
+	status = "okay";
+};
+
+&pmic_fgu {
+	ocv-type = <1>;
+};

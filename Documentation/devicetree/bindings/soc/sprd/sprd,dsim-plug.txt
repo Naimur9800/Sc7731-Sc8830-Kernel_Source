@@ -1,0 +1,20 @@
+Spreadtrum dsim-plug bindings
+
+Required properties:
+- compatible: must be "sprd,dsim-plug".
+- sprd,name: the name of the associated spipe device.
+- sprd,dst: communication with the processor ID.
+- sprd,channel: the channel of the associated sbuf.
+- sim1-gpios: specified detection SIM1 card hot plug pin.
+- sim2-gpios: specified detection SIM2 card hot plug pin.
+
+Example:
+
+dsim-plg-lte {
+	compatible = "sprd,dsim-plug";
+	sprd,name = "dsim-plg-lte";
+	sprd,dst = <5>;
+	sprd,channel = <23>;
+	sim1-gpios = <&ap_gpio 40 0>;
+	sim2-gpios = <&ap_gpio 41 0>;
+};

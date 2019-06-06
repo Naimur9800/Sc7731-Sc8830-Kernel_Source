@@ -1,0 +1,138 @@
+/*
+ * Spreadtrum isharkl2 vdk DDR4G board DTS file
+ *
+ * Copyright (C) 2015, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+/dts-v1/;
+
+#include "sp9853i-presi-common.dtsi"
+
+/ {
+	model = "Spreadtrum isharkl2 vdk DDR4G SoC (x86 based)";
+
+	compatible = "sprd,isharkl2-vdk";
+
+	sprd,sc-id = <9868 1 0x20000>;
+
+	aliases {
+		serial0 = &uart0;
+		serial1 = &uart1;
+		serial2 = &uart2;
+		serial3 = &uart3;
+	};
+
+	chosen {
+		stdout-path = &uart0;
+		bootargs = "earlycon no_timer_check tsc=reliable console=ttyS0,921600n8 androidboot.hardware=sp9853i pit_freq=1193182 hpet_freq=26000000 no_console_suspend";
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		memdisk_reserved: memdisk@40000000{
+			reg = <0x0 0x80000000 0x0 0x3d000000>, /* system 1G-48M */
+				<0x0 0x40000000 0x0 0x30000000>, /* userdata 768M */
+				<0x0 0x15000000 0x0 0x10000000>; /* cache 256M */
+		};
+
+		overlay_reserved: overlay@10848000{
+			reg = <0x0 0x10848000 0x0 0x17e8000>;
+		};
+
+		fb_reserved: fb@12030000{
+			reg = <0x0 0x12030000 0x0 0x2fd0000>; /* fb */
+		};
+	};
+
+	sprd_memdisk {
+		compatible = "sprd,memdisk";
+		memory-region = <&memdisk_reserved>;
+	};
+
+	ion {
+		compatible = "sprd,ion";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		heap@0 {
+			reg = <0>;
+			label = "system";
+			type = <0>;
+		};
+
+		heap@2 {
+			reg = <2>;
+			label = "carveout_overlay";
+			type = <2>;
+			memory-region = <&overlay_reserved>;
+		};
+
+		heap@3 {
+			reg = <3>;
+			label = "carveout_fb";
+			type = <2>;
+			memory-region = <&fb_reserved>;
+		};
+	};
+
+
+};
+
+&uart0 {
+	status = "okay";
+};
+
+&uart1 {
+	status = "okay";
+};
+
+&uart2 {
+	status = "okay";
+};
+
+&uart3 {
+	status = "okay";
+};
+
+&sdio3 {
+	sprd,hs401-dly = <0x20 0x5 0x5 0x5>;
+	sprd,hs400-dly = <0x20 0x5 0x5 0x5>;
+	sprd,ddr52-dly = <0x20 0x5 0x5 0x5>;
+	bus-width = <8>;
+	non-removable;
+	cap-mmc-hw-reset;
+	mmc-hs400-1_8v;
+	mmc-hs200-1_8v;
+	mmc-ddr-1_8v;
+	sprd,name = "emmc";
+	status = "okay";
+};
+
+&dsi0 {
+	status = "disable";
+};
+
+&dphy0 {
+	status = "disable";
+};
+
+&panel_in {
+	remote-endpoint = <&dispc0_out>;
+};
+
+&dispc0_out {
+	remote-endpoint = <&panel_in>;
+};
+
+&panel_if {
+	force-id=<0xffff>;
+};
+
+&aon_timer1 {
+	compatible = "sprd,gp-timer";
+};

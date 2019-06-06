@@ -1,0 +1,15 @@
+* Device tree bindings for SC2723 power off
+
+SC2723 is used to externally trigger a system power off. Once the trigger has
+been sent, which signals the system to power off.
+
+Required properties:
+- compatible: should contain "sprd,sc2723-poweroff"
+- reg:        Physical offset in PMIC address space
+
+Example:
+
+pmic_poweroff: power@950 {
+	compatible = "sprd,sc2723-poweroff";
+	reg = <0x950>;
+};

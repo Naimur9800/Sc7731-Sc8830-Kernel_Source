@@ -1,0 +1,50 @@
+* Spreadtrum efuse Controller
+-----------------------------------------------------
+The Spreadtrum efuse Controller provides an interface to read and write efuse
+There are two efuse chips: Generic efuse for AP part , efuse for PMIC.
+Generic efuse reg  have register address and length.
+Efuse of PMIC only have Registers location.
+
+Required properties:
+- compatible: "sprd,efuse"
+              "sprd,sc2723-efuse"
+              "sprd,ap_r6p0_efuse"
+- reg: Registers address and [length] (length is not required for PMIC efuse)
+
+Optional properties:
+- sprd,syscon-enable: use aon apb controller(optional for PMIC efuse);
+- clocks: use ap efuse clk eb to enable clk control.
+- sprd,uid-start: uid block start.
+- sprd,uid-end : uid block end.
+- sprd,block-start: public efuse start block index.
+- sprd,block-num: public efuse block number.
+- sprd,block-width: public efuse width.
+- hwlocks: ap efuse use spinlock index.
+
+
+Example:
+	ap_efuse: efuse@40240000 {
+				compatible = "sprd,efuse";
+				sprd,syscon-enable = <&aon_apb_controller>;
+				reg = <0 0x40240000 0 0x48>;
+			};
+
+	pmic_efuse: efuse@200 	{
+				compatible = "sprd,sc2723-efuse";
+				reg = <0x200>;
+			};
+
+	ap_efuse: efuse@40240000 {
+				compatible = "sprd,ap_r6p0_efuse";
+				sprd,syscon-enable = <&aon_apb_controller>;
+				reg = <0x40240000 0x10000>;
+				clock-names = "enable";
+				clocks = <&clk_aon_apb_gates0 13>;
+				sprd,uid-start= <46>;
+				sprd,uid-end= <47>;
+				sprd,block-start= <36>;
+				sprd,block-num = <12>;
+				sprd,block-width = <32>;
+				hwlocks = <&hwslock1 8>;
+				hwlock-names = "ap_efuse";
+			};

@@ -1,0 +1,383 @@
+/*
+ * Spreadtrum SP9850S_2 board DTS file
+ *
+ * Copyright (C) 2016, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+/dts-v1/;
+
+#include "sc9850s.dtsi"
+#include "sc2731.dtsi"
+#include "sprd-battery.dtsi"
+#include "sp98x0-common.dtsi"
+#include "sprd-sound.dtsi"
+
+/ {
+	model = "Spreadtrum SP9850s Board";
+
+	compatible = "sprd,sc9850s-2h10-native";
+
+	sprd,sc-id = <9850 1 0x20000>;
+
+	aliases {
+		serial0 = &uart0;
+		serial1 = &uart1;
+		serial2 = &uart2;
+		serial3 = &uart3;
+		i2c0 = &i2c0;
+		i2c1 = &i2c1;
+		i2c5 = &i2c5;
+		spi0 = &spi0;
+		hwspinlock1 = &hwslock1;
+		dmc_mpu = &dmc_mpu;
+		thm-sensor7 = &pmic_thermal;
+		thm-sensor8 = &chg_temp;
+		thm-sensor9 = &pa_temp;
+	};
+
+	memory@80000000 {
+		device_type = "memory";
+		reg = <0 0x80000000 0 0x80000000>;
+	};
+
+	chosen {
+		stdout-path = &uart1;
+		bootargs = "earlycon=sprd_serial,0x70100000,115200n8 console=ttyS1,115200n8 loglevel=1 androidboot.hardware=sp9850s_2h10";
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		audio_reserved: audio-mem@87500000 {
+			reg = <0x0 0x87500000 0x0 0x300000>;
+		};
+
+		smem_reserved: sipc-mem@87800000 {
+			reg = <0x0 0x87800000 0x0 0x500000>;
+		};
+
+		cp_reserved: cp-modem@87d00000 {
+			reg = <0x0 0x87d00000 0x0 0x7900000>;
+		};
+
+		tos_reserved: tos-mem@96000000 {
+			reg = <0x0 0x96000000 0x0 0x2000000>;
+		};
+
+		mm_reserved: multimediabuffer@0{
+			/* start address will be filled by bootloader */
+			reg = <0x0 0x0 0x0 0x10000000>;
+		};
+		/* if changed ,uboot dts also need change */
+		fb_reserved: framebuffer@0{
+			/* start address will be filled by bootloader */
+			reg = <0x0 0x0 0x0 0x17bb000>;
+		};
+
+		overlay_reserved: overlaybuffer@0{
+			/* start address will be filled by bootloader */
+			reg = <0x0 0x0 0x0 0x3f48000>;
+		};
+
+		pub0_mpu_reserved: mpu0-dump@0 {
+			/* start address will be filled by bootloader */
+			reg = <0x0 0x0 0x0 0x1000>;
+		};
+
+		camera_reserved: camera-mem@bd4f0000{
+			reg = <0x0 0xbd4f0000 0x0 0x2b10000>;
+		};
+
+		/* non iq mode will be deleted by bootloader */
+		iq_reserved: iq-mem{
+			compatible = "sprd,iq-mem";
+			alignment = <0x0 0x1000>;
+			size = <0x0 0x8000000>;
+		};
+	};
+
+	ion {
+		compatible = "sprd,ion";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		heap@0 {
+			reg = <0>;
+			label = "system";
+			type = <0>;
+		};
+
+		heap@1 {
+			reg = <1>;
+			label = "carveout_mm";
+			type = <2>;
+			memory-region = <&mm_reserved>;
+			sprd,memory-region-auto;
+		};
+
+		heap@2 {
+			reg = <2>;
+			label = "carveout_overlay";
+			type = <2>;
+			memory-region = <&overlay_reserved>;
+			sprd,memory-region-auto;
+		};
+
+		heap@3 {
+			reg = <3>;
+			label = "carveout_fb";
+			type = <2>;
+			memory-region = <&fb_reserved>;
+			sprd,memory-region-auto;
+		};
+
+		heap@4 {
+			reg = <4>;
+			label = "carveout_camera";
+			type = <2>;
+			memory-region = <&camera_reserved>;
+			sprd,memory-region-auto;
+		};
+	};
+
+	sprd-iq {
+		compatible = "sprd,iq";
+		sprd,region = <&iq_reserved>;
+	};
+
+	sprd-sysdump {
+		memory-region = <&{/memory@80000000}>,<&mm_reserved>,
+		 <&overlay_reserved>;
+	};
+
+	flash-sc2731 {
+		compatible = "sprd,flash-sc2731";
+		sprd,pmic-flash = <&pmic_flash>;
+		flash0-gpios = <&ap_gpio 176 0>;
+		flash1-gpios = <&ap_gpio 177 0>;
+	};
+
+	chg_temp: chg-tsensor {
+		compatible = "sprd,board-thermal";
+		#thermal-sensor-cells = <1>;
+		io-channels = <&pmic_adc 3>;
+		io-channel-names = "adc_temp";
+		temp-tab-size = <16>;
+		temp-tab-val = <1140 1132 1109 1074 983 838 654 413
+				316 238 178 133 99 75 57 43>;
+		temp-tab-temp = <558 596 704 806 953 1101 1248 1450
+				1549 1649 1749 1849 1951 2049 2148 2252>;
+	};
+
+	pa_temp: pa-tsensor {
+		compatible = "sprd,board-thermal";
+		#thermal-sensor-cells = <1>;
+		io-channels = <&pmic_adc 5>;
+		io-channel-names = "adc_temp";
+		temp-tab-size = <16>;
+		temp-tab-val = <1140 1132 1109 1074 983 838 654 413
+				316 238 178 133 99 75 57 43>;
+		temp-tab-temp = <558 596 704 806 953 1101 1248 1450
+				1549 1649 1749 1849 1951 2049 2148 2252>;
+	};
+
+	sprd-wlan {
+		compatible = "sprd,sc2332";
+	};
+
+	sprd-marlin2 {
+		compatible = "sprd,marlin2";
+		m2-to-ap-coexist-gpios = <&ap_gpio 119 0>;
+		m2-wakeup-ap-gpios = <&ap_gpio 83 0>;
+		permit-ap-send-gpios = <&ap_gpio 84 0>;
+		rstn-gpios = <&ap_gpio 111 0>;
+		chip-en-gpios = <&ap_gpio 112 0>;
+		m2-to-ap-irq-gpios = <&ap_gpio 113 0>;
+		vddwcn-supply = <&dcdcrf>;
+		clock-names = "clk_32k","source","enable";
+		clocks = <&clk_aux0>,<&ext_32k>,
+			 <&clk_aon_apb_gates1 2>;
+		sdhci-name = <&sdio1>;
+	};
+
+	sprd-mtty {
+		compatible = "sprd,mtty";
+		sprd,name = "ttyM";
+	};
+
+	sprd-fm {
+		compatible  = "sprd,marlin2-fm";
+	};
+
+};
+
+&sdio0 {
+	non-removable;
+};
+
+&sdio1 {
+	status = "okay";
+};
+
+&battery {
+	adp-cdp-cur = <700>;
+	adp-dcp-cur = <1150>;
+	adp-sdp-cur = <450>;
+	chg-end-vol = <4350>;
+	chg-end-vol-check = <4330>;
+	chg-bat-safety-vol = <4430>;
+	rechg-vol = <4270>;
+	rsense-real = <100>;
+	rint = <320>;
+	cnom = <2780>;
+	ocv-tab-vol = <4360 4249 4189 4133 4081 4034 3991
+			3953 3910 3866 3836 3813 3795 3782
+			3774 3765 3750 3726 3687 3658 3400>;
+	ocv-tab-cap = <100  95   90   85   80   75   70
+			65   60   55   50   45   40   35
+			30   25   20   15   10   5    0>;
+};
+
+&pmic_charger{
+	status = "okay";
+};
+
+&sprd_audio_codec_ana {
+	status = "okay";
+	hp-use-inter-pa = <1>;
+	fixed-sample-rate = <48000 48000 48000>; /* DA, AD, AD1 */
+};
+
+&sprd_headset {
+	status = "okay";
+};
+
+&sound_vbc_r3p0_sprd_codec {
+	status = "okay";
+};
+
+&i2c0 {
+	status = "okay";
+	clock-frequency = <400000>;
+
+	sensor_sub: sensor-sub@21 {
+		compatible = "sprd,sensor-sub";
+		reg = <0x21>;
+		clock-names = "clk_src","sensor_eb",
+			"clk_96m","clk_76m8",
+			"clk_48m","clk_26m";
+		clocks = <&clk_sensor0>,<&clk_cam_axi_gates 6>,
+			<&clk_twpll_96m>,<&clk_twpll_76m8>,
+			<&clk_twpll_48m>,<&ext_26m>;
+		vddio-supply = <&vddcamio>;
+		vddcama-supply = <&vddcama1>;
+		vddcamd-supply = <&vddcamd1>;
+		vddcammot-supply = <&vddcammot>;
+		reset-gpios = <&ap_gpio 123 0>;
+		power-down-gpios = <&ap_gpio 124 0>;
+		host = "dcam1";
+		port {
+			sensor_sub_0: endpoint {
+				remote-endpoint = <&phy0_out>;
+			};
+		};
+	};
+
+	sensor_main2: sensor-main@3c {
+		compatible = "sprd,sensor-main2";
+		reg = <0x3c>;
+		clock-names = "clk_src","sensor_eb",
+			"clk_96m","clk_76m8",
+			"clk_48m","clk_26m";
+		clocks  = <&clk_sensor1>,<&clk_cam_axi_gates 7>,
+			<&clk_twpll_96m>,<&clk_twpll_76m8>,
+			<&clk_twpll_48m>,<&ext_26m>;
+		vddio-supply = <&vddcamio>;
+		vddcama-supply = <&vddcama0>;
+		vddcamd-supply = <&vddcamd0>;
+		vddcammot-supply = <&vddcammot>;
+		reset-gpios = <&ap_gpio 0 0>;
+		power-down-gpios = <&ap_gpio 0 0>;
+		host = "dcam1";
+		port {
+			sensor_main_2: endpoint {
+				remote-endpoint = <&phy2_out>;
+			};
+		};
+	};
+};
+
+&i2c5 {
+	status = "okay";
+	clock-frequency = <400000>;
+
+	sensor_main: sensor-main@3c {
+		compatible = "sprd,sensor-main";
+		reg = <0x3c>;
+		clock-names = "clk_src","sensor_eb",
+			"clk_96m","clk_76m8",
+			"clk_48m","clk_26m";
+		clocks = <&clk_sensor1>,<&clk_cam_axi_gates 7>,
+			<&clk_twpll_96m>,<&clk_twpll_76m8>,
+			<&clk_twpll_48m>,<&ext_26m>;
+		vddio-supply = <&vddcamio>;
+		vddcama-supply = <&vddcama0>;
+		vddcamd-supply = <&vddcamd0>;
+		vddcammot-supply = <&vddcammot>;
+		reset-gpios = <&ap_gpio 157 0>;
+		power-down-gpios = <&ap_gpio 125 0>;
+		host = "dcam0";
+		port {
+			sensor_main_0: endpoint {
+				remote-endpoint = <&phy1_out>;
+			};
+		};
+	};
+};
+
+&mipi_csi_phy0 {
+	status = "okay";
+
+	sprd,phycfg = <0x01>;
+	sprd,csi = <&csi1>;
+	port {
+		phy0_out: endpoint {
+			remote-endpoint = <&sensor_sub_0>;
+		};
+	};
+};
+
+&mipi_csi_phy1 {
+	status = "okay";
+
+	sprd,phycfg = <0x00>;
+	sprd,csi = <&csi0>;
+	port {
+		phy1_out: endpoint {
+			remote-endpoint = <&sensor_main_0>;
+		};
+	};
+};
+
+&mipi_csi_phy2 {
+	status = "okay";
+
+	sprd,phycfg = <0x2>;
+	sprd,csi = <&csi1>;
+	port {
+		phy2_out: endpoint {
+			remote-endpoint = <&sensor_main_2>;
+		};
+	};
+};
+
+&dmc_mpu {
+	sprd,ddr-interleaved = <0>;
+	sprd,ddr-chn = <11>;
+	memory-region = <&pub0_mpu_reserved>;
+	sprd,memory-region-auto;
+};

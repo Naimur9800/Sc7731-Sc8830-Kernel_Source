@@ -1,0 +1,79 @@
+/*
+ * Spreadtrum SC9830A-7 h/w ver. 1.0.0 smartphone board DTS file
+ *
+ * Copyright (C) 2015-2016, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#include "sp9830a-common.dtsi"
+
+/ {
+	model = "Spreadtrum SC9830A-7 V1.0.0 Smartphone Board";
+
+	compatible = "sprd,sp9830a-7h10-ga1", "sprd,sc9830";
+
+	sprd,sc-id = <9830 1 0x20000>;
+
+	memory: memory@80000000 {
+		device_type = "memory";
+		reg = <0x80000000 0x40000000>;
+	};
+
+	chosen {
+		bootargs = "loglevel=8 console=ttyS1,115200n8 init=/init root=/dev/ram0 rw androidboot.hardware=sc9830";
+		linux,initrd-start = <0x85500000>;
+		linux,initrd-end = <0x855a3212>;
+	};
+
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		smem_reserved: sipc_mem@87800000 {
+			reg = <0x87800000 0x400000>;
+		};
+
+		cp_reserved: cp_modem@89600000 {
+			reg = <0x89600000 0x4000000>;
+		};
+
+		mm_reserved: multimediabuffer@9872d000{
+			reg = <0x9872d000 0x7100000>;
+		};
+
+		overlay_reserved: overlaybuffer@9f82d000{
+			reg = <0x9f82d000 0x322000>;
+		};
+
+		fb_reserved: framebuffer@9fb4f000{
+			reg = <0x9fb4f000 0x4b1000>;
+		};
+	};
+
+	sprd-ge2 {
+		compatible = "sprd,ge2";
+		vddwcn-supply = <&vddcon>;
+		clock-names = "clk_32k","source","enable";
+		clocks = <&clk_aux0>,<&ext_32k>,
+			 <&clk_aon_apb_gates1 2>;
+		chip-en-gpios = <&ap_gpio 130 0>;
+		vddlna-supply = <&vddsim2>;
+	};
+};
+
+&i2c1 {
+	status = "okay";
+	fan54015_chg@0x6a {
+		compatible = "fairchild,fan54015_chg";
+		reg = <0x6a>;
+	};
+};
+
+&battery {
+	adp-cdp-cur = <700>;
+	adp-dcp-cur = <1150>;
+	adp-sdp-cur = <550>;
+	status = "okay";
+};

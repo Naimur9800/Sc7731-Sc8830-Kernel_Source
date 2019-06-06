@@ -1,0 +1,43 @@
+Hardware spinlock controller binding
+
+* Hardware spinlock controller
+
+Required property:
+- #hwlock-cells: Must be at least 1. Used to provide hardware lock controller specific information.
+- hwlocks-base: Specify the hwlocks base id of this controller to register into the hwlocks radix tree.
+
+Optional properties:
+- hwlocks-num: Number of hardware spinlock supported by the controller.
+
+Example:
+	hwslock0: hwlocks@20c00000{
+		compatible  = "sprd,sc9838-hwspinlock";
+		reg = <0 0x20c00000 0 0x1000>;
+		#hwlock-cells = <1>;
+		hwlocks-base = <32>;
+		hwlocks-num = <32>;
+	};
+
+* Users of hardware spinlock
+
+The users' driver should specify the hardware spinlock property using a phandle.
+
+Required property:
+- hwlocks: Each consisting of
+	- A phandle pointing to hardware spinlock controller node.
+	- A number of integer cells, as determined by the #hwlock-cells
+	property in the node referenced by phandle containing hardware
+	spinlock controller specific information. This typically contains
+	a hardware spinlock id, but can contain any data that is required
+	for configuring a hardware spinlock.
+- hwlock-names: Contains one identifier string for each hardware spinlock in
+	the hwlocks property. The specific strings that can be used are defined
+	in the binding of the client device.
+
+Examples:
+	adc@1 {
+		...
+		hwlocks = <&hwslock0 2 &hwslock0 3>;
+		hwlocks-names = "lock0", "lock1";
+		...
+	};

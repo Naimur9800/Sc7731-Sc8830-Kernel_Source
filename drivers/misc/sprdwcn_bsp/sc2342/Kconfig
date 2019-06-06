@@ -1,0 +1,38 @@
+#
+# Spreadtrum WCN device configuration
+#
+menu "Spreadtrum WCN Device Drivers"
+	depends on MMC
+
+config MARLIN2
+	tristate "marlin2 ref driver"
+	help
+	  This enables the wcn driver for marlin2 devices.
+
+	  Say Y here to compile support for SPRD's SC2332 driver
+	  into the kernel or say M to compile it as module.
+
+config GREENEYE2
+	tristate "GNSS GreenEye2 ref driver"
+	help
+	  This enables the wcn driver for GE2 devices.
+
+	  Say Y here to compile support for SPRD's SC2393 driver
+	  into the kernel or say M to compile it as module.
+
+config INTEGRATED_MARLIN2_GE2
+	tristate "Integrated Marlin2 and GE2 with AP chihpset ref driver"
+	help
+	  This enables the wcn driver for integrated MARLIN2 and GE2 devices.
+
+	  Say Y here to compile support for SPRD's SC2342 driver
+	  into the kernel or say M to compile it as module.
+
+source "drivers/misc/sprdwcn_bsp/sc2342/platform/Kconfig"
+source "drivers/misc/sprdwcn_bsp/sc2342/packer_sim/Kconfig"
+source "drivers/misc/sprdwcn_bsp/sc2342/sdiom/Kconfig"
+source "drivers/misc/sprdwcn_bsp/sc2342/bluetooth/Kconfig"
+source "drivers/misc/sprdwcn_bsp/sc2342/radio/Kconfig"
+source "drivers/misc/sprdwcn_bsp/sc2342/gnss/Kconfig"
+
+endmenu

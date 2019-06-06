@@ -1,0 +1,39 @@
+/*
+ * Spreadtrum isharkl2 VMM vdk board DTS file
+ *
+ * Copyright (C) 2015, Spreadtrum Communications Inc.
+ *
+ * This file is licensed under a dual GPLv2 or X11 license.
+ */
+
+#define CONFIG_MOBILEVISOR
+#include "sp9853i-vdk.dts"
+
+/* VMM add-on */
+
+/ {
+	chosen {
+		bootargs = "earlycon no_timer_check tsc=reliable idle=halt console=ttyS0,921600n8 androidboot.hardware=sp9853i pit_freq=1193182 hpet_freq=26000000 mobilevisor mce=off";
+	};
+
+	reserved-memory {
+		tos_reserved: tos-mem@8000000  {
+			reg = <0x0 0x8000000 0x0 0x6000000>;
+			no-map;
+		};
+
+		tos_shm_reserved: sh-mem@13900000 {
+			reg = <0x0 0x13900000 0x0 0x1000000>;
+		};
+
+		vmm_shm_reserved: vmm-shm@14900000 {
+			reg = <0x0 0x14900000 0x0 0x100000>;
+		};
+	};
+
+	#include "irq-hirq.dtsi"
+	mobilevisor {
+		compatible = "intel,mobilevisor";
+		interrupt-parent = <&hirq>;
+	};
+};

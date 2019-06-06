@@ -1,0 +1,32 @@
+*Spreadtrum SoCs based PWM Subsystem
+=============================================
+
+Spreadtrum SoCs contain PWM controller which can be used for system clock
+event timers,as well as to drvier SoC output wiht PWM signal.Each controller
+provides 4 PWM channels.
+
+Required porperties:
+- compatible : "sprd,pwm"
+
+- reg: base address and size of register area
+
+- clock-names: should contain all following required clock names:
+        - "sprd_pwm_clk_parent" - parent clock for pwm clock,
+        - "clk_pwm" - pwm base clock used to generate PWM signals.
+
+- clocks: phandle of the clock used by the PWM module.
+
+See pwm.txt in this directory for a description of the cells format.
+More information refer to <Documention/devicetree/bindings/pwm.txt>.
+
+Optional properties:
+- None
+
+Example:
+        pwms: pwm@40260000{
+                compatible = "sprd,pwm";
+                reg = <0x40260000 0x10000>;
+                clock-names = "sprd_pwm_clk_parent", "clk_pwm";
+                clocks = <&ext_26m>, <&clk_pwm2>;
+                #pwm-cells = <2>;
+        }
